@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ThemeLogo } from '@/components/theme-logo'
 import {
   FileText,
   Users,
@@ -19,6 +20,14 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25"></div>
         <div className="relative container mx-auto px-4 py-20 md:py-32">
           <div className="max-w-4xl mx-auto text-center">
+            <div className="flex justify-center mb-8">
+              <ThemeLogo
+                width={300}
+                height={80}
+                className="h-16 md:h-20 w-auto"
+              />
+            </div>
+
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 mb-8">
               <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <span className="text-sm font-medium text-blue-900 dark:text-blue-100">

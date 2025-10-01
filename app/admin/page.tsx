@@ -49,11 +49,13 @@ async function getAdminData() {
 
 export default async function AdminPage() {
   const session = await auth()
+
   if (!session?.user?.id) {
     redirect('/auth/login')
   }
 
   const isAdmin = await isSuperAdmin(session.user.id)
+
   if (!isAdmin) {
     redirect('/')
   }

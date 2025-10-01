@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from '@/lib/theme-context'
 import { Button } from '@/components/ui/button'
-import { Moon, Sun, Monitor, Menu, X } from 'lucide-react'
+import { Moon, Sun, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { UserMenu } from '@/components/user-menu'
 
 export function Navigation({
@@ -27,9 +28,15 @@ export function Navigation({
       <nav className="border-b bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold">Invoice Manager</h1>
-            </div>
+            <Link href="/" className="flex-shrink-0">
+              <Image
+                src="/logo-black.svg"
+                alt="SoloPack"
+                width={180}
+                height={40}
+                className="h-10 w-auto"
+              />
+            </Link>
             <div className="hidden md:flex items-center space-x-8">
               <div className="flex items-baseline space-x-4">
                 <Link
@@ -63,9 +70,15 @@ export function Navigation({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold">Invoice Manager</h1>
-          </div>
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src={theme === 'dark' ? '/logo-white.svg' : '/logo-black.svg'}
+              alt="SoloPack"
+              width={180}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -97,14 +110,10 @@ export function Navigation({
               variant="outline"
               size="sm"
               onClick={() => {
-                if (theme === 'light') setTheme('dark')
-                else if (theme === 'dark') setTheme('system')
-                else setTheme('light')
+                setTheme(theme === 'light' ? 'dark' : 'light')
               }}
             >
-              {theme === 'light' && <Sun className="h-4 w-4" />}
-              {theme === 'dark' && <Moon className="h-4 w-4" />}
-              {theme === 'system' && <Monitor className="h-4 w-4" />}
+              {theme === 'light' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
             {user && <UserMenu user={user} isSuperAdmin={isSuperAdmin || false} />}
@@ -116,14 +125,10 @@ export function Navigation({
               variant="outline"
               size="sm"
               onClick={() => {
-                if (theme === 'light') setTheme('dark')
-                else if (theme === 'dark') setTheme('system')
-                else setTheme('light')
+                setTheme(theme === 'light' ? 'dark' : 'light')
               }}
             >
-              {theme === 'light' && <Sun className="h-4 w-4" />}
-              {theme === 'dark' && <Moon className="h-4 w-4" />}
-              {theme === 'system' && <Monitor className="h-4 w-4" />}
+              {theme === 'light' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
             <Button
