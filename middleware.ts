@@ -1,33 +1,25 @@
-import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export default auth((req) => {
-  const { pathname } = req.nextUrl
-  const isLoggedIn = !!req.auth
+export function middleware(request: NextRequest) {
+  // Let NextAuth handle auth routes
+  if (request.nextUrl.pathname.startsWith('/api/auth')) {
+    return NextResponse.next()
+  }
 
   // Public routes
-  const publicRoutes = ['/auth/login', '/auth/register', '/landing']
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
+  const publicPaths = ['/landing', '/auth/login', '/auth/register']
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  )
 
-  // Auth API routes
-  const isAuthApiRoute = pathname.startsWith('/api/auth')
-
-  if (!isLoggedIn && !isPublicRoute && !isAuthApiRoute) {
-    // Redirect to landing page instead of login for root
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/landing', req.url))
-    }
-    const loginUrl = new URL('/auth/login', req.url)
-    loginUrl.searchParams.set('callbackUrl', pathname)
-    return NextResponse.redirect(loginUrl)
+  if (isPublicPath) {
+    return NextResponse.next()
   }
 
-  if (isLoggedIn && isPublicRoute && pathname !== '/landing') {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-
+  // For all other routes, let server components handle auth
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
