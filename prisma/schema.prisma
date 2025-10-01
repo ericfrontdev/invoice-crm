@@ -37,13 +37,17 @@ model Client {
 }
 
 model UnpaidAmount {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   amount      Float
   description String
-  date        DateTime @default(now())
-  status      String   @default("unpaid") // "unpaid" | "invoiced"
+  date        DateTime  @default(now())
+  dueDate     DateTime?
+  status      String    @default("unpaid") // "unpaid" | "invoiced"
   clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
+  client      Client    @relation(fields: [clientId], references: [id])
+  // Optionnel: rattacher le montant à la facture qui l'a consommé
+  invoiceId   String?
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id])
 }
 
 model Invoice {
@@ -54,4 +58,16 @@ model Invoice {
   createdAt DateTime @default(now())
   clientId  String
   client    Client   @relation(fields: [clientId], references: [id])
+  items     InvoiceItem[]
+  unpaidAmounts UnpaidAmount[]
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  description String
+  amount      Float
+  date        DateTime
+  dueDate     DateTime?
 }

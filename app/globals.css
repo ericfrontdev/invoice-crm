@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,9 +45,9 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(98% 0.002 247); /* gris très clair au lieu de blanc pur */
   --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
+  --card: oklch(100% 0 0); /* garde les cartes blanches */
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
@@ -55,8 +55,8 @@
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted: oklch(96% 0.006 247); /* zone muted légèrement plus foncée */
+  --muted-foreground: oklch(45% 0.006 247); /* texte muted ajusté */
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
@@ -119,4 +119,31 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* 3D Card Flip styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.overlay-blur {
+  backdrop-filter: blur(2px);
+}
+
+/* Remove number input spinners */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield; /* Firefox */
 }

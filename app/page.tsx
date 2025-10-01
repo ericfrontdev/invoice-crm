@@ -1,103 +1,239 @@
-import Image from "next/image";
+import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { DollarSign, AlertTriangle, TrendingUp, Users } from 'lucide-react'
 
-export default function Home() {
+async function getDashboardData() {
+  const now = new Date()
+
+  const [unpaidAggRes, overdueRes, draftsRes, sentRes, paidRes] =
+    await Promise.allSettled([
+      prisma.unpaidAmount.aggregate({
+        _sum: { amount: true },
+        where: { status: 'unpaid' },
+      }),
+      prisma.unpaidAmount.findMany({
+        where: { status: 'unpaid', dueDate: { lt: now } },
+        take: 5,
+        orderBy: { dueDate: 'asc' },
+        select: {
+          id: true,
+          description: true,
+          amount: true,
+          dueDate: true,
+          client: { select: { id: true, name: true } },
+        },
+      }),
+      prisma.invoice.count({ where: { status: 'draft' } }),
+      prisma.invoice.count({ where: { status: 'sent' } }),
+      prisma.invoice.count({ where: { status: 'paid' } }),
+    ])
+
+  const unpaidAgg =
+    unpaidAggRes.status === 'fulfilled'
+      ? unpaidAggRes.value
+      : { _sum: { amount: 0 } }
+  const overdue = overdueRes.status === 'fulfilled' ? overdueRes.value : []
+  const drafts = draftsRes.status === 'fulfilled' ? draftsRes.value : 0
+  const sent = sentRes.status === 'fulfilled' ? sentRes.value : 0
+  const paid = paidRes.status === 'fulfilled' ? paidRes.value : 0
+
+  let topClientsGroup: Array<{ clientId: string; _sum: { amount: number | null } }>
+  try {
+    topClientsGroup = await prisma.unpaidAmount.groupBy({
+      by: ['clientId'],
+      where: { status: 'unpaid' },
+      _sum: { amount: true },
+      orderBy: { _sum: { amount: 'desc' } },
+      take: 5,
+    })
+  } catch {
+    topClientsGroup = []
+  }
+
+  const clientIds = topClientsGroup.map((c) => c.clientId)
+  const clientInfos = clientIds.length
+    ? await prisma.client.findMany({
+        where: { id: { in: clientIds } },
+        select: { id: true, name: true },
+      })
+    : []
+  const clientNameById = Object.fromEntries(
+    clientInfos.map((c) => [c.id, c.name]),
+  ) as Record<string, string>
+
+  return {
+    totalDue: unpaidAgg._sum.amount ?? 0,
+    overdue,
+    counts: { drafts, sent, paid },
+    topClients: topClientsGroup.map((c) => ({
+      id: c.clientId,
+      name: clientNameById[c.clientId] ?? 'Client',
+      total: c._sum.amount ?? 0,
+    })),
+  }
+}
+
+export default async function Home() {
+  const { totalDue, overdue, counts, topClients } = await getDashboardData()
+  const maxTop = topClients.length
+    ? Math.max(...topClients.map((c) => c.total))
+    : 0
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="container mx-auto px-4 py-8 space-y-8">
+      {/* Hero section */}
+      <div className="rounded-xl border overflow-hidden bg-gradient-to-r from-slate-900/5 to-sky-500/10 dark:from-slate-100/5 dark:to-sky-400/10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6">
+          <div>
+            <div className="flex items-center gap-2 text-muted-foreground mb-1">
+              <DollarSign className="h-4 w-4" />
+              <span>Total dû</span>
+            </div>
+            <p className="text-4xl font-semibold tracking-tight">
+              {totalDue.toFixed(2)} $
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {overdue.length > 0
+                ? `${overdue.length} éléments en retard à surveiller`
+                : 'Aucun retard — continuez sur cette lancée !'}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link href="/clients">
+              <Button variant="outline">+ Nouveau client</Button>
+            </Link>
+            <Link href="/invoices">
+              <Button>
+                Créer une facture
+              </Button>
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="grid grid-cols-1 sm:grid-cols-3 border-t">
+          <div className="p-4 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-md grid place-items-center bg-background border">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Brouillons</p>
+              <p className="text-lg font-medium">{counts.drafts}</p>
+            </div>
+          </div>
+          <div className="p-4 flex items-center gap-3 border-t sm:border-t-0 sm:border-l">
+            <div className="h-9 w-9 rounded-md grid place-items-center bg-background border">
+              <Users className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Envoyées</p>
+              <p className="text-lg font-medium">{counts.sent}</p>
+            </div>
+          </div>
+          <div className="p-4 flex items-center gap-3 border-t sm:border-t-0 sm:border-l">
+            <div className="h-9 w-9 rounded-md grid place-items-center bg-background border">
+              <DollarSign className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Payées</p>
+              <p className="text-lg font-medium">{counts.paid}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Deux colonnes distinctives */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Overdue panel */}
+        <div className="rounded-xl border">
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <h2 className="text-base font-semibold">À surveiller</h2>
+            </div>
+            <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300 border border-amber-200/60 dark:border-amber-300/20">
+              {overdue.length} en retard
+            </span>
+          </div>
+          <div className="p-4">
+            {overdue.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Rien en retard 🎉</p>
+            ) : (
+              <ul className="space-y-3">
+                {overdue.map((item) => (
+                  <li key={item.id} className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{item.description}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Client{' '}
+                        <Link href={`/clients/${item.client.id}`} className="underline">
+                          {item.client.name}
+                        </Link>{' '}
+                        • Échéance:{' '}
+                        <span className="text-red-600 dark:text-red-400">
+                          {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : '-'}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-red-50 text-red-700 border-red-200 dark:bg-red-400/10 dark:text-red-300 dark:border-red-300/20">
+                        {item.amount.toFixed(2)} $
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/* Top clients with bars */}
+        <div className="rounded-xl border">
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              <h2 className="text-base font-semibold">Top clients (dû)</h2>
+            </div>
+            <span className="text-xs text-muted-foreground">Part du total</span>
+          </div>
+          <div className="p-4">
+            {topClients.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucun dû</p>
+            ) : (
+              <ul className="space-y-4">
+                {topClients.map((c) => {
+                  const pct = maxTop > 0 ? Math.max(8, Math.round((c.total / maxTop) * 100)) : 0
+                  const initials = c.name
+                    .split(' ')
+                    .slice(0, 2)
+                    .map((s) => s.charAt(0).toUpperCase())
+                    .join('')
+                  return (
+                    <li key={c.id}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="h-7 w-7 rounded-full border grid place-items-center text-xs bg-background">
+                            {initials}
+                          </div>
+                          <Link href={`/clients/${c.id}`} className="truncate hover:underline">
+                            {c.name}
+                          </Link>
+                        </div>
+                        <div className="text-sm font-medium shrink-0">{c.total.toFixed(2)} $</div>
+                      </div>
+                      <div className="h-2 w-full rounded bg-muted overflow-hidden border">
+                        <div
+                          className="h-full bg-gradient-to-r from-sky-500 to-indigo-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

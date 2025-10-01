@@ -1,0 +1,49 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    let { clientId, amount, description, date, dueDate } = body ?? {}
+
+    description = typeof description === 'string' ? description.trim() : ''
+
+    if (!clientId || !description || amount == null || isNaN(Number(amount))) {
+      return NextResponse.json({ error: 'Payload invalide.' }, { status: 400 })
+    }
+
+    // Vérifie que le client existe
+    const client = await prisma.client.findUnique({ where: { id: String(clientId) } })
+    if (!client) {
+      return NextResponse.json({ error: 'Client introuvable.' }, { status: 404 })
+    }
+
+    // Dates
+    const dateObj = date ? new Date(date) : new Date()
+    const dueObj = dueDate ? new Date(dueDate) : null
+    if (dueObj && dateObj && dueObj < dateObj) {
+      return NextResponse.json(
+        { error: "La date d'échéance doit être après la date." },
+        { status: 400 },
+      )
+    }
+
+    const row = await prisma.unpaidAmount.create({
+      data: {
+        clientId: String(clientId),
+        amount: Number(amount),
+        description: description,
+        date: dateObj,
+        dueDate: dueObj,
+        status: 'unpaid',
+      },
+    })
+
+    return NextResponse.json(row, { status: 201 })
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Erreur lors de l'ajout du montant." },
+      { status: 500 },
+    )
+  }
+}
