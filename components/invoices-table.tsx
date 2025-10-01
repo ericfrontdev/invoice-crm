@@ -12,7 +12,7 @@ type Invoice = {
   total: number
   createdAt: string | Date
   clientId: string
-  client?: { id: string; name: string | null } | null
+  client: { id: string; name: string | null } | null
   items?: Array<{ id: string; description: string; amount: number; date: string | Date; dueDate?: string | Date | null }>
 }
 
@@ -23,7 +23,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
     null,
   )
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
 
   // Deterministic date formatting to avoid hydration mismatches (explicit locale + timezone)
   const formatDate = (d: string | Date) =>

@@ -10,7 +10,7 @@ async function getInvoices() {
         items: { select: { id: true, description: true, amount: true, date: true, dueDate: true } },
       },
     })
-  } catch (e) {
+  } catch {
     // Fallback when items relation isn't available yet (pre-migration)
     return prisma.invoice.findMany({
       orderBy: { createdAt: 'desc' },
@@ -33,10 +33,10 @@ export default async function InvoicesPage() {
 
       {invoices.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Aucune facture pour l'instant.
+          Aucune facture pour l&apos;instant.
         </div>
       ) : (
-        <InvoicesTable invoices={invoices as any} />
+        <InvoicesTable invoices={invoices} />
       )}
     </div>
   )

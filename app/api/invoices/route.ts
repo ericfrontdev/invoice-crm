@@ -87,12 +87,14 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(result, { status: 201 })
-  } catch (err: any) {
-    if (err?.message === 'CLIENT_NOT_FOUND') {
-      return NextResponse.json({ error: 'Client introuvable.' }, { status: 404 })
-    }
-    if (err?.message === 'NO_ITEMS') {
-      return NextResponse.json({ error: 'Aucun montant sélectionné valide.' }, { status: 400 })
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'CLIENT_NOT_FOUND') {
+        return NextResponse.json({ error: 'Client introuvable.' }, { status: 404 })
+      }
+      if (err.message === 'NO_ITEMS') {
+        return NextResponse.json({ error: 'Aucun montant sélectionné valide.' }, { status: 400 })
+      }
     }
     return NextResponse.json({ error: 'Erreur lors de la création de la facture.' }, { status: 500 })
   }

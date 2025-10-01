@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params
     const id = params.id
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 })

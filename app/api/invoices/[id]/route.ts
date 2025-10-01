@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } },
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   const id = params.id
   if (!id) return NextResponse.json({ error: 'id requis' }, { status: 400 })
   try {
@@ -53,7 +54,7 @@ export async function GET(
       if (!invoice) return NextResponse.json({ error: 'Introuvable' }, { status: 404 })
       return NextResponse.json(invoice)
     }
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

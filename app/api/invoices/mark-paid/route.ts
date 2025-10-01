@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ ok: true, invoice }, { status: 200 })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Impossible de marquer la facture comme payée" }, { status: 500 })
   }
 }

@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    let { clientId, amount, description, date, dueDate } = body ?? {}
+    const { clientId, amount, dueDate, date } = body ?? {}
+    let { description } = body ?? {}
 
     description = typeof description === 'string' ? description.trim() : ''
 
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(row, { status: 201 })
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Erreur lors de l'ajout du montant." },
       { status: 500 },

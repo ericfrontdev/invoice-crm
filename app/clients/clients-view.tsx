@@ -52,7 +52,7 @@ export function ClientsView({ clients }: { clients: Client[] }) {
       router.refresh()
       setToast({ type: 'success', message: 'Client créé avec succès' })
       setTimeout(() => setToast(null), 2500)
-    } catch (e) {
+    } catch {
       setToast({ type: 'error', message: 'Erreur réseau' })
       setTimeout(() => setToast(null), 3000)
     }
@@ -75,7 +75,7 @@ export function ClientsView({ clients }: { clients: Client[] }) {
       setToast({ type: 'success', message: 'Client modifié avec succès' })
       setTimeout(() => setToast(null), 2500)
       setEditingClient(null)
-    } catch (e) {
+    } catch {
       setToast({ type: 'error', message: 'Erreur réseau' })
       setTimeout(() => setToast(null), 3000)
     }

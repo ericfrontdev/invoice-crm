@@ -38,18 +38,13 @@ async function getDashboardData() {
   const sent = sentRes.status === 'fulfilled' ? sentRes.value : 0
   const paid = paidRes.status === 'fulfilled' ? paidRes.value : 0
 
-  let topClientsGroup: Array<{ clientId: string; _sum: { amount: number | null } }>
-  try {
-    topClientsGroup = await prisma.unpaidAmount.groupBy({
-      by: ['clientId'],
-      where: { status: 'unpaid' },
-      _sum: { amount: true },
-      orderBy: { _sum: { amount: 'desc' } },
-      take: 5,
-    })
-  } catch {
-    topClientsGroup = []
-  }
+  const topClientsGroup = await prisma.unpaidAmount.groupBy({
+    by: ['clientId'],
+    where: { status: 'unpaid' },
+    _sum: { amount: true },
+    orderBy: { _sum: { amount: 'desc' } },
+    take: 5,
+  })
 
   const clientIds = topClientsGroup.map((c) => c.clientId)
   const clientInfos = clientIds.length

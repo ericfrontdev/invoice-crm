@@ -153,7 +153,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="dueDate">Date d'échéance (optionnelle)</Label>
+            <Label htmlFor="dueDate">Date d&apos;échéance (optionnelle)</Label>
             <Input
               id="dueDate"
               type="date"

@@ -65,7 +65,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
       setToast({ type: 'success', message: 'Montant modifié avec succès' })
       setTimeout(() => setToast(null), 2500)
       setEditingAmount(null)
-    } catch (e) {
+    } catch {
       setToast({ type: 'error', message: 'Erreur réseau' })
       setTimeout(() => setToast(null), 3000)
     }
@@ -356,7 +356,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           setSelectedAmounts(new Set())
                           router.refresh()
                         }
-                      } catch (e) {
+                      } catch {
                         setToast({ type: 'error', message: 'Erreur réseau' })
                       } finally {
                         setIsGenerating(false)
@@ -400,7 +400,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                 router.refresh()
                 setToast({ type: 'success', message: 'Montant ajouté' })
               }
-            } catch (e) {
+            } catch {
               setToast({ type: 'error', message: 'Erreur réseau' })
             } finally {
               setIsAddOpen(false)
