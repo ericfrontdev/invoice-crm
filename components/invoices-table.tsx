@@ -3,7 +3,11 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { InvoiceViewModal } from '@/components/invoice-view-modal'
+import { Eye, Mail, CheckCircle, Trash2 } from 'lucide-react'
+import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
+import { ConfirmDialog } from '@/components/confirm-dialog'
+import { Button } from '@/components/ui/button'
+import { Tooltip } from '@/components/ui/tooltip'
 
 type Invoice = {
   id: string
@@ -24,6 +28,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
   )
   const [previewOpen, setPreviewOpen] = useState(false)
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   // Deterministic date formatting to avoid hydration mismatches (explicit locale + timezone)
   const formatDate = (d: string | Date) =>
@@ -31,22 +36,38 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
 
   const doAction = async (
     invoiceId: string,
-    kind: 'send' | 'paid',
+    kind: 'send' | 'paid' | 'delete',
   ) => {
     try {
       setBusyId(invoiceId)
-      const url = kind === 'send' ? '/api/invoices/send' : '/api/invoices/mark-paid'
+      let url = ''
+      let method = 'POST'
+      let successMsg = ''
+
+      if (kind === 'send') {
+        url = '/api/invoices/send'
+        successMsg = 'Facture envoyée'
+      } else if (kind === 'paid') {
+        url = '/api/invoices/mark-paid'
+        successMsg = 'Facture payée'
+      } else if (kind === 'delete') {
+        url = `/api/invoices/${invoiceId}`
+        method = 'DELETE'
+        successMsg = 'Facture supprimée'
+      }
+
       const res = await fetch(url, {
-        method: 'POST',
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ invoiceId }),
+        body: method === 'POST' ? JSON.stringify({ invoiceId }) : undefined,
       })
       if (!res.ok) {
         setToast({ type: 'error', message: "Action impossible" })
         return
       }
       router.refresh()
-      setToast({ type: 'success', message: kind === 'send' ? 'Facture envoyée' : 'Facture payée' })
+      setToast({ type: 'success', message: successMsg })
+      setDeleteConfirmId(null)
     } catch {
       setToast({ type: 'error', message: 'Erreur réseau' })
     } finally {
@@ -73,26 +94,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
             {invoices.map((inv) => (
               <tr key={inv.id} className="border-t">
                 <td className="py-3 px-4 font-medium">
-                  <button
-                    type="button"
-                    className="underline"
-                    onClick={() => {
-                      ;(async () => {
-                        try {
-                          const res = await fetch(`/api/invoices/${inv.id}`, { cache: 'no-store' })
-                          if (res.ok) {
-                            const full = await res.json()
-                            setSelectedInvoice(full)
-                            setPreviewOpen(true)
-                          }
-                        } catch {
-                          // ignore
-                        }
-                      })()
-                    }}
-                  >
-                    {inv.number}
-                  </button>
+                  {inv.number}
                 </td>
                 <td className="py-3 px-4">
                   <Link href={`/clients/${inv.clientId}`} className="underline">
@@ -115,27 +117,73 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
                 <td className="py-3 px-4 text-right font-semibold">{Number(inv.total).toFixed(2)} $</td>
                 <td className="py-3 px-4">{formatDate(inv.createdAt)}</td>
                 <td className="py-3 px-4">
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-1">
+                    {/* Voir */}
+                    <Tooltip content="Voir et modifier">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => {
+                          ;(async () => {
+                            try {
+                              const res = await fetch(`/api/invoices/${inv.id}`, { cache: 'no-store' })
+                              if (res.ok) {
+                                const full = await res.json()
+                                setSelectedInvoice(full)
+                                setPreviewOpen(true)
+                              }
+                            } catch {
+                              // ignore
+                            }
+                          })()
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Tooltip>
+
+                    {/* Envoyer */}
                     {inv.status === 'draft' && (
-                      <button
-                        className="text-xs underline disabled:opacity-60"
-                        disabled={busyId === inv.id}
-                        onClick={() => doAction(inv.id, 'send')}
-                      >
-                        {busyId === inv.id ? 'Envoi…' : 'Envoyer (mock)'}
-                      </button>
+                      <Tooltip content="Envoyer par email">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          disabled={busyId === inv.id}
+                          onClick={() => doAction(inv.id, 'send')}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
                     )}
+
+                    {/* Marquer payée */}
                     {inv.status !== 'paid' && (
-                      <button
-                        className="text-xs underline disabled:opacity-60"
-                        disabled={busyId === inv.id}
-                        onClick={() => doAction(inv.id, 'paid')}
-                      >
-                        {busyId === inv.id && invoices.find((i) => i.id === inv.id)?.status !== 'draft'
-                          ? 'Maj…'
-                          : 'Marquer payée'}
-                      </button>
+                      <Tooltip content="Marquer comme payée">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400"
+                          disabled={busyId === inv.id}
+                          onClick={() => doAction(inv.id, 'paid')}
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
                     )}
+
+                    {/* Supprimer */}
+                    <Tooltip content="Supprimer">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                        onClick={() => setDeleteConfirmId(inv.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Tooltip>
                   </div>
                 </td>
               </tr>
@@ -147,6 +195,19 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] }) {
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
         invoice={selectedInvoice}
+      />
+      <ConfirmDialog
+        isOpen={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            doAction(deleteConfirmId, 'delete')
+          }
+        }}
+        title="Supprimer la facture"
+        description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
+        confirmText="Supprimer"
+        isLoading={busyId === deleteConfirmId}
       />
       {toast && (
         <div

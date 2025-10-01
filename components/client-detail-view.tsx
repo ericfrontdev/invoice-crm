@@ -197,6 +197,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                   size="sm"
                   onClick={() => setIsEditMode(!isEditMode)}
                   className="cursor-pointer"
+                  disabled={client.unpaidAmounts.length === 0}
                 >
                   <Pencil className="h-4 w-4 mr-2" />
                   {isEditMode ? 'Mode édition' : 'Éditer'}
