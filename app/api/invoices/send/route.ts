@@ -63,8 +63,11 @@ export async function POST(req: Request) {
 
     // Envoyer l'email via Resend
     try {
+      const userName = session.user.name || 'SoloPack'
+      const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev'
+
       const { data, error } = await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+        from: `${userName} <${emailFrom}>`,
         to: invoice.client.email,
         subject: `Facture ${invoice.number}`,
         html: emailHtml,
