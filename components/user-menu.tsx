@@ -24,22 +24,14 @@ export function UserMenu({
       )}
 
       <div className="flex items-center gap-2">
-        {user.image ? (
-          <img
-            src={user.image}
-            alt={user.name}
-            className="h-8 w-8 rounded-full"
-          />
-        ) : (
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-xs font-medium">
-            {user.name
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)}
-          </div>
-        )}
+        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-xs font-medium">
+          {user.name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)}
+        </div>
         <div className="hidden md:block">
           <p className="text-sm font-medium">{user.name}</p>
           <p className="text-xs text-muted-foreground">{user.email}</p>
