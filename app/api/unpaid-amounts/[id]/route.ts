@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 export async function PATCH(
   req: Request,
   props: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Check authentication
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
+    }
+
     const params = await props.params
     const id = params.id
     if (!id) {
@@ -20,6 +27,20 @@ export async function PATCH(
         { error: 'Montant, description et date requis' },
         { status: 400 }
       )
+    }
+
+    // Verify ownership through client
+    const existingAmount = await prisma.unpaidAmount.findUnique({
+      where: { id },
+      include: { client: true }
+    })
+
+    if (!existingAmount) {
+      return NextResponse.json({ error: 'Montant introuvable.' }, { status: 404 })
+    }
+
+    if (existingAmount.client.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
     }
 
     const unpaidAmount = await prisma.unpaidAmount.update({

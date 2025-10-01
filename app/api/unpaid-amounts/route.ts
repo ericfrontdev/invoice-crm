@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 export async function POST(req: Request) {
   try {
+    // Check authentication
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
+    }
+
     const body = await req.json()
     const { clientId, amount, dueDate, date } = body ?? {}
     let { description } = body ?? {}
@@ -13,8 +20,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payload invalide.' }, { status: 400 })
     }
 
-    // Vérifie que le client existe
-    const client = await prisma.client.findUnique({ where: { id: String(clientId) } })
+    // Vérifie que le client existe et appartient à l'utilisateur
+    const client = await prisma.client.findUnique({
+      where: {
+        id: String(clientId),
+        userId: session.user.id
+      }
+    })
     if (!client) {
       return NextResponse.json({ error: 'Client introuvable.' }, { status: 404 })
     }

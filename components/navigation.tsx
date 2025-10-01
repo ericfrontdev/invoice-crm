@@ -5,8 +5,15 @@ import { useTheme } from '@/lib/theme-context'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Monitor, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import { UserMenu } from '@/components/user-menu'
 
-export function Navigation() {
+export function Navigation({
+  user,
+  isSuperAdmin,
+}: {
+  user?: { name: string; email: string; image?: string | null }
+  isSuperAdmin?: boolean
+}) {
   const { theme, setTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
@@ -62,26 +69,28 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <div className="flex items-baseline space-x-4">
-              <Link
-                href="/"
-                className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/clients"
-                className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
-              >
-                Clients
-              </Link>
-              <Link
-                href="/invoices"
-                className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
-              >
-                Factures
-              </Link>
-            </div>
+            {user && (
+              <div className="flex items-baseline space-x-4">
+                <Link
+                  href="/"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/clients"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Clients
+                </Link>
+                <Link
+                  href="/invoices"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Factures
+                </Link>
+              </div>
+            )}
 
             {/* Theme Toggle */}
             <Button
@@ -97,6 +106,8 @@ export function Navigation() {
               {theme === 'dark' && <Moon className="h-4 w-4" />}
               {theme === 'system' && <Monitor className="h-4 w-4" />}
             </Button>
+
+            {user && <UserMenu user={user} isSuperAdmin={isSuperAdmin || false} />}
           </div>
 
           {/* Mobile menu button */}

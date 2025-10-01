@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 export async function POST(req: Request) {
   try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+
     const body = await req.json()
     let { name, company, email, phone, address, website } = body ?? {}
 
@@ -25,14 +31,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email invalide.' }, { status: 400 })
     }
 
-    // Récupère un user pour lier le client (pas d’auth pour l’instant)
-    let user = await prisma.user.findFirst()
-    if (!user) {
-      user = await prisma.user.create({
-        data: { email: 'demo@example.com', name: 'Demo User' },
-      })
-    }
-
     const client = await prisma.client.create({
       data: {
         name,
@@ -41,7 +39,7 @@ export async function POST(req: Request) {
         phone: phone || null,
         address: address || null,
         website: website || null,
-        userId: user.id,
+        userId: session.user.id,
       },
     })
 

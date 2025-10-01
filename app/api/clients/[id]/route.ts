@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 export async function PATCH(
   req: Request,
   props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+
     const params = await props.params
     const id = params.id
     if (!id) {
@@ -19,6 +25,19 @@ export async function PATCH(
       return NextResponse.json(
         { error: 'Nom et email requis' },
         { status: 400 }
+      )
+    }
+
+    // Verify ownership
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { userId: true },
+    })
+
+    if (!existingClient || existingClient.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Client introuvable' },
+        { status: 404 }
       )
     }
 

@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma'
 import { InvoicesTable } from '@/components/invoices-table'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-async function getInvoices() {
+async function getInvoices(userId: string) {
   try {
     return await prisma.invoice.findMany({
+      where: { client: { userId } },
       orderBy: { createdAt: 'desc' },
       include: {
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
@@ -13,6 +16,7 @@ async function getInvoices() {
   } catch {
     // Fallback when items relation isn't available yet (pre-migration)
     return prisma.invoice.findMany({
+      where: { client: { userId } },
       orderBy: { createdAt: 'desc' },
       include: {
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
@@ -22,7 +26,12 @@ async function getInvoices() {
 }
 
 export default async function InvoicesPage() {
-  const invoices = await getInvoices()
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect('/auth/login')
+  }
+
+  const invoices = await getInvoices(session.user.id)
 
   return (
     <div className="container mx-auto px-4 py-8">

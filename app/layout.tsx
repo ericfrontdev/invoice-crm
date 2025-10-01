@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/lib/theme-context'
 import { Navigation } from '@/components/navigation'
+import { auth } from '@/auth'
+import { isSuperAdmin } from '@/lib/check-super-admin'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,11 +13,14 @@ export const metadata: Metadata = {
   description: 'CRM et facturation avec IA',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await auth()
+  const isAdmin = session?.user?.id ? await isSuperAdmin(session.user.id) : false
+
   return (
     <html
       lang="fr"
@@ -23,7 +28,7 @@ export default function RootLayout({
     >
       <body className={inter.className}>
         <ThemeProvider>
-          <Navigation />
+          <Navigation user={session?.user} isSuperAdmin={isAdmin} />
           <main className="min-h-screen bg-background">{children}</main>
         </ThemeProvider>
       </body>

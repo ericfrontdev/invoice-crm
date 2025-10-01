@@ -3,9 +3,16 @@ import { prisma } from '@/lib/prisma'
 import { resend } from '@/lib/resend'
 import { render } from '@react-email/render'
 import InvoiceEmail from '@/emails/invoice-email'
+import { auth } from '@/auth'
 
 export async function POST(req: Request) {
   try {
+    // Check authentication
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
+    }
+
     const body = await req.json()
     const invoiceId: string | undefined = body?.invoiceId
     if (!invoiceId) {
@@ -17,7 +24,7 @@ export async function POST(req: Request) {
       where: { id: invoiceId },
       include: {
         client: {
-          select: { name: true, email: true }
+          select: { name: true, email: true, userId: true }
         },
         items: {
           select: { description: true, amount: true, date: true },
@@ -32,6 +39,11 @@ export async function POST(req: Request) {
 
     if (!invoice.client) {
       return NextResponse.json({ error: 'Client introuvable' }, { status: 404 })
+    }
+
+    // Verify ownership
+    if (invoice.client.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
     }
 
     // Préparer les données pour l'email

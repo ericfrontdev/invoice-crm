@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
 
 function makeInvoiceNumber() {
   const d = new Date()
@@ -10,6 +11,12 @@ function makeInvoiceNumber() {
 
 export async function POST(req: Request) {
   try {
+    // Check authentication
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié.' }, { status: 401 })
+    }
+
     const body = await req.json()
     console.log('[invoices:POST] Request body:', body)
     const clientId: string | undefined = body?.clientId
@@ -21,8 +28,13 @@ export async function POST(req: Request) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Vérifier client
-      const client = await tx.client.findUnique({ where: { id: clientId } })
+      // Vérifier client et ownership
+      const client = await tx.client.findUnique({
+        where: {
+          id: clientId,
+          userId: session.user.id
+        }
+      })
       if (!client) {
         throw new Error('CLIENT_NOT_FOUND')
       }

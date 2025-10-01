@@ -2,18 +2,20 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { DollarSign, AlertTriangle, TrendingUp, Users } from 'lucide-react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
-async function getDashboardData() {
+async function getDashboardData(userId: string) {
   const now = new Date()
 
   const [unpaidAggRes, overdueRes, draftsRes, sentRes, paidRes] =
     await Promise.allSettled([
       prisma.unpaidAmount.aggregate({
         _sum: { amount: true },
-        where: { status: 'unpaid' },
+        where: { status: 'unpaid', client: { userId } },
       }),
       prisma.unpaidAmount.findMany({
-        where: { status: 'unpaid', dueDate: { lt: now } },
+        where: { status: 'unpaid', dueDate: { lt: now }, client: { userId } },
         take: 5,
         orderBy: { dueDate: 'asc' },
         select: {
@@ -24,9 +26,9 @@ async function getDashboardData() {
           client: { select: { id: true, name: true } },
         },
       }),
-      prisma.invoice.count({ where: { status: 'draft' } }),
-      prisma.invoice.count({ where: { status: 'sent' } }),
-      prisma.invoice.count({ where: { status: 'paid' } }),
+      prisma.invoice.count({ where: { status: 'draft', client: { userId } } }),
+      prisma.invoice.count({ where: { status: 'sent', client: { userId } } }),
+      prisma.invoice.count({ where: { status: 'paid', client: { userId } } }),
     ])
 
   const unpaidAgg =
@@ -40,7 +42,7 @@ async function getDashboardData() {
 
   const topClientsGroup = await prisma.unpaidAmount.groupBy({
     by: ['clientId'],
-    where: { status: 'unpaid' },
+    where: { status: 'unpaid', client: { userId } },
     _sum: { amount: true },
     orderBy: { _sum: { amount: 'desc' } },
     take: 5,
@@ -49,7 +51,7 @@ async function getDashboardData() {
   const clientIds = topClientsGroup.map((c) => c.clientId)
   const clientInfos = clientIds.length
     ? await prisma.client.findMany({
-        where: { id: { in: clientIds } },
+        where: { id: { in: clientIds }, userId },
         select: { id: true, name: true },
       })
     : []
@@ -70,7 +72,12 @@ async function getDashboardData() {
 }
 
 export default async function Home() {
-  const { totalDue, overdue, counts, topClients } = await getDashboardData()
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect('/landing')
+  }
+
+  const { totalDue, overdue, counts, topClients } = await getDashboardData(session.user.id)
   const maxTop = topClients.length
     ? Math.max(...topClients.map((c) => c.total))
     : 0
