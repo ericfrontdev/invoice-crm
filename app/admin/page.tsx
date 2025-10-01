@@ -11,7 +11,6 @@ async function getAdminData() {
       name: true,
       email: true,
       createdAt: true,
-      image: true,
       _count: {
         select: {
           clients: true,
@@ -148,22 +147,14 @@ export default async function AdminPage() {
                 <tr key={user.id} className="border-t hover:bg-muted/50">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      {user.image ? (
-                        <img
-                          src={user.image}
-                          alt={user.name}
-                          className="h-8 w-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-xs font-medium">
-                          {user.name
-                            .split(' ')
-                            .map((n) => n[0])
-                            .join('')
-                            .toUpperCase()
-                            .slice(0, 2)}
-                        </div>
-                      )}
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-xs font-medium">
+                        {user.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .toUpperCase()
+                          .slice(0, 2)}
+                      </div>
                       <span className="font-medium">{user.name}</span>
                     </div>
                   </td>
