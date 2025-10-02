@@ -72,15 +72,15 @@ async function getDashboardData(userId: string) {
 }
 
 export default async function Home() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    redirect('/auth/login')
-  }
+  // const session = await auth()
+  // if (!session?.user?.id) {
+  //   redirect('/landing')
+  // }
 
-  const { totalDue, overdue, counts, topClients } = await getDashboardData(session.user.id)
-  const maxTop = topClients.length
-    ? Math.max(...topClients.map((c) => c.total))
-    : 0
+  // //const { totalDue, overdue, counts, topClients } = await getDashboardData(session.user.id)
+  // const maxTop = topClients.length
+  //   ? Math.max(...topClients.map((c) => c.total))
+  //   : 0
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
