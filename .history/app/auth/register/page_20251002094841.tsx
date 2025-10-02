@@ -166,7 +166,7 @@ export default function RegisterPage() {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : "S'inscrire"}
+              {loading ? 'Inscription...' : 'S&apos;inscrire'}
             </Button>
           </form>
 

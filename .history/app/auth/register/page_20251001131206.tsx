@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signIn } from 'next-auth/react'
-import { ThemeLogo } from '@/components/theme-logo'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -77,10 +76,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-sky-50 dark:from-slate-950 dark:to-slate-900 p-4">
       <div className="w-full max-w-md">
         <div className="bg-background rounded-xl border shadow-lg p-8">
-          <ThemeLogo className="mb-6 w-auto" />
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold">Inscription</h1>
-            <p className="text-muted-foreground mt-2">Créez votre compte</p>
+            <p className="text-muted-foreground mt-2">
+              Créez votre compte
+            </p>
           </div>
 
           {error && (
@@ -89,15 +89,9 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="name" className="block text-sm font-medium mb-2">
                 Nom complet
               </label>
               <input
@@ -111,10 +105,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email
               </label>
               <input
@@ -128,10 +119,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
                 Mot de passe
               </label>
               <input
@@ -145,10 +133,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
                 Confirmer le mot de passe
               </label>
               <input
@@ -166,7 +151,7 @@ export default function RegisterPage() {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : "S'inscrire"}
+              {loading ? 'Inscription...' : 'S&apos;inscrire'}
             </Button>
           </form>
 
@@ -188,10 +173,7 @@ export default function RegisterPage() {
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -214,10 +196,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Vous avez déjà un compte ?{' '}
-            <Link
-              href="/auth/login"
-              className="text-blue-600 hover:underline dark:text-blue-400"
-            >
+            <Link href="/auth/login" className="text-blue-600 hover:underline dark:text-blue-400">
               Se connecter
             </Link>
           </p>

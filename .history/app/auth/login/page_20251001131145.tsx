@@ -1,18 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { signIn } from 'next-auth/react'
-import { ThemeLogo } from '@/components/theme-logo'
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const router = useRouter()
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -21,34 +18,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
 
-    if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas')
-      setLoading(false)
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères')
-      setLoading(false)
-      return
-    }
-
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error || 'Une erreur est survenue')
-        setLoading(false)
-        return
-      }
-
-      // Auto-login after registration
       const result = await signIn('credentials', {
         email,
         password,
@@ -56,7 +26,7 @@ export default function RegisterPage() {
       })
 
       if (result?.error) {
-        setError('Inscription réussie mais erreur de connexion')
+        setError('Email ou mot de passe incorrect')
       } else {
         router.push('/')
         router.refresh()
@@ -77,10 +47,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-sky-50 dark:from-slate-950 dark:to-slate-900 p-4">
       <div className="w-full max-w-md">
         <div className="bg-background rounded-xl border shadow-lg p-8">
-          <ThemeLogo className="mb-6 w-auto" />
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Inscription</h1>
-            <p className="text-muted-foreground mt-2">Créez votre compte</p>
+            <h1 className="text-3xl font-bold">Connexion</h1>
+            <p className="text-muted-foreground mt-2">
+              Connectez-vous à votre compte
+            </p>
           </div>
 
           {error && (
@@ -89,32 +60,9 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium mb-2"
-              >
-                Nom complet
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email
               </label>
               <input
@@ -128,10 +76,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
                 Mot de passe
               </label>
               <input
@@ -144,29 +89,12 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium mb-2"
-              >
-                Confirmer le mot de passe
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
             <Button
               type="submit"
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : "S'inscrire"}
+              {loading ? 'Connexion...' : 'Se connecter'}
             </Button>
           </form>
 
@@ -188,10 +116,7 @@ export default function RegisterPage() {
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -213,12 +138,9 @@ export default function RegisterPage() {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Vous avez déjà un compte ?{' '}
-            <Link
-              href="/auth/login"
-              className="text-blue-600 hover:underline dark:text-blue-400"
-            >
-              Se connecter
+            Pas encore de compte ?{' '}
+            <Link href="/auth/register" className="text-blue-600 hover:underline dark:text-blue-400">
+              S&apos;inscrire
             </Link>
           </p>
         </div>
