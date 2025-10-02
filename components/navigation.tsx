@@ -5,7 +5,7 @@ import { useTheme } from '@/lib/theme-context'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { ThemeLogo } from '@/components/theme-logo'
 import { UserMenu } from '@/components/user-menu'
 
 export function Navigation({
@@ -29,13 +29,7 @@ export function Navigation({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex-shrink-0">
-              <Image
-                src="/logo-black.svg"
-                alt="SoloPack"
-                width={180}
-                height={40}
-                className="h-10 w-auto"
-              />
+              <ThemeLogo width={180} height={40} className="h-10 w-auto" />
             </Link>
             <div className="hidden md:flex items-center space-x-8">
               <div className="flex items-baseline space-x-4">
@@ -71,13 +65,7 @@ export function Navigation({
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <Image
-              src={theme === 'dark' ? '/logo-white.svg' : '/logo-black.svg'}
-              alt="SoloPack"
-              width={180}
-              height={40}
-              className="h-10 w-auto"
-            />
+            <ThemeLogo width={180} height={40} className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
