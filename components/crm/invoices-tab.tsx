@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { FileText, Eye, Mail, CheckCircle, Trash2, Archive } from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, Archive } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip } from '@/components/ui/tooltip'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
@@ -20,6 +19,16 @@ type Invoice = {
   project: {
     id: string
     name: string
+  } | null
+}
+
+type InvoiceForView = Invoice & {
+  client: {
+    id: string
+    name: string | null
+    company?: string | null
+    email?: string | null
+    address?: string | null
   } | null
 }
 
@@ -57,7 +66,7 @@ export function InvoicesTab({
     message: string
   } | null>(null)
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
+  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceForView | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<string[]>([])
   const [batchAction, setBatchAction] = useState<'delete' | 'archive' | null>(
@@ -218,9 +227,6 @@ export function InvoicesTab({
 
     const invoiceIds = invoices.map((inv) => inv.id)
     const allSelected = invoiceIds.every((id) =>
-      selectedInvoiceIds.includes(id)
-    )
-    const someSelected = invoiceIds.some((id) =>
       selectedInvoiceIds.includes(id)
     )
     const selectedFromThisTable = invoiceIds.filter((id) =>

@@ -36,7 +36,7 @@ export function ProjectModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: any, files: File[]) => Promise<void>
+  onSave: (data: { name: string; description: string | null; status: string; budget: string | number | null; startDate: string | null; endDate: string | null }, files: File[]) => Promise<void>
   project: Project | null
   clientId: string
   availableInvoices: Invoice[]

@@ -55,7 +55,7 @@ export function NotesTab({
     }
   }
 
-  const handleSaveNote = async (data: any) => {
+  const handleSaveNote = async (data: { title: string; content: string; tags: string[] }) => {
     const url = editingNote ? `/api/notes/${editingNote.id}` : `/api/notes`
     const method = editingNote ? 'PATCH' : 'POST'
     const body = editingNote ? data : { ...data, clientId: client.id }

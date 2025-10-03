@@ -23,7 +23,7 @@ export function NoteModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: any) => Promise<void>
+  onSave: (data: { title: string; content: string; tags: string[] }) => Promise<void>
   note: Note | null
 }) {
   const [formData, setFormData] = useState({

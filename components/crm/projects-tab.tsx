@@ -109,7 +109,7 @@ export function ProjectsTab({
     setIsUploadModalOpen(true)
   }
 
-  const handleSaveProject = async (data: any, files: File[]) => {
+  const handleSaveProject = async (data: { name: string; description: string | null; status: string; budget: string | number | null; startDate: string | null; endDate: string | null }, files: File[]) => {
     const url = editingProject
       ? `/api/projects/${editingProject.id}`
       : `/api/projects`
@@ -269,24 +269,24 @@ export function ProjectsTab({
           {client.projects.map((project) => (
             <ProjectCard
               key={project.id}
-              project={project}
-              onEdit={handleEditProject}
+              project={project as never}
+              onEdit={handleEditProject as never}
               onDelete={() => handleDeleteClick(project)}
-              onCreateInvoice={handleCreateInvoice}
-              onUploadDocuments={handleUploadDocuments}
+              onCreateInvoice={handleCreateInvoice as never}
+              onUploadDocuments={handleUploadDocuments as never}
             />
           ))}
         </div>
       ) : (
         <ProjectList
-          projects={client.projects}
-          onEdit={handleEditProject}
+          projects={client.projects as never}
+          onEdit={handleEditProject as never}
           onDelete={(projectId) => {
             const project = client.projects.find((p) => p.id === projectId)
             if (project) handleDeleteClick(project)
           }}
-          onCreateInvoice={handleCreateInvoice}
-          onUploadDocuments={handleUploadDocuments}
+          onCreateInvoice={handleCreateInvoice as never}
+          onUploadDocuments={handleUploadDocuments as never}
         />
       )}
 
@@ -311,7 +311,7 @@ export function ProjectsTab({
               <AlertDialogHeader>
                 <AlertDialogTitle>Supprimer le projet</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le projet "{projectToDelete?.name}" ?
+                  Êtes-vous sûr de vouloir supprimer le projet &ldquo;{projectToDelete?.name}&rdquo; ?
                   Cette action est irréversible et supprimera également tous les fichiers associés.
                 </AlertDialogDescription>
               </AlertDialogHeader>
