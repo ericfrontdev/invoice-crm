@@ -113,16 +113,29 @@ export function ClientCard({
               </div>
             </div>
 
-            <Button
-              size="sm"
-              className="mt-4 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation() // Empêche le flip de la carte
-                router.push(`/clients/${client.id}`)
-              }}
-            >
-              Gérer factures <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
+            <div className="mt-4 flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation() // Empêche le flip de la carte
+                  router.push(`/clients/${client.id}`)
+                }}
+              >
+                Voir les sommes dues
+              </Button>
+              <Button
+                size="sm"
+                className="flex-1 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation() // Empêche le flip de la carte
+                  router.push(`/clients/${client.id}/details`)
+                }}
+              >
+                Détails du client
+              </Button>
+            </div>
           </div>
         </div>
       </motion.div>

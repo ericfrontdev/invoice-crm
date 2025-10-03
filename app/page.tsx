@@ -74,7 +74,7 @@ async function getDashboardData(userId: string) {
 export default async function Home() {
   const session = await auth()
   if (!session?.user?.id) {
-    redirect('/landing')
+    redirect('/auth/login')
   }
 
   const { totalDue, overdue, counts, topClients } = await getDashboardData(

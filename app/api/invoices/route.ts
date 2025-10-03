@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     console.log('[invoices:POST] Request body:', body)
     const clientId: string | undefined = body?.clientId
     const unpaidAmountIds: string[] | undefined = body?.unpaidAmountIds
+    const projectId: string | undefined = body?.projectId
 
     if (!clientId || !Array.isArray(unpaidAmountIds) || unpaidAmountIds.length === 0) {
       console.log('[invoices:POST] Validation failed:', { clientId, unpaidAmountIds })
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
           number,
           status: 'draft',
           total,
+          ...(projectId && { projectId }),
         },
       })
       console.log('[invoices:POST] Invoice created:', invoice.id, invoice.number)

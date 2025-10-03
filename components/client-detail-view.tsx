@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ChevronDown, ChevronUp, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -128,8 +129,8 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
         </div>
       </div>
 
-      {/* Bouton révélateur centré - reste identique */}
-      <div className="flex justify-center mb-4">
+      {/* Bouton d'action */}
+      <div className="flex justify-center gap-4 mb-4 flex-wrap px-4">
         <Button
           variant="outline"
           size="lg"
@@ -381,6 +382,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
           </div>
         </div>
       </motion.div>
+
 
       {/* Modal ajout montant */}
       <AddAmountModal
