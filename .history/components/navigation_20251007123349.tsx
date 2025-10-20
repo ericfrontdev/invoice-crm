@@ -1,0 +1,246 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useTheme } from '@/lib/theme-context'
+import { Button } from '@/components/ui/button'
+import { Moon, Sun, Menu, X, Calculator, Users } from 'lucide-react'
+import Link from 'next/link'
+import { ThemeLogo } from '@/components/theme-logo'
+import { UserMenu } from '@/components/user-menu'
+
+export function Navigation({
+  user,
+  isSuperAdmin,
+}: {
+  user?: { name: string; email: string; image?: string | null }
+  isSuperAdmin?: boolean
+}) {
+  const { theme, setTheme } = useTheme()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <nav className="border-b bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link
+              href="/"
+              className="flex-shrink-0"
+            >
+              <ThemeLogo
+                width={180}
+                height={40}
+                className="h-10 w-auto"
+              />
+            </Link>
+            <div className="hidden md:flex items-center space-x-8">
+              <div className="flex items-baseline space-x-4">
+                <Link
+                  href="/"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/clients"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Clients
+                </Link>
+                <Link
+                  href="/projets"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Projets
+                </Link>
+                <Link
+                  href="/invoices"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Factures
+                </Link>
+                <Link
+                  href="/accounting"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Comptabilité
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    )
+  }
+
+  return (
+    <nav className="border-b bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="flex-shrink-0"
+          >
+            <ThemeLogo
+              width={180}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {user && (
+              <div className="flex items-baseline space-x-4">
+                <Link
+                  href="/"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/crm"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  CRM
+                </Link>
+                <Link
+                  href="/clients"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Clients
+                </Link>
+                <Link
+                  href="/projets"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Projets
+                </Link>
+                <Link
+                  href="/invoices"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Factures
+                </Link>
+                <Link
+                  href="/accounting"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  Comptabilité
+                </Link>
+              </div>
+            )}
+
+            {/* Theme Toggle */}
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setTheme(theme === 'light' ? 'dark' : 'light')
+              }}
+            >
+              {theme === 'light' ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+
+            {user && (
+              <UserMenu
+                user={user}
+                isSuperAdmin={isSuperAdmin || false}
+              />
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setTheme(theme === 'light' ? 'dark' : 'light')
+              }}
+            >
+              {theme === 'light' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Menu className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t bg-background">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                href="/"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/crm"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                CRM
+              </Link>
+              <Link
+                href="/clients"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Clients
+              </Link>
+              <Link
+                href="/projets"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Projets
+              </Link>
+              <Link
+                href="/invoices"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Factures
+              </Link>
+              <Link
+                href="/accounting"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Comptabilité
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  )
+}

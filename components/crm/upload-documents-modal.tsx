@@ -6,21 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Upload, X, FileIcon } from 'lucide-react'
 
-type Project = {
-  id: string
-  name: string
-}
-
 export function UploadDocumentsModal({
   isOpen,
   onClose,
-  onSave,
-  project,
+  projectId,
 }: {
   isOpen: boolean
   onClose: () => void
-  onSave: (files: File[]) => Promise<void>
-  project: Project | null
+  projectId: string
 }) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -56,8 +49,25 @@ export function UploadDocumentsModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedFiles.length === 0) return
-    await onSave(selectedFiles)
-    setSelectedFiles([])
+
+    const formData = new FormData()
+    selectedFiles.forEach((file) => {
+      formData.append('files', file)
+    })
+    formData.append('projectId', projectId)
+
+    try {
+      const res = await fetch('/api/projects/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      if (res.ok) {
+        setSelectedFiles([])
+        onClose()
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
   }
 
   const handleClose = () => {
@@ -65,18 +75,16 @@ export function UploadDocumentsModal({
     onClose()
   }
 
-  if (!project) return null
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Téléverser des documents - {project.name}</DialogTitle>
+          <DialogTitle>Téléverser des documents</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Fichiers du projet</Label>
+            <Label className="mb-2 block">Fichiers du projet</Label>
             <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}

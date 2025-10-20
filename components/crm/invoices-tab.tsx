@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Eye, Mail, CheckCircle, Trash2, Archive } from 'lucide-react'
@@ -14,6 +14,9 @@ type Invoice = {
   id: string
   number: string
   status: string
+  subtotal: number
+  tps: number
+  tvq: number
   total: number
   createdAt: Date
   project: {
@@ -73,10 +76,24 @@ export function InvoicesTab({
     null
   )
   const [internalShowArchived, setInternalShowArchived] = useState(false)
+  const archiveSectionRef = useRef<HTMLDivElement>(null)
 
   // Use external state if provided, otherwise use internal state
   const isArchived = showArchived ?? internalShowArchived
   const toggleArchived = setShowArchived ?? setInternalShowArchived
+
+  // Scroll to archives section when it opens
+  useEffect(() => {
+    if (isArchived && archiveSectionRef.current) {
+      // Wait for animation to complete (500ms animation duration)
+      setTimeout(() => {
+        archiveSectionRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+        })
+      }, 600)
+    }
+  }, [isArchived])
 
   // Séparer les factures de projets, ponctuelles et archivées
   const projectInvoices = client.invoices.filter(
@@ -499,6 +516,7 @@ export function InvoicesTab({
 
       {/* Section archives avec animation */}
       <motion.div
+        ref={archiveSectionRef}
         initial={{ height: 0 }}
         animate={{ height: isArchived ? 'auto' : 0 }}
         transition={{ duration: 0.5, ease: 'easeInOut' }}

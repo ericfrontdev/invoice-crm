@@ -8,6 +8,7 @@ import { ProjectsTab } from '@/components/crm/projects-tab'
 import { InvoicesTab } from '@/components/crm/invoices-tab'
 import { NotesTab } from '@/components/crm/notes-tab'
 import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
+import { AddAmountModal, type NewAmountData } from '@/components/add-amount-modal'
 
 type ClientWithCRM = {
   id: string
@@ -29,6 +30,9 @@ type ClientWithCRM = {
     invoices: Array<{
       id: string
       number: string
+      subtotal: number
+      tps: number
+      tvq: number
       total: number
       status: string
     }>
@@ -44,6 +48,9 @@ type ClientWithCRM = {
     id: string
     number: string
     status: string
+    subtotal: number
+    tps: number
+    tvq: number
     total: number
     createdAt: Date
     project: {
@@ -74,6 +81,7 @@ export function ClientCRMView({ client }: { client: ClientWithCRM }) {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
   const [selectedProjectForInvoice, setSelectedProjectForInvoice] = useState<string | null>(null)
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false)
+  const [isAddAmountModalOpen, setIsAddAmountModalOpen] = useState(false)
 
   return (
     <div className="overflow-x-hidden">
@@ -142,16 +150,11 @@ export function ClientCRMView({ client }: { client: ClientWithCRM }) {
               setActiveTab('projects')
             }}
             onCreateInvoice={() => {
-              setSelectedProjectForInvoice(null)
-              setIsInvoiceModalOpen(true)
+              setIsAddAmountModalOpen(true)
             }}
             onCreateInvoiceForProject={(projectId: string) => {
               setSelectedProjectForInvoice(projectId)
               setIsInvoiceModalOpen(true)
-            }}
-            onAddUnpaidAmount={() => {
-              // Navigate to unpaid amounts - you can implement this later
-              alert('Navigation vers Sommes dues à implémenter')
             }}
             onAddNote={() => {
               setIsNoteModalOpen(true)
@@ -233,7 +236,27 @@ export function ClientCRMView({ client }: { client: ClientWithCRM }) {
             ? client.projects.find((p) => p.id === selectedProjectForInvoice) || null
             : null
         }
-        clientId={client.id}
+      />
+
+      {/* Add Amount Modal */}
+      <AddAmountModal
+        isOpen={isAddAmountModalOpen}
+        onClose={() => setIsAddAmountModalOpen(false)}
+        onSubmit={async (amountData: NewAmountData) => {
+          const res = await fetch('/api/unpaid-amounts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId: client.id,
+              ...amountData,
+            }),
+          })
+
+          if (res.ok) {
+            setIsAddAmountModalOpen(false)
+            router.refresh()
+          }
+        }}
       />
     </div>
   )

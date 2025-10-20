@@ -296,8 +296,6 @@ export function ProjectsTab({
         onClose={handleCloseModal}
         onSave={handleSaveProject}
         project={editingProject}
-        clientId={client.id}
-        availableInvoices={client.invoices || []}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -338,7 +336,6 @@ export function ProjectsTab({
         }}
         onSave={handleSaveCreateInvoice}
         project={invoiceProject}
-        clientId={client.id}
       />
 
       {/* Upload Documents Modal */}
@@ -348,8 +345,7 @@ export function ProjectsTab({
           setIsUploadModalOpen(false)
           setUploadingProject(null)
         }}
-        onSave={handleSaveUploadDocuments}
-        project={uploadingProject}
+        projectId={uploadingProject?.id || ''}
       />
     </div>
   )

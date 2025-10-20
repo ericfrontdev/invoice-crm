@@ -23,13 +23,11 @@ export function CreateInvoiceForProjectModal({
   onClose,
   onSave,
   project,
-  clientId,
 }: {
   isOpen: boolean
   onClose: () => void
   onSave: (items: { description: string; amount: number }[]) => Promise<void>
   project: Project | null
-  clientId: string
 }) {
   const [items, setItems] = useState<InvoiceItem[]>([
     { description: '', amount: '' },

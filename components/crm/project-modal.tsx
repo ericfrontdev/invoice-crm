@@ -31,15 +31,11 @@ export function ProjectModal({
   onClose,
   onSave,
   project,
-  clientId,
-  availableInvoices,
 }: {
   isOpen: boolean
   onClose: () => void
   onSave: (data: { name: string; description: string | null; status: string; budget: string | number | null; startDate: string | null; endDate: string | null }, files: File[]) => Promise<void>
   project: Project | null
-  clientId: string
-  availableInvoices: Invoice[]
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -102,7 +98,7 @@ export function ProjectModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Nom du projet *</Label>
+            <Label htmlFor="name" className="mb-2 block">Nom du projet *</Label>
             <Input
               id="name"
               value={formData.name}
@@ -114,7 +110,7 @@ export function ProjectModal({
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="mb-2 block">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -127,7 +123,7 @@ export function ProjectModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="status">Statut</Label>
+              <Label htmlFor="status" className="mb-2 block">Statut</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
@@ -147,7 +143,7 @@ export function ProjectModal({
             </div>
 
             <div>
-              <Label htmlFor="budget">Budget</Label>
+              <Label htmlFor="budget" className="mb-2 block">Budget</Label>
               <Input
                 id="budget"
                 type="number"
@@ -163,7 +159,7 @@ export function ProjectModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startDate">Date de début</Label>
+              <Label htmlFor="startDate" className="mb-2 block">Date de début</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -175,7 +171,7 @@ export function ProjectModal({
             </div>
 
             <div>
-              <Label htmlFor="endDate">Date de fin</Label>
+              <Label htmlFor="endDate" className="mb-2 block">Date de fin</Label>
               <Input
                 id="endDate"
                 type="date"

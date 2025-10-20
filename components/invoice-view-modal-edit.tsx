@@ -26,6 +26,9 @@ type InvoiceForView = {
   id: string
   number: string
   status: 'draft' | 'sent' | 'paid' | string
+  subtotal: number
+  tps: number
+  tvq: number
   total: number
   createdAt: string | Date
   client: InvoiceClient | null
@@ -46,6 +49,9 @@ export function InvoiceViewModal({
   const [saving, setSaving] = useState(false)
   const [editedStatus, setEditedStatus] = useState('')
   const [editedItems, setEditedItems] = useState<InvoiceItem[]>([])
+
+  // Déterminer si les taxes sont chargées (si tps ou tvq > 0)
+  const hasTaxes = invoice && (invoice.tps > 0 || invoice.tvq > 0)
 
   useEffect(() => {
     if (invoice) {
@@ -71,15 +77,12 @@ export function InvoiceViewModal({
   const handleSave = async () => {
     setSaving(true)
     try {
-      // Calculate new total
-      const newTotal = editedItems.reduce((sum, item) => sum + Number(item.amount), 0)
-
+      // API will calculate taxes automatically
       const res = await fetch(`/api/invoices/${invoice.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: editedStatus,
-          total: newTotal,
           items: editedItems,
         }),
       })
@@ -271,14 +274,70 @@ export function InvoiceViewModal({
                     </td>
                   </tr>
                 )}
-                <tr>
+                {/* Sous-total (toujours affiché si taxes) */}
+                {hasTaxes && (
+                  <tr>
+                    <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
+                      <span className="text-sm text-muted-foreground">Sous-total</span>
+                    </td>
+                    <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
+                      {Number(
+                        isEditing
+                          ? editedItems.reduce((sum, item) => sum + Number(item.amount), 0)
+                          : invoice.subtotal
+                      ).toFixed(2)}{' '}
+                      $
+                    </td>
+                  </tr>
+                )}
+                {/* TPS */}
+                {hasTaxes && (
+                  <tr>
+                    <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
+                      <span className="text-sm text-muted-foreground">TPS (5%)</span>
+                    </td>
+                    <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
+                      {Number(
+                        isEditing
+                          ? editedItems.reduce((sum, item) => sum + Number(item.amount), 0) * 0.05
+                          : invoice.tps
+                      ).toFixed(2)}{' '}
+                      $
+                    </td>
+                  </tr>
+                )}
+                {/* TVQ */}
+                {hasTaxes && (
+                  <tr>
+                    <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
+                      <span className="text-sm text-muted-foreground">TVQ (9,975%)</span>
+                    </td>
+                    <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
+                      {Number(
+                        isEditing
+                          ? editedItems.reduce((sum, item) => sum + Number(item.amount), 0) * 0.09975
+                          : invoice.tvq
+                      ).toFixed(2)}{' '}
+                      $
+                    </td>
+                  </tr>
+                )}
+                {/* Total */}
+                <tr className="border-t-2">
                   <td className="py-3 px-4" colSpan={isEditing ? 3 : 2}>
-                    <span className="text-sm text-muted-foreground">Total</span>
+                    <span className="text-sm font-semibold">Total</span>
                   </td>
                   <td className="py-3 px-4 text-right text-base font-semibold" colSpan={isEditing ? 2 : 1}>
                     {Number(
                       isEditing
-                        ? editedItems.reduce((sum, item) => sum + Number(item.amount), 0)
+                        ? (() => {
+                            const subtotal = editedItems.reduce((sum, item) => sum + Number(item.amount), 0)
+                            // Calculer avec les mêmes ratios que la facture d'origine
+                            if (hasTaxes) {
+                              return subtotal + subtotal * 0.05 + subtotal * 0.09975
+                            }
+                            return subtotal
+                          })()
                         : invoice.total
                     ).toFixed(2)}{' '}
                     $

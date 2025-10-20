@@ -24,7 +24,17 @@ export async function POST(req: Request) {
       where: { id: invoiceId },
       include: {
         client: {
-          select: { name: true, email: true, userId: true }
+          select: {
+            name: true,
+            email: true,
+            userId: true,
+            user: {
+              select: {
+                name: true,
+                company: true
+              }
+            }
+          }
         },
         items: {
           select: { description: true, amount: true, date: true },
@@ -46,6 +56,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
     }
 
+    // Vérifier que le client a un email
+    if (!invoice.client.email) {
+      return NextResponse.json({ error: 'Le client n\'a pas d\'adresse email' }, { status: 400 })
+    }
+
     // Préparer les données pour l'email
     const emailData = {
       invoiceNumber: invoice.number,
@@ -63,11 +78,12 @@ export async function POST(req: Request) {
 
     // Envoyer l'email via Resend
     try {
-      const userName = session.user.name || 'SoloPack'
+      // Utiliser le nom de l'entreprise si disponible, sinon le nom de l'utilisateur
+      const senderName = invoice.client.user.company || invoice.client.user.name || 'SoloPack'
       const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev'
 
       const { data, error } = await resend.emails.send({
-        from: `${userName} <${emailFrom}>`,
+        from: `${senderName} <${emailFrom}>`,
         to: invoice.client.email,
         subject: `Facture ${invoice.number}`,
         html: emailHtml,

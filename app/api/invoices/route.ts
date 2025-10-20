@@ -21,11 +21,28 @@ export async function POST(req: Request) {
     console.log('[invoices:POST] Request body:', body)
     const clientId: string | undefined = body?.clientId
     const unpaidAmountIds: string[] | undefined = body?.unpaidAmountIds
+    const items: Array<{ description: string; amount: number }> | undefined = body?.items
     const projectId: string | undefined = body?.projectId
 
-    if (!clientId || !Array.isArray(unpaidAmountIds) || unpaidAmountIds.length === 0) {
+    // Support deux modes: unpaidAmountIds (ancien) ou items directement (nouveau)
+    if (!clientId) {
+      console.log('[invoices:POST] Validation failed: missing clientId')
+      return NextResponse.json({ error: 'clientId requis.' }, { status: 400 })
+    }
+
+    if (!unpaidAmountIds && !items) {
+      console.log('[invoices:POST] Validation failed: missing unpaidAmountIds or items')
+      return NextResponse.json({ error: 'unpaidAmountIds ou items requis.' }, { status: 400 })
+    }
+
+    if (unpaidAmountIds && (!Array.isArray(unpaidAmountIds) || unpaidAmountIds.length === 0)) {
       console.log('[invoices:POST] Validation failed:', { clientId, unpaidAmountIds })
-      return NextResponse.json({ error: 'clientId et unpaidAmountIds requis.' }, { status: 400 })
+      return NextResponse.json({ error: 'unpaidAmountIds doit être un tableau non-vide.' }, { status: 400 })
+    }
+
+    if (items && (!Array.isArray(items) || items.length === 0)) {
+      console.log('[invoices:POST] Validation failed: items must be non-empty array')
+      return NextResponse.json({ error: 'items doit être un tableau non-vide.' }, { status: 400 })
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -40,23 +57,54 @@ export async function POST(req: Request) {
         throw new Error('CLIENT_NOT_FOUND')
       }
 
-      // Récupérer montants encore "unpaid" pour ce client et ces IDs
-      const items = await tx.unpaidAmount.findMany({
-        where: {
-          id: { in: unpaidAmountIds },
-          clientId,
-          status: 'unpaid',
-        },
-        select: { id: true, amount: true, description: true, date: true, dueDate: true },
+      // Récupérer les préférences de taxes de l'utilisateur
+      const user = await tx.user.findUnique({
+        where: { id: session.user.id },
+        select: { chargesTaxes: true }
       })
+      const chargesTaxes = user?.chargesTaxes ?? false
 
-      if (items.length === 0) {
-        console.log('[invoices:POST] No valid items found')
+      let invoiceItems: Array<{ description: string; amount: number; date?: Date; dueDate?: Date | null }>
+      let unpaidIds: string[] = []
+
+      // Mode 1: Création à partir d'items directs (nouveau)
+      if (items) {
+        console.log('[invoices:POST] Creating invoice with direct items:', items.length)
+        invoiceItems = items.map(it => ({
+          description: it.description,
+          amount: it.amount,
+          date: new Date(),
+        }))
+      }
+      // Mode 2: Création à partir d'unpaidAmounts (ancien)
+      else if (unpaidAmountIds) {
+        // Récupérer montants encore "unpaid" pour ce client et ces IDs
+        const unpaidItems = await tx.unpaidAmount.findMany({
+          where: {
+            id: { in: unpaidAmountIds },
+            clientId,
+            status: 'unpaid',
+          },
+          select: { id: true, amount: true, description: true, date: true, dueDate: true },
+        })
+
+        if (unpaidItems.length === 0) {
+          console.log('[invoices:POST] No valid unpaid items found')
+          throw new Error('NO_ITEMS')
+        }
+
+        invoiceItems = unpaidItems
+        unpaidIds = unpaidItems.map(i => i.id)
+        console.log('[invoices:POST] Creating invoice from unpaid amounts:', unpaidItems.length)
+      } else {
         throw new Error('NO_ITEMS')
       }
 
-      console.log('[invoices:POST] Creating invoice with', items.length, 'items')
-      const total = items.reduce((s, it) => s + it.amount, 0)
+      // Calcul des taxes québécoises (si l'utilisateur les charge)
+      const subtotal = invoiceItems.reduce((s, it) => s + it.amount, 0)
+      const tps = chargesTaxes ? subtotal * 0.05 : 0 // TPS 5%
+      const tvq = chargesTaxes ? subtotal * 0.09975 : 0 // TVQ 9.975%
+      const total = subtotal + tps + tvq
       const number = makeInvoiceNumber()
 
       const invoice = await tx.invoice.create({
@@ -64,6 +112,9 @@ export async function POST(req: Request) {
           clientId,
           number,
           status: 'draft',
+          subtotal,
+          tps,
+          tvq,
           total,
           ...(projectId && { projectId }),
         },
@@ -71,30 +122,32 @@ export async function POST(req: Request) {
       console.log('[invoices:POST] Invoice created:', invoice.id, invoice.number)
 
       // Snapshot des lignes de facture
-      if (items.length > 0) {
+      if (invoiceItems.length > 0) {
         await tx.invoiceItem.createMany({
-          data: items.map((it) => ({
+          data: invoiceItems.map((it) => ({
             invoiceId: invoice.id,
             description: it.description,
             amount: it.amount,
-            date: it.date,
+            date: it.date || new Date(),
             dueDate: it.dueDate ?? null,
           })),
         })
       }
 
-      // Lier les UnpaidAmount à la facture si la colonne existe, sinon fallback
-      try {
-        await tx.unpaidAmount.updateMany({
-          where: { id: { in: items.map((i) => i.id) } },
-          data: { status: 'invoiced', invoiceId: invoice.id },
-        })
-      } catch (e) {
-        console.warn('[invoices:POST] unpaidAmount.invoiceId link skipped (likely missing column):', e)
-        await tx.unpaidAmount.updateMany({
-          where: { id: { in: items.map((i) => i.id) } },
-          data: { status: 'invoiced' },
-        })
+      // Lier les UnpaidAmount à la facture seulement si on vient du mode unpaidAmountIds
+      if (unpaidIds.length > 0) {
+        try {
+          await tx.unpaidAmount.updateMany({
+            where: { id: { in: unpaidIds } },
+            data: { status: 'invoiced', invoiceId: invoice.id },
+          })
+        } catch (e) {
+          console.warn('[invoices:POST] unpaidAmount.invoiceId link skipped (likely missing column):', e)
+          await tx.unpaidAmount.updateMany({
+            where: { id: { in: unpaidIds } },
+            data: { status: 'invoiced' },
+          })
+        }
       }
 
       return invoice

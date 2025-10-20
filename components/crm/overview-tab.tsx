@@ -36,9 +36,14 @@ type Client = {
   }>
   invoices: Array<{
     id: string
+    number: string
     status: string
     total: number
     createdAt: Date
+    project: {
+      id: string
+      name: string
+    } | null
   }>
   unpaidAmounts: Array<{
     amount: number
@@ -54,14 +59,12 @@ export function OverviewTab({
   onCreateProject,
   onCreateInvoice,
   onCreateInvoiceForProject,
-  onAddUnpaidAmount,
   onAddNote,
 }: {
   client: Client
   onCreateProject: () => void
   onCreateInvoice: () => void
   onCreateInvoiceForProject: (projectId: string) => void
-  onAddUnpaidAmount: () => void
   onAddNote: () => void
 }) {
   // Calculs des métriques
@@ -164,7 +167,7 @@ export function OverviewTab({
           <Plus className="h-5 w-5" />
           Actions rapides
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <Button
             variant="outline"
             className="justify-start h-auto py-3 cursor-pointer"
@@ -208,14 +211,6 @@ export function OverviewTab({
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            variant="outline"
-            className="justify-start h-auto py-3 cursor-pointer"
-            onClick={onAddUnpaidAmount}
-          >
-            <DollarSign className="h-4 w-4 mr-2" />
-            Ajouter somme due
-          </Button>
           <Button
             variant="outline"
             className="justify-start h-auto py-3 cursor-pointer"
@@ -287,19 +282,38 @@ export function OverviewTab({
               {recentInvoices.map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="flex items-center justify-between text-sm"
+                  className="flex items-center gap-3 text-sm"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     {invoice.status === 'paid' ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    ) : invoice.status === 'sent' ? (
+                      <FileText className="h-4 w-4 text-blue-600 flex-shrink-0" />
                     ) : (
-                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     )}
-                    <span className="text-muted-foreground">
-                      {new Date(invoice.createdAt).toLocaleDateString('fr-CA')}
-                    </span>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{invoice.number}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(invoice.createdAt).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </div>
+                    </div>
                   </div>
-                  <span className="font-medium">{invoice.total.toFixed(2)} $</span>
+                  <div className="flex-1 min-w-0 text-center">
+                    <div className="text-xs text-muted-foreground truncate">
+                      {invoice.project ? invoice.project.name : 'Facture ponctuelle'}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="font-medium">{invoice.total.toFixed(2)} $</div>
+                    <div className="text-xs text-muted-foreground">
+                      {invoice.status === 'paid' ? 'Payée' : invoice.status === 'sent' ? 'Envoyée' : 'Brouillon'}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

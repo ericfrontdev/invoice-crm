@@ -69,7 +69,7 @@ export function ProjectCard({
 
   return (
     <div
-      className="relative h-80 w-full perspective-1000 cursor-pointer"
+      className="relative h-80 w-full perspective-1000 cursor-pointer overflow-hidden"
       onClick={() => setIsFlipped(!isFlipped)}
     >
       {/* Card Container */}

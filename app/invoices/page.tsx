@@ -11,6 +11,7 @@ async function getInvoices(userId: string) {
       include: {
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
         items: { select: { id: true, description: true, amount: true, date: true, dueDate: true } },
+        project: { select: { id: true, name: true } },
       },
     })
   } catch {
@@ -20,6 +21,7 @@ async function getInvoices(userId: string) {
       orderBy: { createdAt: 'desc' },
       include: {
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
+        project: { select: { id: true, name: true } },
       },
     })
   }
@@ -33,11 +35,18 @@ export default async function InvoicesPage() {
 
   const invoices = await getInvoices(session.user.id)
 
+  const projectInvoices = invoices.filter((inv) => inv.project)
+  const standaloneInvoices = invoices.filter((inv) => !inv.project)
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Factures</h1>
-        {/* Placeholder actions */}
+    <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Factures</h1>
+          <p className="text-muted-foreground">
+            Gérez toutes vos factures clients
+          </p>
+        </div>
       </div>
 
       {invoices.length === 0 ? (
@@ -45,7 +54,33 @@ export default async function InvoicesPage() {
           Aucune facture pour l&apos;instant.
         </div>
       ) : (
-        <InvoicesTable invoices={invoices} />
+        <div className="space-y-8">
+          {/* Factures de projets */}
+          {projectInvoices.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">Factures de projets</h2>
+                <span className="text-sm text-muted-foreground">
+                  ({projectInvoices.length})
+                </span>
+              </div>
+              <InvoicesTable invoices={projectInvoices} showProject />
+            </div>
+          )}
+
+          {/* Factures ponctuelles */}
+          {standaloneInvoices.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">Factures ponctuelles</h2>
+                <span className="text-sm text-muted-foreground">
+                  ({standaloneInvoices.length})
+                </span>
+              </div>
+              <InvoicesTable invoices={standaloneInvoices} />
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

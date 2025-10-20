@@ -93,7 +93,7 @@ export async function PATCH(
 
   try {
     const body = await req.json()
-    const { status, total, items } = body
+    const { status, items } = body
 
     // First, get the invoice to verify ownership
     const invoice = await prisma.invoice.findUnique({
@@ -113,13 +113,33 @@ export async function PATCH(
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
     }
 
+    // Récupérer les préférences de taxes de l'utilisateur
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { chargesTaxes: true }
+    })
+    const chargesTaxes = user?.chargesTaxes ?? false
+
+    // Recalculate taxes if items are provided
+    const updateData: { status?: string; subtotal?: number; tps?: number; tvq?: number; total?: number } = {}
+    if (status) updateData.status = status
+
+    if (items && Array.isArray(items)) {
+      const subtotal = items.reduce((s: number, item: { amount: number }) => s + item.amount, 0)
+      const tps = chargesTaxes ? subtotal * 0.05 : 0 // TPS 5%
+      const tvq = chargesTaxes ? subtotal * 0.09975 : 0 // TVQ 9.975%
+      const total = subtotal + tps + tvq
+
+      updateData.subtotal = subtotal
+      updateData.tps = tps
+      updateData.tvq = tvq
+      updateData.total = total
+    }
+
     // Update invoice and items
     const updated = await prisma.invoice.update({
       where: { id },
-      data: {
-        status,
-        total,
-      },
+      data: updateData,
       include: {
         client: true,
         items: true,

@@ -16,6 +16,9 @@ async function getClientWithCRMData(id: string, userId: string) {
             select: {
               id: true,
               number: true,
+              subtotal: true,
+              tps: true,
+              tvq: true,
               total: true,
               status: true,
             },
