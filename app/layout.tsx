@@ -9,8 +9,8 @@ import { isSuperAdmin } from '@/lib/check-super-admin'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Invoice CRM',
-  description: 'CRM et facturation avec IA',
+  title: 'SoloPack',
+  description: 'Pack d\'outils complet pour solopreneurs québécois',
 }
 
 export default async function RootLayout({

@@ -11,10 +11,26 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String
+  company       String?
+  phone         String?
+  address       String?
+  plan          String?   @default("free")
+  paymentMethod String?
   createdAt     DateTime  @default(now())
   emailVerified DateTime?
   image         String?
   password      String?
+
+  // Champs spécifiques Québec
+  neq           String?   // Numéro d'entreprise du Québec
+  tpsNumber     String?   // Numéro TPS (fédéral)
+  tvqNumber     String?   // Numéro TVQ (provincial)
+  chargesTaxes  Boolean   @default(false) // Charge les taxes TPS/TVQ (obligatoire si CA > 30k$)
+
+  // Programme beta
+  betaTester       Boolean @default(false) // Identifie les beta testeurs
+  lifetimeDiscount Int     @default(0)     // Pourcentage de réduction à vie (ex: 50 pour 50%)
+
   accounts      Account[]
   clients       Client[]
   sessions      Session[]
@@ -87,14 +103,20 @@ model UnpaidAmount {
   dueDate     DateTime?
   invoiceId   String?
   client      Client    @relation(fields: [clientId], references: [id])
-  invoice     Invoice?  @relation(fields: [invoiceId], references: [id])
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 }
 
 model Invoice {
   id            String         @id @default(cuid())
   number        String         @unique
   status        String         @default("draft")
-  total         Float
+
+  // Montants avec taxes québécoises
+  subtotal      Float          @default(0) // Montant avant taxes
+  tps           Float          @default(0) // TPS 5%
+  tvq           Float          @default(0) // TVQ 9.975%
+  total         Float          // Total incluant taxes
+
   createdAt     DateTime       @default(now())
   clientId      String
   projectId     String?
@@ -108,10 +130,10 @@ model InvoiceItem {
   id          String    @id @default(cuid())
   invoiceId   String
   description String
-  amount      Float
+  amount      Float     // Montant avant taxes
   date        DateTime
   dueDate     DateTime?
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id])
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model Project {
@@ -149,4 +171,24 @@ model Note {
   updatedAt DateTime @updatedAt
   clientId  String
   client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model Revenue {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  category    String?
+  userId      String
+  createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  category    String?
+  userId      String
+  createdAt   DateTime @default(now())
 }
