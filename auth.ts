@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs'
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
+  trustHost: true, // Required for Netlify deployment
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
