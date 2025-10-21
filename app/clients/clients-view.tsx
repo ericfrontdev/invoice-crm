@@ -12,6 +12,7 @@ import {
   MapPin,
   ArrowRight,
   Pencil,
+  Users,
 } from 'lucide-react'
 import { NewClientModal, type NewClientData } from '@/components/new-client-modal'
 import { EditClientModal, type EditClientData } from '@/components/edit-client-modal'
@@ -153,7 +154,19 @@ export function ClientsView({ clients }: { clients: Client[] }) {
         </div>
       </div>
 
-      {viewMode === 'cards' ? (
+      {clients.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p className="text-sm">Aucun client</p>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            variant="outline"
+            className="mt-4 cursor-pointer"
+          >
+            Créer le premier client
+          </Button>
+        </div>
+      ) : viewMode === 'cards' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {clients.map((client) => (
             <ClientCard
