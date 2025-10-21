@@ -31,7 +31,8 @@ export async function POST(req: Request) {
             user: {
               select: {
                 name: true,
-                company: true
+                company: true,
+                paymentProvider: true,
               }
             }
           }
@@ -62,6 +63,11 @@ export async function POST(req: Request) {
     }
 
     // Préparer les données pour l'email
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const paymentUrl = invoice.client.user.paymentProvider
+      ? `${baseUrl}/invoices/${invoice.id}/pay`
+      : undefined
+
     const emailData = {
       invoiceNumber: invoice.number,
       clientName: invoice.client.name,
@@ -75,7 +81,9 @@ export async function POST(req: Request) {
       subtotal: invoice.subtotal,
       tps: invoice.tps,
       tvq: invoice.tvq,
-      total: invoice.total
+      total: invoice.total,
+      invoiceId: invoice.id,
+      paymentUrl,
     }
 
     // Générer le HTML de l'email

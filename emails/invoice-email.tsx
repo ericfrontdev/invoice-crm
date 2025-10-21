@@ -8,6 +8,7 @@ import {
   Section,
   Text,
   Hr,
+  Button,
 } from '@react-email/components'
 
 interface InvoiceEmailProps {
@@ -24,6 +25,8 @@ interface InvoiceEmailProps {
   tps: number
   tvq: number
   total: number
+  invoiceId: string
+  paymentUrl?: string
 }
 
 export default function InvoiceEmail({
@@ -36,6 +39,8 @@ export default function InvoiceEmail({
   tps,
   tvq,
   total,
+  invoiceId,
+  paymentUrl,
 }: InvoiceEmailProps) {
   const hasTaxes = tps > 0 || tvq > 0
 
@@ -126,6 +131,20 @@ export default function InvoiceEmail({
             </table>
           </Section>
 
+          {paymentUrl && (
+            <Section style={{ padding: '0 48px', textAlign: 'center', margin: '32px 0' }}>
+              <Button
+                href={paymentUrl}
+                style={payButton}
+              >
+                Payer cette facture
+              </Button>
+              <Text style={{ fontSize: '14px', color: '#666', marginTop: '12px' }}>
+                Cliquez sur le bouton ci-dessus pour payer en ligne de manière sécurisée.
+              </Text>
+            </Section>
+          )}
+
           <Hr style={hr} />
 
           <Text style={footer}>
@@ -215,4 +234,17 @@ const senderText = {
   color: '#666',
   fontSize: '14px',
   margin: '0',
+}
+
+const payButton = {
+  backgroundColor: '#4F46E5',
+  borderRadius: '8px',
+  color: '#fff',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '16px 32px',
+  margin: '0 auto',
 }
