@@ -200,7 +200,8 @@ export function ProfileForm({ user }: { user: User }) {
               >
                 <option value="">Aucun (paiements désactivés)</option>
                 <option value="paypal">PayPal</option>
-                <option value="stripe">Stripe</option>
+                {/* Stripe temporairement désactivé pendant le beta - en attente du NEQ */}
+                {/* <option value="stripe">Stripe</option> */}
               </select>
             </div>
 
