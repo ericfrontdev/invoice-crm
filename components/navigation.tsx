@@ -238,6 +238,18 @@ export function Navigation({
                 Comptabilité
               </Link>
             </div>
+
+            {/* User section in mobile menu */}
+            {user && (
+              <div className="border-t px-2 pt-3 pb-3">
+                <div className="flex items-center justify-center">
+                  <UserMenu
+                    user={user}
+                    isSuperAdmin={isSuperAdmin || false}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
