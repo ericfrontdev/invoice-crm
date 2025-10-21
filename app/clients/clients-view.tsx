@@ -13,9 +13,21 @@ import {
   ArrowRight,
   Pencil,
   Users,
+  X,
+  AlertTriangle,
 } from 'lucide-react'
 import { NewClientModal, type NewClientData } from '@/components/new-client-modal'
 import { EditClientModal, type EditClientData } from '@/components/edit-client-modal'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useRouter } from 'next/navigation'
 
 type Client = {
@@ -35,6 +47,8 @@ export function ClientsView({ clients }: { clients: Client[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const router = useRouter()
 
@@ -87,6 +101,36 @@ export function ClientsView({ clients }: { clients: Client[] }) {
       setEditingClient(client)
     } else {
       router.push(`/clients/${client.id}`)
+    }
+  }
+
+  const handleDeleteClick = (client: Client) => {
+    setClientToDelete(client)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!clientToDelete) return
+
+    try {
+      const res = await fetch(`/api/clients/${clientToDelete.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        setToast({ type: 'error', message: 'Erreur lors de la suppression du client' })
+        setTimeout(() => setToast(null), 3000)
+        return
+      }
+
+      router.refresh()
+      setToast({ type: 'success', message: 'Client supprimé avec succès' })
+      setTimeout(() => setToast(null), 2500)
+      setIsDeleteDialogOpen(false)
+      setClientToDelete(null)
+    } catch {
+      setToast({ type: 'error', message: 'Erreur réseau' })
+      setTimeout(() => setToast(null), 3000)
     }
   }
 
@@ -174,6 +218,7 @@ export function ClientsView({ clients }: { clients: Client[] }) {
               client={client}
               isEditMode={isEditMode}
               onCardClick={handleCardClick}
+              onDelete={handleDeleteClick}
             />
           ))}
         </div>
@@ -182,9 +227,23 @@ export function ClientsView({ clients }: { clients: Client[] }) {
           {clients.map((client) => (
             <div
               key={client.id}
-              className={`bg-card border rounded-lg p-6 hover:shadow-md transition-shadow ${isEditMode ? 'cursor-pointer ring-2 ring-blue-500 ring-offset-2 hover:ring-blue-600' : ''}`}
+              className={`relative bg-card border rounded-lg p-6 hover:shadow-md transition-shadow ${isEditMode ? 'cursor-pointer ring-2 ring-blue-500 ring-offset-2 hover:ring-blue-600' : ''}`}
               onClick={() => isEditMode && handleCardClick(client)}
             >
+              {/* Delete button - only visible in edit mode */}
+              {isEditMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDeleteClick(client)
+                  }}
+                  className="absolute -top-2 -right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md transition-colors"
+                  aria-label="Supprimer le client"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+
               <div className="flex justify-between items-start">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Colonne 1 - Identité */}
@@ -266,6 +325,36 @@ export function ClientsView({ clients }: { clients: Client[] }) {
         onSubmit={handleEditClient}
         client={editingClient}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/20 grid place-items-center">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="flex-1">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Supprimer le client</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Êtes-vous sûr de vouloir supprimer le client &ldquo;{clientToDelete?.name}&rdquo; ?
+                  Cette action est irréversible et supprimera également tous les projets, factures et données associés à ce client.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {toast && (
         <div
           className={`fixed bottom-4 right-4 z-50 rounded-md border px-3 py-2 text-sm shadow-md ${

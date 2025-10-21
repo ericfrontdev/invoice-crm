@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Globe, ArrowRight } from 'lucide-react'
+import { Mail, Phone, MapPin, Globe, ArrowRight, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 
@@ -21,11 +21,13 @@ type Client = {
 export function ClientCard({
   client,
   isEditMode = false,
-  onCardClick
+  onCardClick,
+  onDelete
 }: {
   client: Client
   isEditMode?: boolean
   onCardClick?: (client: Client) => void
+  onDelete?: (client: Client) => void
 }) {
   const [isFlipped, setIsFlipped] = useState(false)
   const router = useRouter()
@@ -38,11 +40,29 @@ export function ClientCard({
     }
   }
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onDelete) {
+      onDelete(client)
+    }
+  }
+
   return (
     <div
       className={`relative h-48 w-full perspective-1000 ${isEditMode ? 'cursor-pointer ring-2 ring-blue-500 ring-offset-2 hover:ring-blue-600' : 'cursor-pointer'}`}
       onClick={handleClick}
     >
+      {/* Delete button - only visible in edit mode */}
+      {isEditMode && onDelete && (
+        <button
+          onClick={handleDelete}
+          className="absolute -top-2 -right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md transition-colors"
+          aria-label="Supprimer le client"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+
       {/* Card Container */}
       <motion.div
         className="relative h-full w-full"

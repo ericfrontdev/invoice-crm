@@ -62,3 +62,47 @@ export async function PATCH(
     )
   }
 }
+
+export async function DELETE(
+  req: Request,
+  props: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+
+    const params = await props.params
+    const id = params.id
+    if (!id) {
+      return NextResponse.json({ error: 'ID requis' }, { status: 400 })
+    }
+
+    // Verify ownership
+    const existingClient = await prisma.client.findUnique({
+      where: { id },
+      select: { userId: true },
+    })
+
+    if (!existingClient || existingClient.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Client introuvable' },
+        { status: 404 }
+      )
+    }
+
+    // Delete the client (cascade will handle related data)
+    await prisma.client.delete({
+      where: { id },
+    })
+
+    return NextResponse.json({ success: true }, { status: 200 })
+  } catch (e) {
+    console.error('[clients:DELETE] Error:', e)
+    return NextResponse.json(
+      { error: 'Erreur lors de la suppression du client' },
+      { status: 500 }
+    )
+  }
+}
