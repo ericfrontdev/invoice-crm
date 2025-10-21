@@ -65,11 +65,16 @@ export async function POST(req: Request) {
     const emailData = {
       invoiceNumber: invoice.number,
       clientName: invoice.client.name,
+      senderName: invoice.client.user.name,
+      senderCompany: invoice.client.user.company || undefined,
       items: invoice.items.map(item => ({
         description: item.description,
         amount: item.amount,
         date: item.date.toISOString()
       })),
+      subtotal: invoice.subtotal,
+      tps: invoice.tps,
+      tvq: invoice.tvq,
       total: invoice.total
     }
 
