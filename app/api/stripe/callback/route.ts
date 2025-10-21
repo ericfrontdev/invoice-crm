@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     // Initialiser Stripe
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2025-09-30.clover',
     })
 
     // Échanger le code d'autorisation contre un token d'accès
