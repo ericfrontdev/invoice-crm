@@ -17,6 +17,9 @@ type User = {
   tpsNumber: string | null
   tvqNumber: string | null
   chargesTaxes: boolean
+  paymentProvider: string | null
+  paypalEmail: string | null
+  stripeAccountId: string | null
 }
 
 export function ProfileForm({ user }: { user: User }) {
@@ -31,6 +34,9 @@ export function ProfileForm({ user }: { user: User }) {
     tpsNumber: user.tpsNumber || '',
     tvqNumber: user.tvqNumber || '',
     chargesTaxes: user.chargesTaxes,
+    paymentProvider: user.paymentProvider || '',
+    paypalEmail: user.paypalEmail || '',
+    stripeAccountId: user.stripeAccountId || '',
   })
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
@@ -171,6 +177,75 @@ export function ProfileForm({ user }: { user: User }) {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Configuration des paiements */}
+        <div className="pt-4 border-t">
+          <h3 className="text-lg font-semibold mb-4">Configuration des paiements</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Configurez PayPal ou Stripe pour permettre à vos clients de payer leurs factures en ligne.
+          </p>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="paymentProvider" className="mb-2 block">
+                Fournisseur de paiement
+              </Label>
+              <select
+                id="paymentProvider"
+                value={formData.paymentProvider}
+                onChange={(e) => setFormData({ ...formData, paymentProvider: e.target.value })}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Aucun (paiements désactivés)</option>
+                <option value="paypal">PayPal</option>
+                <option value="stripe">Stripe</option>
+              </select>
+            </div>
+
+            {formData.paymentProvider === 'paypal' && (
+              <div>
+                <Label htmlFor="paypalEmail" className="mb-2 block">
+                  Adresse courriel PayPal
+                </Label>
+                <Input
+                  id="paypalEmail"
+                  type="email"
+                  value={formData.paypalEmail}
+                  onChange={(e) => setFormData({ ...formData, paypalEmail: e.target.value })}
+                  placeholder="votre-email@example.com"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Cette adresse sera utilisée pour recevoir les paiements PayPal de vos clients.
+                </p>
+              </div>
+            )}
+
+            {formData.paymentProvider === 'stripe' && (
+              <div>
+                <Label htmlFor="stripeAccountId" className="mb-2 block">
+                  ID du compte Stripe
+                </Label>
+                <Input
+                  id="stripeAccountId"
+                  value={formData.stripeAccountId}
+                  onChange={(e) => setFormData({ ...formData, stripeAccountId: e.target.value })}
+                  placeholder="acct_xxxxxxxxxxxx"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Vous devez créer un compte Stripe Connect pour accepter les paiements.
+                  <a
+                    href="https://dashboard.stripe.com/account"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline ml-1"
+                  >
+                    Obtenir votre ID de compte Stripe →
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

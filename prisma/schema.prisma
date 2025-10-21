@@ -31,6 +31,11 @@ model User {
   betaTester       Boolean @default(false) // Identifie les beta testeurs
   lifetimeDiscount Int     @default(0)     // Pourcentage de réduction à vie (ex: 50 pour 50%)
 
+  // Configuration des paiements (pour recevoir des paiements des clients)
+  paymentProvider  String? // "paypal" ou "stripe"
+  paypalEmail      String? // Email PayPal pour recevoir les paiements
+  stripeAccountId  String? // ID du compte Stripe Connect
+
   accounts      Account[]
   clients       Client[]
   sessions      Session[]
@@ -109,13 +114,18 @@ model UnpaidAmount {
 model Invoice {
   id            String         @id @default(cuid())
   number        String         @unique
-  status        String         @default("draft")
+  status        String         @default("draft") // draft, sent, paid, cancelled
 
   // Montants avec taxes québécoises
   subtotal      Float          @default(0) // Montant avant taxes
   tps           Float          @default(0) // TPS 5%
   tvq           Float          @default(0) // TVQ 9.975%
   total         Float          // Total incluant taxes
+
+  // Informations de paiement
+  paidAt                DateTime? // Date du paiement
+  paymentProvider       String?   // "paypal" ou "stripe"
+  paymentTransactionId  String?   // ID de la transaction PayPal/Stripe
 
   createdAt     DateTime       @default(now())
   clientId      String

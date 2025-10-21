@@ -11,7 +11,20 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, email, company, phone, address, neq, tpsNumber, tvqNumber, chargesTaxes } = body
+    const {
+      name,
+      email,
+      company,
+      phone,
+      address,
+      neq,
+      tpsNumber,
+      tvqNumber,
+      chargesTaxes,
+      paymentProvider,
+      paypalEmail,
+      stripeAccountId
+    } = body
 
     // Validate required fields
     if (!name || !email) {
@@ -34,6 +47,9 @@ export async function PUT(req: NextRequest) {
         tpsNumber: tpsNumber || null,
         tvqNumber: tvqNumber || null,
         chargesTaxes: chargesTaxes ?? false,
+        paymentProvider: paymentProvider || null,
+        paypalEmail: paypalEmail || null,
+        stripeAccountId: stripeAccountId || null,
       },
     })
 
@@ -50,6 +66,9 @@ export async function PUT(req: NextRequest) {
         tpsNumber: updatedUser.tpsNumber,
         tvqNumber: updatedUser.tvqNumber,
         chargesTaxes: updatedUser.chargesTaxes,
+        paymentProvider: updatedUser.paymentProvider,
+        paypalEmail: updatedUser.paypalEmail,
+        stripeAccountId: updatedUser.stripeAccountId,
       },
     })
   } catch (error) {

@@ -23,6 +23,9 @@ export default async function ProfilPage() {
       tpsNumber: true,
       tvqNumber: true,
       chargesTaxes: true,
+      paymentProvider: true,
+      paypalEmail: true,
+      stripeAccountId: true,
     },
   })
 
