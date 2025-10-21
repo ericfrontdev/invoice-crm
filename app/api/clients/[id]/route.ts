@@ -79,6 +79,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'ID requis' }, { status: 400 })
     }
 
+    const { searchParams } = new URL(req.url)
+    const permanent = searchParams.get('permanent') === 'true'
+
     // Verify ownership
     const existingClient = await prisma.client.findUnique({
       where: { id },
@@ -92,12 +95,23 @@ export async function DELETE(
       )
     }
 
-    // Delete the client (cascade will handle related data)
-    await prisma.client.delete({
-      where: { id },
-    })
-
-    return NextResponse.json({ success: true }, { status: 200 })
+    if (permanent) {
+      // Permanent deletion - only for archived clients
+      await prisma.client.delete({
+        where: { id },
+      })
+      return NextResponse.json({ success: true, message: 'Client supprimé définitivement' }, { status: 200 })
+    } else {
+      // Archive the client instead of deleting
+      await prisma.client.update({
+        where: { id },
+        data: {
+          archived: true,
+          archivedAt: new Date(),
+        },
+      })
+      return NextResponse.json({ success: true, message: 'Client archivé' }, { status: 200 })
+    }
   } catch (e) {
     console.error('[clients:DELETE] Error:', e)
     return NextResponse.json(
