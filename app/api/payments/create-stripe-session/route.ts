@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-// import Stripe from 'stripe'
+import Stripe from 'stripe'
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,19 +52,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // TODO: Implémenter l'intégration Stripe
-    // Pour l'instant, retourner une erreur indiquant que Stripe doit être configuré
-    return NextResponse.json(
-      {
-        error:
-          'L\'intégration Stripe nécessite une configuration supplémentaire. Veuillez installer le package Stripe et configurer vos clés API.',
-      },
-      { status: 501 }
-    )
+    // Vérifier que la clé secrète Stripe est configurée
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('[create-stripe-session] STRIPE_SECRET_KEY not configured')
+      return NextResponse.json(
+        { error: 'Stripe n\'est pas configuré sur le serveur. Veuillez contacter l\'administrateur.' },
+        { status: 500 }
+      )
+    }
 
-    /*
     // Initialiser Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2024-11-20.acacia',
     })
 
@@ -87,23 +85,30 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXTAUTH_URL}/invoices/${invoice.id}/pay/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXTAUTH_URL}/invoices/${invoice.id}/pay`,
+      customer_email: invoice.client.email,
       metadata: {
         invoiceId: invoice.id,
       },
-      payment_intent_data: {
-        application_fee_amount: 0,
-        transfer_data: {
-          destination: invoice.client.user.stripeAccountId,
-        },
-      },
+      // Note: Pour utiliser Stripe Connect et transférer les fonds au compte du solopreneur,
+      // il faut d'abord que le solopreneur connecte son compte Stripe via OAuth.
+      // Pour l'instant, on collecte simplement le paiement sur le compte principal.
+      // Décommentez ces lignes si vous utilisez Stripe Connect:
+      // payment_intent_data: {
+      //   application_fee_amount: 0,
+      //   transfer_data: {
+      //     destination: invoice.client.user.stripeAccountId,
+      //   },
+      // },
     })
 
+    console.log('[create-stripe-session] Session created:', session.id)
+
     return NextResponse.json({ url: session.url })
-    */
   } catch (error) {
     console.error('[create-stripe-session] Error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue'
     return NextResponse.json(
-      { error: 'Erreur lors de la création de la session de paiement' },
+      { error: 'Erreur lors de la création de la session de paiement', details: errorMessage },
       { status: 500 }
     )
   }
