@@ -66,7 +66,20 @@ export async function POST(req: NextRequest) {
       apiVersion: '2024-11-20.acacia',
     })
 
-    // Créer une session de paiement
+    // Calculer la commission de la plateforme (optionnel)
+    // Vous pouvez configurer une commission via une variable d'environnement
+    // Par exemple: STRIPE_APPLICATION_FEE_PERCENT=2 pour 2%
+    const applicationFeePercent = parseFloat(process.env.STRIPE_APPLICATION_FEE_PERCENT || '0')
+    const applicationFeeAmount = Math.round(invoice.total * 100 * (applicationFeePercent / 100))
+
+    console.log('[create-stripe-session] Creating session with destination charge:', {
+      destinationAccount: invoice.client.user.stripeAccountId,
+      totalAmount: Math.round(invoice.total * 100),
+      applicationFee: applicationFeeAmount,
+      feePercent: applicationFeePercent,
+    })
+
+    // Créer une session de paiement avec Stripe Connect (Destination Charges)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -89,16 +102,15 @@ export async function POST(req: NextRequest) {
       metadata: {
         invoiceId: invoice.id,
       },
-      // Note: Pour utiliser Stripe Connect et transférer les fonds au compte du solopreneur,
-      // il faut d'abord que le solopreneur connecte son compte Stripe via OAuth.
-      // Pour l'instant, on collecte simplement le paiement sur le compte principal.
-      // Décommentez ces lignes si vous utilisez Stripe Connect:
-      // payment_intent_data: {
-      //   application_fee_amount: 0,
-      //   transfer_data: {
-      //     destination: invoice.client.user.stripeAccountId,
-      //   },
-      // },
+      // Stripe Connect: Destination Charges
+      // L'argent va directement sur le compte du solopreneur
+      // La plateforme peut optionnellement prendre une commission
+      payment_intent_data: {
+        application_fee_amount: applicationFeeAmount,
+        transfer_data: {
+          destination: invoice.client.user.stripeAccountId,
+        },
+      },
     })
 
     console.log('[create-stripe-session] Session created:', session.id)

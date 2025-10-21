@@ -51,27 +51,46 @@ Le webhook est déjà configuré et fonctionnel. Aucune configuration supplémen
 - ✅ Paiement par carte de crédit directement
 - ✅ Interface de paiement moderne
 - ✅ Support de plusieurs devises
-- ✅ Meilleure intégration avec le site
+- ✅ **Les fonds vont DIRECTEMENT au solopreneur** (via Stripe Connect)
+- ✅ Vous ne gérez jamais l'argent de vos utilisateurs
+- ✅ Commission optionnelle configurable
 
-### Configuration côté serveur
+### Configuration côté serveur (Stripe Connect)
 
-#### 1. Créer un compte Stripe
+#### 1. Créer un compte Stripe Platform
 
 1. Allez sur [stripe.com](https://stripe.com)
-2. Créez un compte
+2. Créez un compte (ou utilisez votre compte existant)
 3. Accédez au [Dashboard Stripe](https://dashboard.stripe.com)
 
-#### 2. Obtenir les clés API
+#### 2. Activer Stripe Connect
+
+1. Dans le Dashboard, allez dans **Settings** > **Connect**
+2. Cliquez sur **Get started** pour activer Connect
+3. Choisissez le type de plateforme: **Platform or marketplace**
+4. Configurez votre profil d'entreprise
+
+#### 3. Obtenir le Client ID
+
+1. Dans **Settings** > **Connect** > **Settings**
+2. Trouvez votre **Client ID** (commence par `ca_`)
+3. Ajoutez-le dans votre `.env`:
+
+```bash
+STRIPE_CLIENT_ID="ca_votre_client_id"
+```
+
+#### 4. Obtenir la clé secrète
 
 1. Dans le Dashboard, allez dans **Developers** > **API keys**
 2. Copiez votre **Secret key** (commence par `sk_test_` en mode test, `sk_live_` en production)
-3. Ajoutez-la dans votre fichier `.env`:
+3. Ajoutez-la dans votre `.env`:
 
 ```bash
 STRIPE_SECRET_KEY="sk_test_votre_cle_secrete_ici"
 ```
 
-#### 3. Configurer le webhook
+#### 5. Configurer le webhook
 
 1. Dans le Dashboard Stripe, allez dans **Developers** > **Webhooks**
 2. Cliquez sur **Add endpoint**
@@ -85,6 +104,20 @@ STRIPE_SECRET_KEY="sk_test_votre_cle_secrete_ici"
 ```bash
 STRIPE_WEBHOOK_SECRET="whsec_votre_secret_webhook_ici"
 ```
+
+#### 6. Configurer la commission (optionnel)
+
+Si vous souhaitez prendre une commission sur chaque transaction:
+
+```bash
+# Par exemple, 2% de commission
+STRIPE_APPLICATION_FEE_PERCENT="2"
+
+# Ou 0% pour aucune commission
+STRIPE_APPLICATION_FEE_PERCENT="0"
+```
+
+**Important:** La commission est prélevée automatiquement et va sur votre compte Stripe Platform. Le solopreneur reçoit le montant moins la commission.
 
 #### 4. Tester la configuration
 
@@ -103,14 +136,25 @@ stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 Stripe CLI vous donnera un webhook secret temporaire à utiliser en local.
 
-### Configuration côté utilisateur
+### Configuration côté utilisateur (OAuth Flow)
 
-1. L'utilisateur va dans **Profil** > **Configuration des paiements**
+Le solopreneur suit ces étapes simples:
+
+1. Va dans **Profil** > **Configuration des paiements**
 2. Sélectionne **Stripe** comme fournisseur
-3. Entre son **ID de compte Stripe** (commence par `acct_`)
-4. Enregistre
+3. Clique sur **"Connecter avec Stripe"**
+4. Est redirigé vers Stripe OAuth (page sécurisée de Stripe)
+5. Se connecte à son compte Stripe (ou en crée un)
+6. Autorise SoloPack à recevoir des paiements pour lui
+7. Est redirigé automatiquement vers SoloPack
+8. ✅ **C'est fait!** Son compte est connecté
 
-**Note importante:** Pour l'instant, les paiements sont collectés sur le compte Stripe principal (celui configuré avec `STRIPE_SECRET_KEY`). Pour transférer automatiquement les fonds au compte de chaque utilisateur, vous devrez implémenter [Stripe Connect](https://stripe.com/docs/connect).
+**Avantages pour le solopreneur:**
+- 🔒 Sécurisé (OAuth officiel de Stripe)
+- 💰 L'argent va directement sur son compte Stripe
+- 🚫 SoloPack ne touche jamais son argent
+- ⚡ Rapide (moins de 2 minutes)
+- 📊 Il garde le contrôle total via son dashboard Stripe
 
 ### Comment ça fonctionne
 
@@ -209,9 +253,11 @@ ngrok http 3000
 Résumé des variables nécessaires dans `.env`:
 
 ```bash
-# Obligatoire pour Stripe
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
+# Obligatoire pour Stripe Connect
+STRIPE_SECRET_KEY="sk_test_..."              # Clé secrète API
+STRIPE_CLIENT_ID="ca_..."                    # Client ID pour OAuth
+STRIPE_WEBHOOK_SECRET="whsec_..."            # Secret du webhook
+STRIPE_APPLICATION_FEE_PERCENT="0"           # Commission (0 = aucune)
 
 # URL de base de l'application
 NEXTAUTH_URL="https://votre-domaine.com"
