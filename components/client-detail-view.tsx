@@ -25,6 +25,11 @@ type ClientWithAmounts = {
     dueDate: Date | null
     status: string
   }>
+  user: {
+    name: string
+    company: string | null
+    chargesTaxes: boolean
+  }
 }
 
 export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
@@ -420,6 +425,11 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
           company: client.company,
           email: client.email,
           address: client.address,
+        }}
+        user={{
+          name: client.user.name,
+          company: client.user.company,
+          chargesTaxes: client.user.chargesTaxes,
         }}
         items={client.unpaidAmounts
           .filter((a) => selectedAmounts.has(a.id))

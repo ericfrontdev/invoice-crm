@@ -22,6 +22,13 @@ async function getClient(id: string, userId: string) {
           status: true,
         },
       },
+      user: {
+        select: {
+          name: true,
+          company: true,
+          chargesTaxes: true,
+        },
+      },
     },
   })
 

@@ -19,23 +19,37 @@ type ClientInfo = {
   address?: string | null
 }
 
+type UserInfo = {
+  name: string
+  company: string | null
+  chargesTaxes: boolean
+}
+
 export function InvoicePreviewModal({
   isOpen,
   onClose,
   client,
+  user,
   items,
   onCreated,
 }: {
   isOpen: boolean
   onClose: () => void
   client: ClientInfo
+  user: UserInfo
   items: Item[]
   onCreated?: () => void
 }) {
-  const total = useMemo(
+  const subtotal = useMemo(
     () => items.reduce((s, it) => s + (Number(it.amount) || 0), 0),
     [items],
   )
+
+  const tps = useMemo(() => user.chargesTaxes ? subtotal * 0.05 : 0, [subtotal, user.chargesTaxes])
+  const tvq = useMemo(() => user.chargesTaxes ? subtotal * 0.09975 : 0, [subtotal, user.chargesTaxes])
+  const total = useMemo(() => subtotal + tps + tvq, [subtotal, tps, tvq])
+
+  const hasTaxes = tps > 0 || tvq > 0
   const [isLoading, setIsLoading] = useState<'create' | 'send' | null>(null)
 
   useEffect(() => {
@@ -113,16 +127,22 @@ export function InvoicePreviewModal({
           {/* Header facture */}
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold">Facture</h3>
-              <p className="text-sm text-muted-foreground">Brouillon (prévisualisation)</p>
+              <p className="text-sm text-muted-foreground mb-1">De</p>
+              {user.company && <p className="font-semibold text-base">{user.company}</p>}
+              <p className="text-sm">{user.name}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Destinataire</p>
+              <p className="text-sm text-muted-foreground mb-1">À</p>
               <p className="font-medium">{client.name}</p>
               {client.company && <p className="text-sm">{client.company}</p>}
               {client.address && <p className="text-sm">{client.address}</p>}
               <p className="text-sm">{client.email}</p>
             </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold">Facture</h3>
+            <p className="text-sm text-muted-foreground">Brouillon (prévisualisation)</p>
           </div>
 
           {/* Items */}
@@ -153,7 +173,37 @@ export function InvoicePreviewModal({
                 ))}
               </tbody>
               <tfoot>
-                <tr>
+                {hasTaxes && (
+                  <tr className="border-t">
+                    <td className="py-3 px-4" colSpan={2}>
+                      <span className="text-sm text-muted-foreground">Sous-total</span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      {subtotal.toFixed(2)} $
+                    </td>
+                  </tr>
+                )}
+                {hasTaxes && tps > 0 && (
+                  <tr>
+                    <td className="py-3 px-4" colSpan={2}>
+                      <span className="text-sm text-muted-foreground">TPS (5%)</span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      {tps.toFixed(2)} $
+                    </td>
+                  </tr>
+                )}
+                {hasTaxes && tvq > 0 && (
+                  <tr>
+                    <td className="py-3 px-4" colSpan={2}>
+                      <span className="text-sm text-muted-foreground">TVQ (9,975%)</span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      {tvq.toFixed(2)} $
+                    </td>
+                  </tr>
+                )}
+                <tr className="border-t">
                   <td className="py-3 px-4" colSpan={2}>
                     <span className="text-sm text-muted-foreground">Total</span>
                   </td>
