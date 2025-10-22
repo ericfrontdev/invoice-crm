@@ -2,14 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  Eye,
-  Mail,
-  CheckCircle,
-  Trash2,
-  MoreVertical,
-  Calendar,
-} from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, MoreVertical, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -31,21 +24,14 @@ type Invoice = {
   clientId: string
   client: { id: string; name: string | null; email?: string } | null
   project?: { id: string; name: string } | null
-  items?: Array<{
-    id: string
-    description: string
-    amount: number
-    date: string | Date
-    dueDate?: string | Date | null
-  }>
+  items?: Array<{ id: string; description: string; amount: number; date: string | Date; dueDate?: string | Date | null }>
 }
 
 const statusColors = {
   draft: 'bg-gray-100 text-gray-800 dark:bg-gray-400/10 dark:text-gray-300',
   sent: 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-300',
   paid: 'bg-green-100 text-green-800 dark:bg-green-400/10 dark:text-green-300',
-  archived:
-    'bg-slate-100 text-slate-800 dark:bg-slate-400/10 dark:text-slate-300',
+  archived: 'bg-slate-100 text-slate-800 dark:bg-slate-400/10 dark:text-slate-300',
 }
 
 const statusLabels = {
@@ -133,7 +119,9 @@ export function InvoiceCard({
   return (
     <div
       className={`relative bg-card rounded-lg border p-4 transition-all select-none ${
-        isSelectionMode ? 'cursor-pointer' : 'cursor-default'
+        isSelectionMode
+          ? 'cursor-pointer'
+          : 'cursor-default'
       } ${
         isSelected
           ? 'ring-2 ring-primary border-primary bg-primary/5'
@@ -162,37 +150,23 @@ export function InvoiceCard({
       {!isSelectionMode && (
         <div className="absolute top-4 right-4 z-10">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              onClick={(e) => e.stopPropagation()}
-            >
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 mt-8"
+                className="h-8 w-8 p-0"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onView()
-                }}
-              >
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onView(); }}>
                 <Eye className="h-4 w-4 mr-2" />
                 Voir et modifier
               </DropdownMenuItem>
               {invoice.status === 'draft' && invoice.client?.email && (
                 <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onSend()
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onSend(); }}
                   disabled={isBusy}
                 >
                   <Mail className="h-4 w-4 mr-2" />
@@ -201,10 +175,7 @@ export function InvoiceCard({
               )}
               {invoice.status !== 'paid' && (
                 <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onMarkPaid()
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onMarkPaid(); }}
                   disabled={isBusy}
                 >
                   <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
@@ -212,10 +183,7 @@ export function InvoiceCard({
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDelete()
-                }}
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
                 className="text-red-600 focus:text-red-600"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
@@ -235,15 +203,11 @@ export function InvoiceCard({
           </div>
           <span
             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ml-2 ${
-              statusColors[invoice.status as keyof typeof statusColors] ||
-              statusColors.draft
+              statusColors[invoice.status as keyof typeof statusColors] || statusColors.draft
             }`}
           >
-            <span>
-              {statusIcons[invoice.status as keyof typeof statusIcons] || '📝'}
-            </span>
-            {statusLabels[invoice.status as keyof typeof statusLabels] ||
-              invoice.status}
+            <span>{statusIcons[invoice.status as keyof typeof statusIcons] || '📝'}</span>
+            {statusLabels[invoice.status as keyof typeof statusLabels] || invoice.status}
           </span>
         </div>
 

@@ -169,7 +169,7 @@ export function InvoiceCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 mt-8"
+                className="h-8 w-8 p-0 mt-6"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
