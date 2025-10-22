@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
+import { ProjectModal } from '@/components/crm/project-modal'
 
 type Project = {
   id: string
@@ -65,6 +66,8 @@ const statusLabels = {
 export function ProjectsGlobalView({ projects, clients }: { projects: Project[]; clients: Client[] }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const router = useRouter()
 
   // Filtrer par statut
@@ -83,6 +86,25 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
       project.description?.toLowerCase().includes(search)
     )
   })
+
+  const handleSaveProject = async (
+    data: { name: string; description: string | null; status: string; budget: string | number | null; startDate: string | null; endDate: string | null },
+    files: File[]
+  ) => {
+    if (!selectedClient) return
+
+    const res = await fetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, clientId: selectedClient.id }),
+    })
+
+    if (res.ok) {
+      router.refresh()
+      setIsProjectModalOpen(false)
+      setSelectedClient(null)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -133,8 +155,8 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
                   key={client.id}
                   className="cursor-pointer"
                   onClick={() => {
-                    // Rediriger vers la page détails du client avec le modal de projet ouvert
-                    router.push(`/clients/${client.id}/details?createProject=true`)
+                    setSelectedClient(client)
+                    setIsProjectModalOpen(true)
                   }}
                 >
                   <div className="flex flex-col">
@@ -229,6 +251,18 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
           ))}
         </div>
       )}
+
+      {/* Modal de création de projet */}
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => {
+          setIsProjectModalOpen(false)
+          setSelectedClient(null)
+        }}
+        onSave={handleSaveProject}
+        project={null}
+        clientName={selectedClient?.name}
+      />
     </div>
   )
 }

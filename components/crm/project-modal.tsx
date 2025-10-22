@@ -31,11 +31,13 @@ export function ProjectModal({
   onClose,
   onSave,
   project,
+  clientName,
 }: {
   isOpen: boolean
   onClose: () => void
   onSave: (data: { name: string; description: string | null; status: string; budget: string | number | null; startDate: string | null; endDate: string | null }, files: File[]) => Promise<void>
   project: Project | null
+  clientName?: string
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -93,6 +95,11 @@ export function ProjectModal({
         <DialogHeader>
           <DialogTitle>
             {project ? 'Modifier le projet' : 'Nouveau projet'}
+            {clientName && !project && (
+              <span className="text-sm font-normal text-muted-foreground ml-2">
+                pour {clientName}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
