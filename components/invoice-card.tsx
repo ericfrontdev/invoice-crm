@@ -213,13 +213,19 @@ export function InvoiceCard({
 
         {/* Client */}
         <div className="mb-3">
-          <Link
-            href={`/clients/${invoice.clientId}`}
-            className="text-sm font-medium text-primary hover:underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {invoice.client?.name ?? 'Client'}
-          </Link>
+          {isSelectionMode ? (
+            <span className="text-sm font-medium text-primary">
+              {invoice.client?.name ?? 'Client'}
+            </span>
+          ) : (
+            <Link
+              href={`/clients/${invoice.clientId}`}
+              className="text-sm font-medium text-primary hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {invoice.client?.name ?? 'Client'}
+            </Link>
+          )}
           {invoice.project && (
             <div className="text-xs text-muted-foreground mt-0.5">
               Projet: {invoice.project.name}
