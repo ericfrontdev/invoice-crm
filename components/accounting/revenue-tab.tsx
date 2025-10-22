@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
@@ -36,6 +36,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { RevenueCard } from '@/components/accounting/revenue-card'
 
 type Invoice = {
   id: string
@@ -85,6 +86,18 @@ export function RevenueTab({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [revenueToDelete, setRevenueToDelete] = useState<{ id: string; description: string } | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // md breakpoint
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Combiner factures et revenus manuels
   const allRevenues: CombinedRevenue[] = [
@@ -206,13 +219,25 @@ export function RevenueTab({
         </div>
       </div>
 
-      {/* Table des revenus */}
+      {/* Table des revenus / Cartes mobile */}
       <div className="bg-card rounded-lg border">
         {filteredRevenues.length === 0 ? (
           <div className="p-8 text-center text-sm text-muted-foreground">
             {searchTerm || dateFilter !== 'all' ? 'Aucun revenu trouvé' : 'Aucun revenu'}
           </div>
+        ) : isMobile ? (
+          /* Mobile: Card view */
+          <div className="p-4 space-y-3">
+            {filteredRevenues.map((revenue) => (
+              <RevenueCard
+                key={`${revenue.type}-${revenue.id}`}
+                revenue={revenue}
+                onDelete={openDeleteModal}
+              />
+            ))}
+          </div>
         ) : (
+          /* Desktop: Table view */
           <Table>
             <TableHeader>
               <TableRow>

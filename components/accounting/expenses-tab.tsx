@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { ExpenseModal } from '@/components/expense-modal'
+import { ExpenseCard } from '@/components/accounting/expense-card'
 import { useRouter } from 'next/navigation'
 
 type Expense = {
@@ -18,6 +19,18 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // md breakpoint
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleCreate = () => {
     setSelectedExpense(null)
@@ -97,7 +110,7 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
         </div>
       </div>
 
-      {/* Liste des dépenses */}
+      {/* Liste des dépenses / Cartes mobile */}
       <div className="bg-card rounded-lg border">
         {expenses.length === 0 ? (
           <div className="p-8 text-center">
@@ -107,7 +120,20 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
               Ajouter une dépense
             </Button>
           </div>
+        ) : isMobile ? (
+          /* Mobile: Card view */
+          <div className="p-4 space-y-3">
+            {expenses.map((expense) => (
+              <ExpenseCard
+                key={expense.id}
+                expense={expense}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         ) : (
+          /* Desktop: Table view */
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-muted/50">
