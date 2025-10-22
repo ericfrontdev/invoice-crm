@@ -111,7 +111,7 @@ export function InvoiceCard({
     // Reset after a short delay
     setTimeout(() => {
       setLongPressTriggered(false)
-    }, 100)
+    }, 200)
   }
 
   const handleCardClick = () => {
