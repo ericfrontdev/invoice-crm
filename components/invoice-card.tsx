@@ -118,7 +118,7 @@ export function InvoiceCard({
 
   return (
     <div
-      className={`relative bg-card rounded-lg border p-4 transition-all ${
+      className={`relative bg-card rounded-lg border p-4 transition-all select-none ${
         isSelectionMode
           ? 'cursor-pointer'
           : 'cursor-default'
