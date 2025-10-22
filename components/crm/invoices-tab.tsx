@@ -9,6 +9,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Checkbox } from '@/components/ui/checkbox'
+import { InvoiceCard } from '@/components/invoice-card'
 
 type Invoice = {
   id: string
@@ -77,10 +78,30 @@ export function InvoicesTab({
   )
   const [internalShowArchived, setInternalShowArchived] = useState(false)
   const archiveSectionRef = useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isSelectionMode, setIsSelectionMode] = useState(false)
 
   // Use external state if provided, otherwise use internal state
   const isArchived = showArchived ?? internalShowArchived
   const toggleArchived = setShowArchived ?? setInternalShowArchived
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // md breakpoint
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Auto-enable selection mode when first invoice is selected on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setIsSelectionMode(selectedInvoiceIds.length > 0)
+    }
+  }, [selectedInvoiceIds.length, isMobile])
 
   // Scroll to archives section when it opens
   useEffect(() => {
@@ -229,10 +250,23 @@ export function InvoicesTab({
     }
   }
 
+  const handleViewInvoice = async (invoiceId: string) => {
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}`, { cache: 'no-store' })
+      if (res.ok) {
+        const full = await res.json()
+        setSelectedInvoice(full)
+        setPreviewOpen(true)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const renderInvoiceTable = (
     invoices: Invoice[],
     emptyMessage: string,
-    isArchived = false
+    isArchivedSection = false
   ) => {
     if (invoices.length === 0) {
       return (
@@ -250,204 +284,224 @@ export function InvoicesTab({
       selectedInvoiceIds.includes(id)
     )
 
+    // Convertir Invoice en type compatible avec InvoiceCard
+    const invoicesWithClient = invoices.map(inv => ({
+      ...inv,
+      clientId: client.id,
+      client: {
+        id: client.id,
+        name: client.name,
+        email: undefined
+      },
+      items: []
+    }))
+
     return (
       <div className="space-y-3">
-        {/* Batch Actions Bar for this table */}
+        {/* Batch Actions Bar - Sticky on mobile, inline on desktop */}
         {selectedFromThisTable.length > 0 && (
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="font-medium">
-                {selectedFromThisTable.length} facture(s) sélectionnée(s)
-              </span>
+          <div className={`flex items-center gap-2 p-3 rounded-lg border ${
+            isMobile
+              ? 'sticky top-0 z-40 bg-primary/10 border-primary/20 shadow-md backdrop-blur supports-[backdrop-filter]:bg-background/80'
+              : 'bg-primary/10 border-primary/20'
+          }`}>
+            <span className="text-sm font-medium">
+              {selectedFromThisTable.length} facture(s) sélectionnée(s)
+            </span>
+            <div className="ml-auto flex gap-2">
               <Button
+                variant="ghost"
                 size="sm"
-                variant="outline"
                 onClick={() => {
                   setSelectedInvoiceIds((prev) =>
                     prev.filter((id) => !invoiceIds.includes(id))
                   )
                 }}
+                className="cursor-pointer"
               >
-                Désélectionner
+                Annuler
               </Button>
-            </div>
-            <div className="flex items-center gap-2">
               <Button
-                size="sm"
                 variant="outline"
+                size="sm"
                 onClick={() => setBatchAction('archive')}
                 disabled={busyId === 'batch'}
+                className="cursor-pointer"
               >
-                <Archive className="h-4 w-4 mr-2" />
-                Archiver
+                <Archive className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Archiver</span>
               </Button>
               <Button
+                variant="outline"
                 size="sm"
-                variant="destructive"
                 onClick={() => setBatchAction('delete')}
                 disabled={busyId === 'batch'}
+                className="text-red-600 hover:text-red-700 dark:text-red-400 cursor-pointer"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
+                <Trash2 className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Supprimer</span>
               </Button>
             </div>
           </div>
         )}
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted">
-              <tr>
-                <th className="text-left p-3 w-12">
-                  <Checkbox
-                    checked={allSelected}
-                    onCheckedChange={() => toggleSelectAll(invoices)}
-                    aria-label="Tout sélectionner"
-                  />
-                </th>
-                <th className="text-left p-3 font-medium">Numéro</th>
-                {invoices === projectInvoices && (
-                  <th className="text-left p-3 font-medium">Projet</th>
-                )}
-                <th className="text-left p-3 font-medium">Date</th>
-                <th className="text-left p-3 font-medium">Montant</th>
-                <th className="text-left p-3 font-medium">Statut</th>
-                <th className="text-right p-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice) => (
-                <tr
-                  key={invoice.id}
-                  className="border-t hover:bg-muted/50"
-                >
-                  <td className="p-3">
+        {/* Mobile: Card view */}
+        {isMobile ? (
+          <div className="space-y-3">
+            {invoicesWithClient.map((inv) => (
+              <InvoiceCard
+                key={inv.id}
+                invoice={inv}
+                isSelectionMode={isSelectionMode}
+                isSelected={selectedInvoiceIds.includes(inv.id)}
+                onToggleSelect={() => toggleInvoiceSelection(inv.id)}
+                onView={() => handleViewInvoice(inv.id)}
+                onSend={() => doAction(inv.id, 'send')}
+                onMarkPaid={() => doAction(inv.id, 'paid')}
+                onDelete={() => setDeleteConfirmId(inv.id)}
+                isBusy={busyId === inv.id}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Desktop: Table view */
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-left p-3 w-12">
                     <Checkbox
-                      checked={selectedInvoiceIds.includes(invoice.id)}
-                      onCheckedChange={() => toggleInvoiceSelection(invoice.id)}
-                      aria-label={`Sélectionner ${invoice.number}`}
+                      checked={allSelected}
+                      onCheckedChange={() => toggleSelectAll(invoices)}
+                      aria-label="Tout sélectionner"
                     />
-                  </td>
-                  <td className="p-3 font-medium">{invoice.number}</td>
+                  </th>
+                  <th className="text-left p-3 font-medium">Numéro</th>
                   {invoices === projectInvoices && (
-                    <td className="p-3">
-                      <span className="text-sm">{invoice.project?.name}</span>
-                    </td>
+                    <th className="text-left p-3 font-medium">Projet</th>
                   )}
-                  <td className="p-3 text-sm text-muted-foreground">
-                    {new Date(invoice.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-3 font-medium">
-                    {invoice.total.toFixed(2)} $
-                  </td>
-                  <td className="p-3">
-                    <span
-                      className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                        statusColors[
-                          invoice.status as keyof typeof statusColors
-                        ] || statusColors.draft
-                      }`}
-                    >
-                      {statusLabels[
-                        invoice.status as keyof typeof statusLabels
-                      ] || invoice.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex gap-1 justify-end">
-                      {/* Voir */}
-                      <Tooltip content="Voir et modifier">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => {
-                            ;(async () => {
-                              try {
-                                const res = await fetch(
-                                  `/api/invoices/${invoice.id}`,
-                                  {
-                                    cache: 'no-store',
-                                  }
-                                )
-                                if (res.ok) {
-                                  const full = await res.json()
-                                  setSelectedInvoice(full)
-                                  setPreviewOpen(true)
-                                }
-                              } catch {
-                                // ignore
-                              }
-                            })()
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Tooltip>
-
-                      {/* Désarchiver (seulement pour les factures archivées) */}
-                      {isArchived && (
-                        <Tooltip content="Désarchiver">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 dark:text-blue-400"
-                            disabled={busyId === invoice.id}
-                            onClick={() => doAction(invoice.id, 'unarchive')}
-                          >
-                            <Archive className="h-4 w-4" />
-                          </Button>
-                        </Tooltip>
-                      )}
-
-                      {/* Envoyer */}
-                      {!isArchived && invoice.status === 'draft' && (
-                        <Tooltip content="Envoyer par email">
+                  <th className="text-left p-3 font-medium">Date</th>
+                  <th className="text-left p-3 font-medium">Montant</th>
+                  <th className="text-left p-3 font-medium">Statut</th>
+                  <th className="text-right p-3 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr
+                    key={invoice.id}
+                    className="border-t hover:bg-muted/50"
+                  >
+                    <td className="p-3">
+                      <Checkbox
+                        checked={selectedInvoiceIds.includes(invoice.id)}
+                        onCheckedChange={() => toggleInvoiceSelection(invoice.id)}
+                        aria-label={`Sélectionner ${invoice.number}`}
+                      />
+                    </td>
+                    <td className="p-3 font-medium">{invoice.number}</td>
+                    {invoices === projectInvoices && (
+                      <td className="p-3">
+                        <span className="text-sm">{invoice.project?.name}</span>
+                      </td>
+                    )}
+                    <td className="p-3 text-sm text-muted-foreground">
+                      {new Date(invoice.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3 font-medium">
+                      {invoice.total.toFixed(2)} $
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          statusColors[
+                            invoice.status as keyof typeof statusColors
+                          ] || statusColors.draft
+                        }`}
+                      >
+                        {statusLabels[
+                          invoice.status as keyof typeof statusLabels
+                        ] || invoice.status}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex gap-1 justify-end">
+                        {/* Voir */}
+                        <Tooltip content="Voir et modifier">
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0"
-                            disabled={busyId === invoice.id}
-                            onClick={() => doAction(invoice.id, 'send')}
+                            onClick={() => handleViewInvoice(invoice.id)}
                           >
-                            <Mail className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </Tooltip>
-                      )}
 
-                      {/* Marquer payée */}
-                      {!isArchived && invoice.status !== 'paid' && (
-                        <Tooltip content="Marquer comme payée">
+                        {/* Désarchiver (seulement pour les factures archivées) */}
+                        {isArchivedSection && (
+                          <Tooltip content="Désarchiver">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                              disabled={busyId === invoice.id}
+                              onClick={() => doAction(invoice.id, 'unarchive')}
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                        )}
+
+                        {/* Envoyer */}
+                        {!isArchivedSection && invoice.status === 'draft' && (
+                          <Tooltip content="Envoyer par email">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              disabled={busyId === invoice.id}
+                              onClick={() => doAction(invoice.id, 'send')}
+                            >
+                              <Mail className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                        )}
+
+                        {/* Marquer payée */}
+                        {!isArchivedSection && invoice.status !== 'paid' && (
+                          <Tooltip content="Marquer comme payée">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400"
+                              disabled={busyId === invoice.id}
+                              onClick={() => doAction(invoice.id, 'paid')}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
+                        )}
+
+                        {/* Supprimer */}
+                        <Tooltip content="Supprimer">
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400"
-                            disabled={busyId === invoice.id}
-                            onClick={() => doAction(invoice.id, 'paid')}
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                            onClick={() => setDeleteConfirmId(invoice.id)}
                           >
-                            <CheckCircle className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </Tooltip>
-                      )}
-
-                      {/* Supprimer */}
-                      <Tooltip content="Supprimer">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400"
-                          onClick={() => setDeleteConfirmId(invoice.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </Tooltip>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     )
   }
