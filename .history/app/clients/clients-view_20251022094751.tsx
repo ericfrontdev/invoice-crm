@@ -257,7 +257,7 @@ export function ClientsView({
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5 md:gap-4">
+        <div className="flex items-center gap-2">
           {/* Toggle pour voir les clients archivés */}
           <Button
             variant="outline"

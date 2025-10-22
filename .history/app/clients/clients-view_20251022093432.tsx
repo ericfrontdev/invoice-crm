@@ -250,14 +250,14 @@ export function ClientsView({
           </Button>
         </div>
       )}
-      <div className="flex justify-between flex-wrap items-center mb-8">
+      <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">
             {showArchived ? 'Clients archivés' : 'Clients'}
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5 md:gap-4">
+        <div className="flex items-center gap-4">
           {/* Toggle pour voir les clients archivés */}
           <Button
             variant="outline"
@@ -268,7 +268,7 @@ export function ClientsView({
                 : '/clients?archived=true'
               router.push(newUrl)
             }}
-            className="cursor-pointer mt-2 md:mt-0"
+            className="cursor-pointer"
           >
             {showArchived ? (
               <>
@@ -284,8 +284,8 @@ export function ClientsView({
           </Button>
 
           {!showArchived && (
-            <>
-              <div className="flex border rounded-md mt-2 md:mt-0">
+            <div className="flex flex-wrap">
+              <div className="flex border rounded-md">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
@@ -308,7 +308,7 @@ export function ClientsView({
                 variant={isEditMode ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setIsEditMode(!isEditMode)}
-                className="cursor-pointer mt-2 md:mt-0"
+                className="cursor-pointer"
                 disabled={clients.length === 0}
               >
                 <Pencil className="h-4 w-4 mr-2" />
@@ -316,12 +316,12 @@ export function ClientsView({
               </Button>
 
               <Button
-                className="cursor-pointer mt-2 md:mt-0"
+                className="cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               >
                 + Nouveau client
               </Button>
-            </>
+            </div>
           )}
         </div>
       </div>

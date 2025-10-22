@@ -257,7 +257,7 @@ export function ClientsView({
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5 md:gap-4">
+        <div className="flex items-center gap-4">
           {/* Toggle pour voir les clients archivés */}
           <Button
             variant="outline"
@@ -268,7 +268,7 @@ export function ClientsView({
                 : '/clients?archived=true'
               router.push(newUrl)
             }}
-            className="cursor-pointer mt-2 md:mt-0"
+            className="cursor-pointer mt-0 md:mt-0"
           >
             {showArchived ? (
               <>

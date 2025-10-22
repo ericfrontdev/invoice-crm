@@ -257,7 +257,7 @@ export function ClientsView({
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5 md:gap-4">
+        <div className="flex items-center gap-4">
           {/* Toggle pour voir les clients archivés */}
           <Button
             variant="outline"
@@ -268,11 +268,11 @@ export function ClientsView({
                 : '/clients?archived=true'
               router.push(newUrl)
             }}
-            className="cursor-pointer mt-2 md:mt-0"
+            className="cursor-pointer"
           >
             {showArchived ? (
               <>
-                <ArchiveRestore className="h-4 w-4 mr-2" />
+                <ArchiveRestore className="h-4 w-4 mr-2 mt-4" />
                 Voir les clients actifs
               </>
             ) : (
@@ -285,7 +285,7 @@ export function ClientsView({
 
           {!showArchived && (
             <>
-              <div className="flex border rounded-md mt-2 md:mt-0">
+              <div className="flex border rounded-md">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
@@ -308,7 +308,7 @@ export function ClientsView({
                 variant={isEditMode ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setIsEditMode(!isEditMode)}
-                className="cursor-pointer mt-2 md:mt-0"
+                className="cursor-pointer"
                 disabled={clients.length === 0}
               >
                 <Pencil className="h-4 w-4 mr-2" />
@@ -316,7 +316,7 @@ export function ClientsView({
               </Button>
 
               <Button
-                className="cursor-pointer mt-2 md:mt-0"
+                className="cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               >
                 + Nouveau client

@@ -203,18 +203,18 @@ export function Navigation({
                 Tableau de bord
               </Link>
               <Link
+                href="/crm"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                CRM
+              </Link>
+              <Link
                 href="/clients"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Clients
-              </Link>
-              <Link
-                href="/invoices"
-                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Factures
               </Link>
               <Link
                 href="/projets"
@@ -224,11 +224,11 @@ export function Navigation({
                 Projets
               </Link>
               <Link
-                href="/crm"
+                href="/invoices"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                CRM
+                Factures
               </Link>
               <Link
                 href="/accounting"

@@ -209,19 +209,20 @@ export function Navigation({
               >
                 Clients
               </Link>
-              <Link
-                href="/invoices"
-                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Factures
-              </Link>
+
               <Link
                 href="/projets"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Projets
+              </Link>
+              <Link
+                href="/invoices"
+                className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Factures
               </Link>
               <Link
                 href="/crm"

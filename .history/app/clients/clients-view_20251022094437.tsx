@@ -257,7 +257,7 @@ export function ClientsView({
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5 md:gap-4">
+        <div className="flex items-center gap-4">
           {/* Toggle pour voir les clients archivés */}
           <Button
             variant="outline"
@@ -290,7 +290,7 @@ export function ClientsView({
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('cards')}
-                  className="cursor-pointer"
+                  className="cursor-pointer mt-2 md:mt-0"
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
@@ -298,7 +298,7 @@ export function ClientsView({
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className="cursor-pointer"
+                  className="cursor-pointer mt-2 md:mt-0"
                 >
                   <List className="h-4 w-4" />
                 </Button>
