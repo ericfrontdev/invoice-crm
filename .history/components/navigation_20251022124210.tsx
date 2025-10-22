@@ -104,7 +104,12 @@ export function Navigation({
                 >
                   Tableau de bord
                 </Link>
-
+                <Link
+                  href="/crm"
+                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
+                >
+                  CRM
+                </Link>
                 <Link
                   href="/clients"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
@@ -112,23 +117,16 @@ export function Navigation({
                   Clients
                 </Link>
                 <Link
-                  href="/invoices"
-                  className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
-                >
-                  Factures
-                </Link>
-                <Link
                   href="/projets"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
                   Projets
                 </Link>
-
                 <Link
-                  href="/crm"
+                  href="/invoices"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  CRM
+                  Factures
                 </Link>
                 <Link
                   href="/accounting"
