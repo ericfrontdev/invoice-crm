@@ -139,6 +139,7 @@ export function ClientsView({ clients, showArchived }: { clients: Client[]; show
       setTimeout(() => setToast(null), 2500)
       setIsArchiveDialogOpen(false)
       setClientToArchive(null)
+      setIsEditMode(false) // Désactiver le mode édition après archivage
     } catch {
       setToast({ type: 'error', message: 'Erreur réseau' })
       setTimeout(() => setToast(null), 3000)
