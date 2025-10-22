@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Tooltip } from '@/components/ui/tooltip'
 import { Checkbox } from '@/components/ui/checkbox'
+import { InvoiceCard } from '@/components/invoice-card'
 
 type Invoice = {
   id: string
@@ -55,6 +56,26 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
   const [batchAction, setBatchAction] = useState<'delete' | 'archive' | null>(null)
   const [sortField, setSortField] = useState<SortField>('createdAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+  const [isMobile, setIsMobile] = useState(false)
+  const [isSelectionMode, setIsSelectionMode] = useState(false)
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // md breakpoint
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Auto-enable selection mode when first invoice is selected on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setIsSelectionMode(selectedInvoiceIds.length > 0)
+    }
+  }, [selectedInvoiceIds.length, isMobile])
 
   // Deterministic date formatting to avoid hydration mismatches (explicit locale + timezone)
   const formatDate = (d: string | Date) =>
@@ -211,49 +232,90 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
     }
   }
 
+  const handleViewInvoice = async (invoiceId: string) => {
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}`, { cache: 'no-store' })
+      if (res.ok) {
+        const full = await res.json()
+        setSelectedInvoice(full)
+        setPreviewOpen(true)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const invoiceIds = sortedInvoices.map((inv) => inv.id)
   const allSelected = invoiceIds.every((id) => selectedInvoiceIds.includes(id)) && sortedInvoices.length > 0
 
   return (
     <>
-      {/* Bulk action buttons */}
+      {/* Bulk action buttons - Sticky on mobile, inline on desktop */}
       {selectedInvoiceIds.length > 0 && (
-        <div className="mb-4 flex items-center gap-2 p-3 bg-muted/50 rounded-lg border">
+        <div className={`flex items-center gap-2 p-3 bg-muted/50 rounded-lg border ${
+          isMobile
+            ? 'sticky top-0 z-40 mb-4 shadow-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80'
+            : 'mb-4'
+        }`}>
           <span className="text-sm font-medium">
             {selectedInvoiceIds.length} facture(s) sélectionnée(s)
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setBatchAction('archive')}
-            disabled={busyId === 'batch'}
-          >
-            <Archive className="h-4 w-4 mr-2" />
-            Archiver
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setBatchAction('delete')}
-            disabled={busyId === 'batch'}
-            className="text-red-600 hover:text-red-700 dark:text-red-400"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Supprimer
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedInvoiceIds([])}
-          >
-            Annuler
-          </Button>
+          <div className="ml-auto flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedInvoiceIds([])}
+              className="cursor-pointer"
+            >
+              Annuler
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setBatchAction('archive')}
+              disabled={busyId === 'batch'}
+              className="cursor-pointer"
+            >
+              <Archive className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Archiver</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setBatchAction('delete')}
+              disabled={busyId === 'batch'}
+              className="text-red-600 hover:text-red-700 dark:text-red-400 cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Supprimer</span>
+            </Button>
+          </div>
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50">
+      {/* Mobile: Card view */}
+      {isMobile ? (
+        <div className="space-y-3">
+          {sortedInvoices.map((inv) => (
+            <InvoiceCard
+              key={inv.id}
+              invoice={inv}
+              isSelectionMode={isSelectionMode}
+              isSelected={selectedInvoiceIds.includes(inv.id)}
+              onToggleSelect={() => toggleInvoiceSelection(inv.id)}
+              onView={() => handleViewInvoice(inv.id)}
+              onSend={() => doAction(inv.id, 'send')}
+              onMarkPaid={() => doAction(inv.id, 'paid')}
+              onDelete={() => setDeleteConfirmId(inv.id)}
+              isBusy={busyId === inv.id}
+            />
+          ))}
+        </div>
+      ) : (
+        /* Desktop: Table view */
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50">
             <tr>
               <th className="text-left py-3 px-4 w-12">
                 <Checkbox
@@ -437,6 +499,8 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
           </tbody>
         </table>
       </div>
+      )}
+
       <InvoiceViewModal
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
