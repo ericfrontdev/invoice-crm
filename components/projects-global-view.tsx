@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
-import { Search, FolderOpen, FileText, Paperclip, ArrowUpRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Search, FolderOpen, FileText, Paperclip, ArrowUpRight, Plus } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -11,6 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu'
 
 type Project = {
   id: string
@@ -32,6 +42,12 @@ type Project = {
   }
 }
 
+type Client = {
+  id: string
+  name: string
+  company: string | null
+}
+
 const statusColors = {
   active: 'bg-green-100 text-green-800 dark:bg-green-400/10 dark:text-green-300',
   completed: 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-300',
@@ -46,9 +62,10 @@ const statusLabels = {
   cancelled: 'Annulé',
 }
 
-export function ProjectsGlobalView({ projects }: { projects: Project[] }) {
+export function ProjectsGlobalView({ projects, clients }: { projects: Project[]; clients: Client[] }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const router = useRouter()
 
   // Filtrer par statut
   const statusFiltered = projects.filter((project) => {
@@ -69,7 +86,7 @@ export function ProjectsGlobalView({ projects }: { projects: Project[] }) {
 
   return (
     <div className="space-y-6">
-      {/* Filtres */}
+      {/* Filtres et bouton nouveau projet */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -94,6 +111,43 @@ export function ProjectsGlobalView({ projects }: { projects: Project[] }) {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Bouton nouveau projet avec dropdown de clients */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="cursor-pointer">
+              <Plus className="h-4 w-4 mr-2" />
+              Nouveau projet
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel>Sélectionner un client</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {clients.length === 0 ? (
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                Aucun client disponible
+              </div>
+            ) : (
+              clients.map((client) => (
+                <DropdownMenuItem
+                  key={client.id}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    // Rediriger vers la page détails du client avec le modal de projet ouvert
+                    router.push(`/clients/${client.id}/details?createProject=true`)
+                  }}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium">{client.name}</span>
+                    {client.company && (
+                      <span className="text-xs text-muted-foreground">{client.company}</span>
+                    )}
+                  </div>
+                </DropdownMenuItem>
+              ))
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Grille de projets */}

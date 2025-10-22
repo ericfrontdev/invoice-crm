@@ -33,6 +33,25 @@ async function getProjects(userId: string) {
   return projects
 }
 
+async function getClients(userId: string) {
+  const clients = await prisma.client.findMany({
+    where: {
+      userId,
+      archived: false, // Seulement les clients actifs
+    },
+    select: {
+      id: true,
+      name: true,
+      company: true,
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+
+  return clients
+}
+
 export default async function ProjectsPage() {
   const session = await auth()
   if (!session?.user?.id) {
@@ -40,6 +59,7 @@ export default async function ProjectsPage() {
   }
 
   const projects = await getProjects(session.user.id)
+  const clients = await getClients(session.user.id)
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -52,7 +72,7 @@ export default async function ProjectsPage() {
         </div>
       </div>
 
-      <ProjectsGlobalView projects={projects} />
+      <ProjectsGlobalView projects={projects} clients={clients} />
     </div>
   )
 }

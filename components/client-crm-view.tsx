@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { OverviewTab } from '@/components/crm/overview-tab'
@@ -72,7 +72,7 @@ type ClientWithCRM = {
   }>
 }
 
-export function ClientCRMView({ client }: { client: ClientWithCRM }) {
+export function ClientCRMView({ client, openProjectModal = false }: { client: ClientWithCRM; openProjectModal?: boolean }) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
 
@@ -82,6 +82,14 @@ export function ClientCRMView({ client }: { client: ClientWithCRM }) {
   const [selectedProjectForInvoice, setSelectedProjectForInvoice] = useState<string | null>(null)
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false)
   const [isAddAmountModalOpen, setIsAddAmountModalOpen] = useState(false)
+
+  // Ouvrir automatiquement le modal de projet si demandé via URL
+  useEffect(() => {
+    if (openProjectModal) {
+      setActiveTab('projets')
+      setIsProjectModalOpen(true)
+    }
+  }, [openProjectModal])
 
   return (
     <div className="overflow-x-hidden">
