@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
 import { Resend } from 'resend'
 
+// Configuration pour désactiver le body parsing automatique
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text()
