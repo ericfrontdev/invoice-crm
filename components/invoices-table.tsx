@@ -3,13 +3,19 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useMemo, useEffect } from 'react'
-import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw } from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw, MoreVertical } from 'lucide-react'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Tooltip } from '@/components/ui/tooltip'
 import { Checkbox } from '@/components/ui/checkbox'
 import { InvoiceCard } from '@/components/invoice-card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 type Invoice = {
   id: string
@@ -441,7 +447,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                 <td className="py-3 px-4">{formatDate(inv.createdAt)}</td>
                 <td className="py-3 px-4">
                   <div className="flex justify-end gap-1">
-                    {/* Voir */}
+                    {/* Voir - toujours visible */}
                     <Tooltip content="Voir et modifier">
                       <Button
                         variant="ghost"
@@ -466,7 +472,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                       </Button>
                     </Tooltip>
 
-                    {/* Envoyer */}
+                    {/* Action contextuelle selon le statut */}
                     {inv.status === 'draft' && inv.client?.email && (
                       <Tooltip content="Envoyer par email">
                         <Button
@@ -481,37 +487,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                       </Tooltip>
                     )}
 
-                    {/* Renvoyer */}
-                    {inv.status === 'sent' && inv.client?.email && (
-                      <Tooltip content="Renvoyer la facture">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          disabled={busyId === inv.id}
-                          onClick={() => doAction(inv.id, 'send')}
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
-                      </Tooltip>
-                    )}
-
-                    {/* Copier lien de paiement */}
-                    {inv.status !== 'draft' && (
-                      <Tooltip content="Copier lien de paiement">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => handleCopyPaymentLink(inv.id)}
-                        >
-                          <Link2 className="h-4 w-4" />
-                        </Button>
-                      </Tooltip>
-                    )}
-
-                    {/* Marquer payée */}
-                    {inv.status !== 'paid' && (
+                    {inv.status === 'sent' && (
                       <Tooltip content="Marquer comme payée">
                         <Button
                           variant="ghost"
@@ -525,17 +501,60 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                       </Tooltip>
                     )}
 
-                    {/* Supprimer */}
-                    <Tooltip content="Supprimer">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400"
-                        onClick={() => setDeleteConfirmId(inv.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </Tooltip>
+                    {/* Menu dropdown pour actions secondaires */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {/* Renvoyer (si sent) */}
+                        {inv.status === 'sent' && inv.client?.email && (
+                          <DropdownMenuItem
+                            onClick={() => doAction(inv.id, 'send')}
+                            disabled={busyId === inv.id}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Renvoyer la facture
+                          </DropdownMenuItem>
+                        )}
+
+                        {/* Copier lien (si non-draft) */}
+                        {inv.status !== 'draft' && (
+                          <DropdownMenuItem
+                            onClick={() => handleCopyPaymentLink(inv.id)}
+                          >
+                            <Link2 className="h-4 w-4 mr-2" />
+                            Copier lien de paiement
+                          </DropdownMenuItem>
+                        )}
+
+                        {/* Marquer payée (si non-paid et non-draft) */}
+                        {inv.status !== 'paid' && inv.status !== 'draft' && (
+                          <DropdownMenuItem
+                            onClick={() => doAction(inv.id, 'paid')}
+                            disabled={busyId === inv.id}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                            Marquer comme payée
+                          </DropdownMenuItem>
+                        )}
+
+                        {/* Supprimer (toujours) */}
+                        <DropdownMenuItem
+                          onClick={() => setDeleteConfirmId(inv.id)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Supprimer
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </td>
               </tr>
