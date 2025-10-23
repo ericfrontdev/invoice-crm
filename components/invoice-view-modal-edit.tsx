@@ -1,10 +1,12 @@
 'use client'
 
 import { createPortal } from 'react-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Edit2, Save, X, Plus, Trash2 } from 'lucide-react'
+import { Edit2, Save, X, Plus, Trash2, FileDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { InvoicePDFTemplate } from '@/components/invoice-pdf-template'
+import { useReactToPrint } from 'react-to-print'
 
 type InvoiceClient = {
   id: string
@@ -22,6 +24,18 @@ type InvoiceItem = {
   dueDate?: string | Date | null
 }
 
+type User = {
+  name: string
+  company: string | null
+  address: string | null
+  phone: string | null
+  email: string
+  neq: string | null
+  tpsNumber: string | null
+  tvqNumber: string | null
+  logo: string | null
+}
+
 type InvoiceForView = {
   id: string
   number: string
@@ -34,6 +48,7 @@ type InvoiceForView = {
   dueDate?: string | Date | null
   client: InvoiceClient | null
   items?: InvoiceItem[]
+  user?: User
 }
 
 export function InvoiceViewModal({
@@ -52,9 +67,15 @@ export function InvoiceViewModal({
   const [editedItems, setEditedItems] = useState<InvoiceItem[]>([])
   const [editedCreatedAt, setEditedCreatedAt] = useState('')
   const [editedDueDate, setEditedDueDate] = useState('')
+  const pdfRef = useRef<HTMLDivElement>(null)
 
   // Déterminer si les taxes sont chargées (si tps ou tvq > 0)
   const hasTaxes = invoice && (invoice.tps > 0 || invoice.tvq > 0)
+
+  const handlePrint = useReactToPrint({
+    contentRef: pdfRef,
+    documentTitle: `Facture-${invoice?.number || 'document'}`,
+  })
 
   useEffect(() => {
     if (invoice) {
@@ -137,12 +158,16 @@ export function InvoiceViewModal({
     >
       <div className="fixed inset-0 bg-black/50 overlay-blur" onClick={isEditing ? undefined : onClose} />
 
-      <div className="relative bg-background border rounded-xl shadow-2xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-background border rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
           <h2 className="text-base font-semibold">Facture {invoice.number}</h2>
           <div className="flex items-center gap-2">
             {!isEditing ? (
               <>
+                <Button variant="ghost" size="sm" onClick={handlePrint}>
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Télécharger PDF
+                </Button>
                 <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
                   <Edit2 className="h-4 w-4 mr-2" />
                   Modifier
@@ -177,6 +202,40 @@ export function InvoiceViewModal({
           </div>
         </div>
 
+        {/* Mode Aperçu - Affiche le vrai template de facture */}
+        {!isEditing && invoice.user && (
+          <div className="p-6">
+            <InvoicePDFTemplate
+              ref={pdfRef}
+              invoice={{
+                id: invoice.id,
+                number: invoice.number,
+                status: invoice.status,
+                subtotal: invoice.subtotal,
+                tps: invoice.tps,
+                tvq: invoice.tvq,
+                total: invoice.total,
+                createdAt: invoice.createdAt,
+                client: {
+                  name: invoice.client?.name || '',
+                  company: invoice.client?.company || null,
+                  email: invoice.client?.email || '',
+                  address: invoice.client?.address || null,
+                },
+                items: (invoice.items || []).map(item => ({
+                  description: item.description,
+                  amount: item.amount,
+                  date: item.date,
+                  dueDate: item.dueDate || null,
+                })),
+              }}
+              user={invoice.user}
+            />
+          </div>
+        )}
+
+        {/* Mode Édition - Affiche les champs éditables */}
+        {isEditing && (
         <div className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -394,6 +453,7 @@ export function InvoiceViewModal({
             <p>Payable à réception. Merci de votre confiance.</p>
           </div>
         </div>
+        )}
       </div>
     </div>
   )

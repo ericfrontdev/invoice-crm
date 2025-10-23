@@ -36,6 +36,22 @@ export async function GET(
         return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
       }
 
+      // Get user info for PDF template
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          name: true,
+          company: true,
+          address: true,
+          phone: true,
+          email: true,
+          neq: true,
+          tpsNumber: true,
+          tvqNumber: true,
+          logo: true,
+        },
+      })
+
       // If no items stored yet, try deriving from linked unpaid amounts
       if (!invoice.items || invoice.items.length === 0) {
         try {
@@ -45,14 +61,14 @@ export async function GET(
             orderBy: { date: 'asc' },
           })
           if (amounts.length > 0) {
-            return NextResponse.json({ ...invoice, items: amounts })
+            return NextResponse.json({ ...invoice, items: amounts, user })
           }
         } catch {
           // if column doesn't exist, ignore
         }
       }
 
-      return NextResponse.json(invoice)
+      return NextResponse.json({ ...invoice, user })
     } catch {
       // Fallback: older schema without items relation
       const invoice = await prisma.invoice.findUnique({
@@ -70,7 +86,23 @@ export async function GET(
         return NextResponse.json({ error: 'Non autorisé.' }, { status: 403 })
       }
 
-      return NextResponse.json(invoice)
+      // Get user info for PDF template
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          name: true,
+          company: true,
+          address: true,
+          phone: true,
+          email: true,
+          neq: true,
+          tpsNumber: true,
+          tvqNumber: true,
+          logo: true,
+        },
+      })
+
+      return NextResponse.json({ ...invoice, user })
     }
   } catch {
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
