@@ -20,6 +20,7 @@ type User = {
   paymentProvider: string | null
   paypalEmail: string | null
   stripeAccountId: string | null
+  logo: string | null
 }
 
 export function ProfileForm({ user }: { user: User }) {
@@ -38,8 +39,68 @@ export function ProfileForm({ user }: { user: User }) {
     paypalEmail: user.paypalEmail || '',
     stripeAccountId: user.stripeAccountId || '',
   })
+  const [logo, setLogo] = useState<string | null>(user.logo)
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploadingLogo(true)
+    setMessage(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('logo', file)
+
+      const res = await fetch('/api/user/logo', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || 'Erreur lors de l\'upload')
+      }
+
+      const data = await res.json()
+      setLogo(data.logoUrl)
+      setMessage({ type: 'success', text: 'Logo uploadé avec succès' })
+      router.refresh()
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erreur lors de l\'upload du logo'
+      })
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
+
+  const handleLogoDelete = async () => {
+    setIsUploadingLogo(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/user/logo', {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        throw new Error('Erreur lors de la suppression')
+      }
+
+      setLogo(null)
+      setMessage({ type: 'success', text: 'Logo supprimé avec succès' })
+      router.refresh()
+    } catch (_error) {
+      setMessage({ type: 'error', text: 'Erreur lors de la suppression du logo' })
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -96,6 +157,79 @@ export function ProfileForm({ user }: { user: User }) {
             id="company"
             value={formData.company}
             onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+          />
+        </div>
+
+        {/* Logo */}
+        <div className="pt-4 border-t">
+          <Label className="mb-2 block">Logo pour les factures</Label>
+          <p className="text-sm text-muted-foreground mb-3">
+            Le logo apparaîtra sur vos factures. Format: PNG, JPG, SVG (max 5MB)
+          </p>
+
+          {logo ? (
+            <div className="flex items-start gap-4">
+              <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-white">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogoDelete}
+                  disabled={isUploadingLogo}
+                  className="cursor-pointer"
+                >
+                  Supprimer le logo
+                </Button>
+                <label htmlFor="logo-upload" className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isUploadingLogo}
+                    className="cursor-pointer w-full"
+                    onClick={() => document.getElementById('logo-upload')?.click()}
+                  >
+                    {isUploadingLogo ? 'Upload en cours...' : 'Changer le logo'}
+                  </Button>
+                </label>
+              </div>
+            </div>
+          ) : (
+            <label htmlFor="logo-upload" className="cursor-pointer">
+              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
+                <svg
+                  className="mx-auto h-12 w-12 text-muted-foreground"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {isUploadingLogo ? 'Upload en cours...' : 'Cliquez pour uploader un logo'}
+                </p>
+              </div>
+            </label>
+          )}
+          <input
+            id="logo-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+            disabled={isUploadingLogo}
           />
         </div>
 

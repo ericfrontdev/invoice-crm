@@ -20,6 +20,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  logo          String?   // URL du logo pour les factures
 
   // Champs spécifiques Québec
   neq           String?   // Numéro d'entreprise du Québec

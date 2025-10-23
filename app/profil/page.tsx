@@ -26,6 +26,7 @@ export default async function ProfilPage() {
       paymentProvider: true,
       paypalEmail: true,
       stripeAccountId: true,
+      logo: true,
     },
   })
 

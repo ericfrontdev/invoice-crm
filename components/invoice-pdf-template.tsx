@@ -25,8 +25,22 @@ type Invoice = {
   }>
 }
 
-export const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, { invoice: Invoice }>(
-  ({ invoice }, ref) => {
+type User = {
+  name: string
+  company: string | null
+  address: string | null
+  phone: string | null
+  email: string
+  neq: string | null
+  tpsNumber: string | null
+  tvqNumber: string | null
+  logo: string | null
+}
+
+export const InvoicePDFTemplate = React.forwardRef<
+  HTMLDivElement,
+  { invoice: Invoice; user: User }
+>(({ invoice, user }, ref) => {
     // Déterminer si les taxes sont chargées
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
@@ -36,19 +50,27 @@ export const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, { invoice: In
         <div className="mb-8">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">FACTURE</h1>
+              {user.logo ? (
+                <img
+                  src={user.logo}
+                  alt="Logo"
+                  className="h-16 w-auto mb-4"
+                  style={{ maxWidth: '200px' }}
+                />
+              ) : (
+                <h1 className="text-4xl font-bold text-gray-900">FACTURE</h1>
+              )}
               <p className="text-xl text-gray-600 mt-2">{invoice.number}</p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-semibold">[VOTRE ENTREPRISE]</p>
-              <p className="text-sm text-gray-600">[Adresse]</p>
-              <p className="text-sm text-gray-600">[Code postal et ville]</p>
+              <p className="text-lg font-semibold">{user.company || user.name}</p>
+              {user.address && <p className="text-sm text-gray-600">{user.address}</p>}
               <p className="text-sm text-gray-600">Québec, Canada</p>
-              <p className="text-sm text-gray-600">[Téléphone]</p>
-              <p className="text-sm text-gray-600">[Courriel]</p>
-              <p className="text-sm text-gray-600 mt-2">NEQ : [Numéro NEQ]</p>
-              <p className="text-sm text-gray-600">TPS : [Numéro TPS]</p>
-              <p className="text-sm text-gray-600">TVQ : [Numéro TVQ]</p>
+              {user.phone && <p className="text-sm text-gray-600">{user.phone}</p>}
+              {user.email && <p className="text-sm text-gray-600">{user.email}</p>}
+              {user.neq && <p className="text-sm text-gray-600 mt-2">NEQ : {user.neq}</p>}
+              {user.tpsNumber && <p className="text-sm text-gray-600">TPS : {user.tpsNumber}</p>}
+              {user.tvqNumber && <p className="text-sm text-gray-600">TVQ : {user.tvqNumber}</p>}
             </div>
           </div>
         </div>
@@ -158,8 +180,17 @@ export const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, { invoice: In
 
         {/* Pied de page */}
         <div className="absolute bottom-8 left-12 right-12 text-center text-xs text-gray-500 border-t pt-4">
-          <p>[VOTRE ENTREPRISE] - NEQ: [Numéro] - TPS: [Numéro] - TVQ: [Numéro]</p>
-          <p>[Adresse complète], Québec, Canada - [Téléphone] - [Courriel]</p>
+          <p>
+            {user.company || user.name}
+            {user.neq && ` - NEQ: ${user.neq}`}
+            {user.tpsNumber && ` - TPS: ${user.tpsNumber}`}
+            {user.tvqNumber && ` - TVQ: ${user.tvqNumber}`}
+          </p>
+          <p>
+            {user.address && `${user.address}, `}Québec, Canada
+            {user.phone && ` - ${user.phone}`}
+            {user.email && ` - ${user.email}`}
+          </p>
         </div>
       </div>
     )
