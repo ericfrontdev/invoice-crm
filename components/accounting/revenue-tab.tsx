@@ -233,7 +233,6 @@ export function RevenueTab({
                   <th className="text-left py-3 px-4">Type</th>
                   <th className="text-left py-3 px-4">Client / Catégorie</th>
                   <th className="text-right py-3 px-4">Montant</th>
-                  <th className="text-right py-3 px-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -273,19 +272,6 @@ export function RevenueTab({
                     </td>
                     <td className="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">
                       +{revenue.amount.toFixed(2)} $
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {revenue.type === 'manual' ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openDeleteModal(revenue.id, revenue.description)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        ) : null}
-                      </div>
                     </td>
                   </tr>
                 ))}
