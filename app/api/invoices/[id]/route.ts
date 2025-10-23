@@ -93,7 +93,7 @@ export async function PATCH(
 
   try {
     const body = await req.json()
-    const { status, items } = body
+    const { status, items, createdAt, dueDate } = body
 
     // First, get the invoice to verify ownership
     const invoice = await prisma.invoice.findUnique({
@@ -121,8 +121,18 @@ export async function PATCH(
     const chargesTaxes = user?.chargesTaxes ?? false
 
     // Recalculate taxes if items are provided
-    const updateData: { status?: string; subtotal?: number; tps?: number; tvq?: number; total?: number } = {}
+    const updateData: {
+      status?: string;
+      subtotal?: number;
+      tps?: number;
+      tvq?: number;
+      total?: number;
+      createdAt?: Date;
+      dueDate?: Date | null;
+    } = {}
     if (status) updateData.status = status
+    if (createdAt) updateData.createdAt = new Date(createdAt)
+    if (dueDate !== undefined) updateData.dueDate = dueDate ? new Date(dueDate) : null
 
     if (items && Array.isArray(items)) {
       const subtotal = items.reduce((s: number, item: { amount: number }) => s + item.amount, 0)

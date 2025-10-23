@@ -130,6 +130,7 @@ model Invoice {
   paymentTransactionId  String?   // ID de la transaction PayPal/Stripe
 
   createdAt     DateTime       @default(now())
+  dueDate       DateTime?      // Date d'échéance de la facture
   clientId      String
   projectId     String?
   client        Client         @relation(fields: [clientId], references: [id])

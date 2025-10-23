@@ -31,6 +31,7 @@ type InvoiceForView = {
   tvq: number
   total: number
   createdAt: string | Date
+  dueDate?: string | Date | null
   client: InvoiceClient | null
   items?: InvoiceItem[]
 }
@@ -49,6 +50,8 @@ export function InvoiceViewModal({
   const [saving, setSaving] = useState(false)
   const [editedStatus, setEditedStatus] = useState('')
   const [editedItems, setEditedItems] = useState<InvoiceItem[]>([])
+  const [editedCreatedAt, setEditedCreatedAt] = useState('')
+  const [editedDueDate, setEditedDueDate] = useState('')
 
   // Déterminer si les taxes sont chargées (si tps ou tvq > 0)
   const hasTaxes = invoice && (invoice.tps > 0 || invoice.tvq > 0)
@@ -57,6 +60,9 @@ export function InvoiceViewModal({
     if (invoice) {
       setEditedStatus(invoice.status)
       setEditedItems(invoice.items || [])
+      // Format dates for input[type="date"] (YYYY-MM-DD)
+      setEditedCreatedAt(new Date(invoice.createdAt).toISOString().split('T')[0])
+      setEditedDueDate(invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : '')
     }
   }, [invoice])
 
@@ -84,6 +90,8 @@ export function InvoiceViewModal({
         body: JSON.stringify({
           status: editedStatus,
           items: editedItems,
+          createdAt: editedCreatedAt ? new Date(editedCreatedAt).toISOString() : undefined,
+          dueDate: editedDueDate ? new Date(editedDueDate).toISOString() : null,
         }),
       })
 
@@ -152,6 +160,8 @@ export function InvoiceViewModal({
                     setIsEditing(false)
                     setEditedStatus(invoice.status)
                     setEditedItems(invoice.items || [])
+                    setEditedCreatedAt(new Date(invoice.createdAt).toISOString().split('T')[0])
+                    setEditedDueDate(invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : '')
                   }}
                   disabled={saving}
                 >
@@ -187,8 +197,40 @@ export function InvoiceViewModal({
                   <span className="text-sm">{invoice.status}</span>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground">Créée le {formatDate(created)}</p>
-              <p className="text-sm text-muted-foreground">Numéro: {invoice.number}</p>
+
+              {/* Créée le - éditable */}
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-sm text-muted-foreground">Créée le:</p>
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={editedCreatedAt}
+                    onChange={(e) => setEditedCreatedAt(e.target.value)}
+                    className="text-sm border rounded px-2 py-1"
+                  />
+                ) : (
+                  <span className="text-sm">{formatDate(created)}</span>
+                )}
+              </div>
+
+              {/* Échéance - éditable */}
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-sm text-muted-foreground">Échéance:</p>
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={editedDueDate}
+                    onChange={(e) => setEditedDueDate(e.target.value)}
+                    className="text-sm border rounded px-2 py-1"
+                  />
+                ) : (
+                  <span className="text-sm">
+                    {invoice.dueDate ? formatDate(invoice.dueDate) : '-'}
+                  </span>
+                )}
+              </div>
+
+              <p className="text-sm text-muted-foreground mt-1">Numéro: {invoice.number}</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Destinataire</p>
