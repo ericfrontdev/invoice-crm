@@ -12,22 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowUpRight, Search, Plus, FileText, DollarSign, Trash2, MoreHorizontal } from 'lucide-react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { ArrowUpRight, Search, Plus, FileText, DollarSign, Trash2 } from 'lucide-react'
 import { AddRevenueModal } from '@/components/add-revenue-modal'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   Dialog,
   DialogContent,
@@ -238,83 +224,74 @@ export function RevenueTab({
           </div>
         ) : (
           /* Desktop: Table view */
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Client / Catégorie</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Montant</TableHead>
-                <TableHead className="w-[70px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRevenues.map((revenue) => (
-                <TableRow key={`${revenue.type}-${revenue.id}`}>
-                  <TableCell>
-                    {revenue.type === 'invoice' ? (
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm">Facture</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        <span className="text-sm">Manuel</span>
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-medium">{revenue.description}</TableCell>
-                  <TableCell>
-                    {revenue.type === 'invoice' && revenue.clientName ? (
-                      <Link
-                        href={`/clients/${revenue.clientId}`}
-                        className="hover:underline flex items-center gap-1 text-sm"
-                      >
-                        {revenue.clientName}
-                        <ArrowUpRight className="h-3 w-3" />
-                      </Link>
-                    ) : revenue.category ? (
-                      <span className="text-sm text-muted-foreground">{revenue.category}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground italic">Non catégorisé</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {new Date(revenue.date).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right font-medium text-green-600 dark:text-green-400">
-                    +{revenue.amount.toFixed(2)} $
-                  </TableCell>
-                  <TableCell>
-                    {revenue.type === 'manual' ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left py-3 px-4">Date</th>
+                  <th className="text-left py-3 px-4">Description</th>
+                  <th className="text-left py-3 px-4">Type</th>
+                  <th className="text-left py-3 px-4">Client / Catégorie</th>
+                  <th className="text-right py-3 px-4">Montant</th>
+                  <th className="text-right py-3 px-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRevenues.map((revenue) => (
+                  <tr key={`${revenue.type}-${revenue.id}`} className="border-t hover:bg-muted/50">
+                    <td className="py-3 px-4">
+                      {new Date(revenue.date).toLocaleDateString('fr-FR')}
+                    </td>
+                    <td className="py-3 px-4 font-medium">{revenue.description}</td>
+                    <td className="py-3 px-4">
+                      {revenue.type === 'invoice' ? (
+                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-400/10 dark:text-blue-300 dark:border-blue-300/20">
+                          <FileText className="h-3 w-3 mr-1" />
+                          Facture
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border-green-200 dark:bg-green-400/10 dark:text-green-300 dark:border-green-300/20">
+                          <DollarSign className="h-3 w-3 mr-1" />
+                          Manuel
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {revenue.type === 'invoice' && revenue.clientName ? (
+                        <Link
+                          href={`/clients/${revenue.clientId}`}
+                          className="hover:underline flex items-center gap-1 text-sm"
+                        >
+                          {revenue.clientName}
+                          <ArrowUpRight className="h-3 w-3" />
+                        </Link>
+                      ) : revenue.category ? (
+                        <span className="text-sm text-muted-foreground">{revenue.category}</span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">
+                      +{revenue.amount.toFixed(2)} $
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end gap-2">
+                        {revenue.type === 'manual' ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => openDeleteModal(revenue.id, revenue.description)}
-                            className="text-destructive focus:text-destructive"
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
