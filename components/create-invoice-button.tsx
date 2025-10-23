@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
 
 type Client = {
   id: string
@@ -35,6 +36,9 @@ export function CreateInvoiceButton() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
   // Load clients and projects on mount
   useEffect(() => {
@@ -80,26 +84,30 @@ export function CreateInvoiceButton() {
       })
   }, [])
 
-  const createInvoice = async (clientId: string, projectId?: string) => {
+  const openInvoiceModal = (client: Client, project?: Project) => {
+    setSelectedClient(client)
+    setSelectedProject(project || null)
+    setIsModalOpen(true)
+  }
+
+  const handleCreateInvoice = async (items: { description: string; amount: number }[]) => {
     setCreating(true)
     try {
       const res = await fetch('/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clientId,
-          projectId,
-          items: [
-            {
-              description: '',
-              amount: 0,
-            }
-          ]
+          clientId: selectedProject ? selectedProject.clientId : selectedClient?.id,
+          projectId: selectedProject?.id || null,
+          items,
         }),
       })
 
       if (res.ok) {
         const invoice = await res.json()
+        setIsModalOpen(false)
+        setSelectedClient(null)
+        setSelectedProject(null)
         router.refresh()
         router.push(`/invoices?view=${invoice.id}`)
       }
@@ -111,6 +119,7 @@ export function CreateInvoiceButton() {
   }
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="cursor-pointer" disabled={loading || creating}>
@@ -138,7 +147,7 @@ export function CreateInvoiceButton() {
               clients.map((client) => (
                 <DropdownMenuItem
                   key={client.id}
-                  onClick={() => createInvoice(client.id)}
+                  onClick={() => openInvoiceModal(client)}
                   disabled={creating}
                   className="cursor-pointer"
                 >
@@ -167,7 +176,7 @@ export function CreateInvoiceButton() {
               projects.map((project) => (
                 <DropdownMenuItem
                   key={project.id}
-                  onClick={() => createInvoice(project.clientId, project.id)}
+                  onClick={() => openInvoiceModal({ id: project.clientId, name: project.client.name }, project)}
                   disabled={creating}
                   className="cursor-pointer"
                 >
@@ -184,5 +193,18 @@ export function CreateInvoiceButton() {
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <CreateInvoiceForProjectModal
+      isOpen={isModalOpen}
+      onClose={() => {
+        setIsModalOpen(false)
+        setSelectedClient(null)
+        setSelectedProject(null)
+      }}
+      onSave={handleCreateInvoice}
+      project={selectedProject}
+      client={selectedClient}
+    />
+  </>
   )
 }

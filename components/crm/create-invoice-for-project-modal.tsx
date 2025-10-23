@@ -13,6 +13,11 @@ type Project = {
   name: string
 }
 
+type Client = {
+  id: string
+  name: string
+}
+
 type InvoiceItem = {
   description: string
   amount: string
@@ -23,11 +28,13 @@ export function CreateInvoiceForProjectModal({
   onClose,
   onSave,
   project,
+  client,
 }: {
   isOpen: boolean
   onClose: () => void
   onSave: (items: { description: string; amount: number }[]) => Promise<void>
-  project: Project | null
+  project?: Project | null
+  client?: Client | null
 }) {
   const [items, setItems] = useState<InvoiceItem[]>([
     { description: '', amount: '' },
@@ -84,13 +91,17 @@ export function CreateInvoiceForProjectModal({
     return sum + amount
   }, 0)
 
-  if (!project) return null
+  const modalTitle = project
+    ? `Créer une facture - ${project.name}`
+    : client
+    ? `Créer une facture - ${client.name}`
+    : 'Créer une facture'
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Créer une facture - {project.name}</DialogTitle>
+          <DialogTitle>{modalTitle}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">

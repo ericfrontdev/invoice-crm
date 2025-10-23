@@ -8,7 +8,6 @@ import { ProjectsTab } from '@/components/crm/projects-tab'
 import { InvoicesTab } from '@/components/crm/invoices-tab'
 import { NotesTab } from '@/components/crm/notes-tab'
 import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
-import { AddAmountModal, type NewAmountData } from '@/components/add-amount-modal'
 
 type ClientWithCRM = {
   id: string
@@ -81,7 +80,6 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
   const [selectedProjectForInvoice, setSelectedProjectForInvoice] = useState<string | null>(null)
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false)
-  const [isAddAmountModalOpen, setIsAddAmountModalOpen] = useState(false)
 
   // Ouvrir automatiquement le modal de projet si demandé via URL
   useEffect(() => {
@@ -158,7 +156,8 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
               setActiveTab('projects')
             }}
             onCreateInvoice={() => {
-              setIsAddAmountModalOpen(true)
+              setSelectedProjectForInvoice(null)
+              setIsInvoiceModalOpen(true)
             }}
             onCreateInvoiceForProject={(projectId: string) => {
               setSelectedProjectForInvoice(projectId)
@@ -201,70 +200,29 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
           setSelectedProjectForInvoice(null)
         }}
         onSave={async (items: { description: string; amount: number }[]) => {
-          // Create unpaid amounts with or without projectId
-          const amountIds: string[] = []
-          for (const item of items) {
-            const res = await fetch('/api/unpaid-amounts', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                clientId: client.id,
-                projectId: selectedProjectForInvoice,
-                description: item.description,
-                amount: item.amount,
-                date: new Date().toISOString(),
-              }),
-            })
+          // Create the invoice directly with items
+          const res = await fetch('/api/invoices', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId: client.id,
+              projectId: selectedProjectForInvoice,
+              items,
+            }),
+          })
 
-            if (res.ok) {
-              const data = await res.json()
-              amountIds.push(data.id)
-            }
+          if (res.ok) {
+            setIsInvoiceModalOpen(false)
+            setSelectedProjectForInvoice(null)
+            router.refresh()
           }
-
-          // Create the invoice
-          if (amountIds.length > 0) {
-            await fetch('/api/invoices', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                clientId: client.id,
-                unpaidAmountIds: amountIds,
-                projectId: selectedProjectForInvoice,
-              }),
-            })
-          }
-
-          setIsInvoiceModalOpen(false)
-          setSelectedProjectForInvoice(null)
-          router.refresh()
         }}
         project={
           selectedProjectForInvoice
             ? client.projects.find((p) => p.id === selectedProjectForInvoice) || null
             : null
         }
-      />
-
-      {/* Add Amount Modal */}
-      <AddAmountModal
-        isOpen={isAddAmountModalOpen}
-        onClose={() => setIsAddAmountModalOpen(false)}
-        onSubmit={async (amountData: NewAmountData) => {
-          const res = await fetch('/api/unpaid-amounts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              clientId: client.id,
-              ...amountData,
-            }),
-          })
-
-          if (res.ok) {
-            setIsAddAmountModalOpen(false)
-            router.refresh()
-          }
-        }}
+        client={!selectedProjectForInvoice ? { id: client.id, name: client.name } : undefined}
       />
     </div>
   )
