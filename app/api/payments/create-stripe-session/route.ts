@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     })
 
     // Créer une session de paiement avec Stripe Connect (Destination Charges)
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXTAUTH_URL}/invoices/${invoice.id}/pay/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXTAUTH_URL}/invoices/${invoice.id}/pay`,
-      customer_email: invoice.client.email,
+      customer_email: invoice.client.email || undefined,
       metadata: {
         invoiceId: invoice.id,
       },
@@ -106,12 +106,15 @@ export async function POST(req: NextRequest) {
       // L'argent va directement sur le compte du solopreneur
       // La plateforme peut optionnellement prendre une commission
       payment_intent_data: {
-        application_fee_amount: applicationFeeAmount,
         transfer_data: {
           destination: invoice.client.user.stripeAccountId,
         },
+        // N'ajouter application_fee_amount que si > 0
+        ...(applicationFeeAmount > 0 && { application_fee_amount: applicationFeeAmount }),
       },
-    })
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     console.log('[create-stripe-session] Session created:', session.id)
 
