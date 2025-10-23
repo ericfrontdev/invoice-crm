@@ -39,15 +39,33 @@ export function CreateInvoiceButton() {
   // Load clients and projects on mount
   useEffect(() => {
     Promise.all([
-      fetch('/api/clients').then(res => res.json()),
-      fetch('/api/projects').then(res => res.json()),
+      fetch('/api/clients').then(res => {
+        console.log('[CreateInvoiceButton] Clients response status:', res.status, res.ok)
+        if (!res.ok) {
+          console.error('[CreateInvoiceButton] Clients API error:', res.status, res.statusText)
+          return []
+        }
+        return res.json()
+      }),
+      fetch('/api/projects').then(res => {
+        console.log('[CreateInvoiceButton] Projects response status:', res.status, res.ok)
+        if (!res.ok) {
+          console.error('[CreateInvoiceButton] Projects API error:', res.status, res.statusText)
+          return []
+        }
+        return res.json()
+      }),
     ])
       .then(([clientsData, projectsData]) => {
         console.log('[CreateInvoiceButton] Clients data:', clientsData)
         console.log('[CreateInvoiceButton] Projects data:', projectsData)
 
-        const filteredClients = clientsData.filter((c: Client & { archived?: boolean }) => !c.archived)
-        const filteredProjects = projectsData.filter((p: Project & { status?: string }) => p.status === 'active')
+        const filteredClients = Array.isArray(clientsData)
+          ? clientsData.filter((c: Client & { archived?: boolean }) => !c.archived)
+          : []
+        const filteredProjects = Array.isArray(projectsData)
+          ? projectsData.filter((p: Project & { status?: string }) => p.status === 'active')
+          : []
 
         console.log('[CreateInvoiceButton] Filtered clients:', filteredClients)
         console.log('[CreateInvoiceButton] Filtered projects:', filteredProjects)
