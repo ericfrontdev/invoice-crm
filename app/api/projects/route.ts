@@ -11,36 +11,63 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const clientId = searchParams.get('clientId')
 
-  if (!clientId) {
-    return NextResponse.json({ error: 'clientId requis' }, { status: 400 })
+  // Cas 1: Si clientId est fourni, retourner les projets de ce client
+  if (clientId) {
+    // Vérifier que le client appartient à l'utilisateur
+    const client = await prisma.client.findUnique({
+      where: { id: clientId, userId: session.user.id },
+    })
+
+    if (!client) {
+      return NextResponse.json({ error: 'Client non trouvé' }, { status: 404 })
+    }
+
+    const projects = await prisma.project.findMany({
+      where: { clientId },
+      include: {
+        invoices: {
+          select: {
+            id: true,
+            number: true,
+            total: true,
+            status: true,
+          },
+        },
+        files: {
+          select: {
+            id: true,
+            filename: true,
+            fileSize: true,
+            uploadedAt: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json(projects)
   }
 
-  // Vérifier que le client appartient à l'utilisateur
-  const client = await prisma.client.findUnique({
-    where: { id: clientId, userId: session.user.id },
-  })
-
-  if (!client) {
-    return NextResponse.json({ error: 'Client non trouvé' }, { status: 404 })
-  }
-
+  // Cas 2: Si pas de clientId, retourner TOUS les projets de l'utilisateur
   const projects = await prisma.project.findMany({
-    where: { clientId },
+    where: {
+      client: {
+        userId: session.user.id,
+      },
+    },
     include: {
+      client: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       invoices: {
         select: {
           id: true,
           number: true,
           total: true,
           status: true,
-        },
-      },
-      files: {
-        select: {
-          id: true,
-          filename: true,
-          fileSize: true,
-          uploadedAt: true,
         },
       },
     },
