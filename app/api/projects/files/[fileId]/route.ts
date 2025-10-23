@@ -1,8 +1,6 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
-import { unlink } from 'fs/promises'
-import { join } from 'path'
 
 export async function DELETE(
   request: Request,
@@ -29,15 +27,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Fichier non trouvé' }, { status: 404 })
   }
 
-  // Supprimer le fichier physique
-  try {
-    const filepath = join(process.cwd(), 'public', file.fileUrl)
-    await unlink(filepath)
-  } catch (error) {
-    console.error('Erreur lors de la suppression du fichier:', error)
-  }
-
-  // Supprimer l'entrée de la base de données
+  // Supprimer l'entrée de la base de données (fichier stocké en base64)
   await prisma.projectFile.delete({
     where: { id: params.fileId },
   })

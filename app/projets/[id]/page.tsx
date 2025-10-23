@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Paperclip } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProjectActions } from '@/components/project-actions'
+import { ProjectFilesList } from '@/components/project-files-list'
 
 async function getProject(projectId: string, userId: string) {
   const project = await prisma.project.findFirst({
@@ -240,40 +241,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
       )}
 
       {/* Files */}
-      {project.files.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Fichiers</h2>
-          <div className="grid grid-cols-1 gap-3">
-            {project.files.map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{file.filename}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {(file.fileSize / 1024).toFixed(1)} KB •{' '}
-                      {new Date(file.uploadedAt).toLocaleDateString('fr-FR')}
-                    </p>
-                  </div>
-                </div>
-                <a
-                  href={file.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0"
-                >
-                  <Button variant="ghost" size="sm">
-                    Ouvrir
-                  </Button>
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <ProjectFilesList files={project.files} />
     </div>
   )
 }
