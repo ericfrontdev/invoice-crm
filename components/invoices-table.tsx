@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useMemo, useEffect } from 'react'
-import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw } from 'lucide-react'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
@@ -245,6 +245,19 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
     }
   }
 
+  const handleCopyPaymentLink = (invoiceId: string) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+    const paymentUrl = `${baseUrl}/invoices/${invoiceId}/pay`
+
+    navigator.clipboard.writeText(paymentUrl).then(() => {
+      setToast({ type: 'success', message: 'Lien de paiement copié!' })
+      setTimeout(() => setToast(null), 2500)
+    }).catch(() => {
+      setToast({ type: 'error', message: 'Erreur lors de la copie' })
+      setTimeout(() => setToast(null), 2500)
+    })
+  }
+
   const invoiceIds = sortedInvoices.map((inv) => inv.id)
   const allSelected = invoiceIds.every((id) => selectedInvoiceIds.includes(id)) && sortedInvoices.length > 0
 
@@ -307,6 +320,8 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
               onSend={() => doAction(inv.id, 'send')}
               onMarkPaid={() => doAction(inv.id, 'paid')}
               onDelete={() => setDeleteConfirmId(inv.id)}
+              onCopyLink={() => handleCopyPaymentLink(inv.id)}
+              onResend={() => doAction(inv.id, 'send')}
               isBusy={busyId === inv.id}
             />
           ))}
@@ -462,6 +477,35 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                           onClick={() => doAction(inv.id, 'send')}
                         >
                           <Mail className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
+
+                    {/* Renvoyer */}
+                    {inv.status === 'sent' && inv.client?.email && (
+                      <Tooltip content="Renvoyer la facture">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          disabled={busyId === inv.id}
+                          onClick={() => doAction(inv.id, 'send')}
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </Tooltip>
+                    )}
+
+                    {/* Copier lien de paiement */}
+                    {inv.status !== 'draft' && (
+                      <Tooltip content="Copier lien de paiement">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => handleCopyPaymentLink(inv.id)}
+                        >
+                          <Link2 className="h-4 w-4" />
                         </Button>
                       </Tooltip>
                     )}

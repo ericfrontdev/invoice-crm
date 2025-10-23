@@ -9,6 +9,8 @@ import {
   Trash2,
   MoreVertical,
   Calendar,
+  Link2,
+  RefreshCw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -71,6 +73,8 @@ export function InvoiceCard({
   onSend,
   onMarkPaid,
   onDelete,
+  onCopyLink,
+  onResend,
   isBusy,
 }: {
   invoice: Invoice
@@ -81,6 +85,8 @@ export function InvoiceCard({
   onSend: () => void
   onMarkPaid: () => void
   onDelete: () => void
+  onCopyLink: () => void
+  onResend: () => void
   isBusy: boolean
 }) {
   const [longPressTriggered, setLongPressTriggered] = useState(false)
@@ -197,6 +203,29 @@ export function InvoiceCard({
                 >
                   <Mail className="h-4 w-4 mr-2" />
                   Envoyer par email
+                </DropdownMenuItem>
+              )}
+              {invoice.status === 'sent' && invoice.client?.email && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onResend()
+                  }}
+                  disabled={isBusy}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Renvoyer la facture
+                </DropdownMenuItem>
+              )}
+              {invoice.status !== 'draft' && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onCopyLink()
+                  }}
+                >
+                  <Link2 className="h-4 w-4 mr-2" />
+                  Copier lien de paiement
                 </DropdownMenuItem>
               )}
               {invoice.status !== 'paid' && (

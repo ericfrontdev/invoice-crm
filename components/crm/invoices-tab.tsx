@@ -263,6 +263,19 @@ export function InvoicesTab({
     }
   }
 
+  const handleCopyPaymentLink = (invoiceId: string) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+    const paymentUrl = `${baseUrl}/invoices/${invoiceId}/pay`
+
+    navigator.clipboard.writeText(paymentUrl).then(() => {
+      setToast({ type: 'success', message: 'Lien de paiement copié!' })
+      setTimeout(() => setToast(null), 2500)
+    }).catch(() => {
+      setToast({ type: 'error', message: 'Erreur lors de la copie' })
+      setTimeout(() => setToast(null), 2500)
+    })
+  }
+
   const renderInvoiceTable = (
     invoices: Invoice[],
     emptyMessage: string,
@@ -359,6 +372,8 @@ export function InvoicesTab({
                 onSend={() => doAction(inv.id, 'send')}
                 onMarkPaid={() => doAction(inv.id, 'paid')}
                 onDelete={() => setDeleteConfirmId(inv.id)}
+                onCopyLink={() => handleCopyPaymentLink(inv.id)}
+                onResend={() => doAction(inv.id, 'send')}
                 isBusy={busyId === inv.id}
               />
             ))}
