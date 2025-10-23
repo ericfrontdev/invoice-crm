@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -15,8 +16,11 @@ export function UploadDocumentsModal({
   onClose: () => void
   projectId: string
 }) {
+  const router = useRouter()
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -50,28 +54,41 @@ export function UploadDocumentsModal({
     e.preventDefault()
     if (selectedFiles.length === 0) return
 
-    const formData = new FormData()
-    selectedFiles.forEach((file) => {
-      formData.append('files', file)
-    })
-    formData.append('projectId', projectId)
+    setIsUploading(true)
+    setError(null)
 
     try {
-      const res = await fetch('/api/projects/upload', {
-        method: 'POST',
-        body: formData,
-      })
-      if (res.ok) {
-        setSelectedFiles([])
-        onClose()
+      // Uploader les fichiers un par un
+      for (const file of selectedFiles) {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const res = await fetch(`/api/projects/${projectId}/files`, {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!res.ok) {
+          const errorData = await res.json()
+          throw new Error(errorData.error || `Erreur lors de l'upload de ${file.name}`)
+        }
       }
+
+      // Succès: réinitialiser et fermer
+      setSelectedFiles([])
+      router.refresh()
+      onClose()
     } catch (error) {
       console.error('Upload error:', error)
+      setError(error instanceof Error ? error.message : 'Erreur lors de l\'upload')
+    } finally {
+      setIsUploading(false)
     }
   }
 
   const handleClose = () => {
     setSelectedFiles([])
+    setError(null)
     onClose()
   }
 
@@ -145,12 +162,18 @@ export function UploadDocumentsModal({
             )}
           </div>
 
+          {error && (
+            <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isUploading}>
               Annuler
             </Button>
-            <Button type="submit" disabled={selectedFiles.length === 0}>
-              Téléverser {selectedFiles.length > 0 && `(${selectedFiles.length})`}
+            <Button type="submit" disabled={selectedFiles.length === 0 || isUploading}>
+              {isUploading ? 'Téléversement...' : `Téléverser ${selectedFiles.length > 0 ? `(${selectedFiles.length})` : ''}`}
             </Button>
           </div>
         </form>
