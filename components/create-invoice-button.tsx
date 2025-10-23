@@ -43,11 +43,21 @@ export function CreateInvoiceButton() {
       fetch('/api/projects').then(res => res.json()),
     ])
       .then(([clientsData, projectsData]) => {
-        setClients(clientsData.filter((c: Client & { archived?: boolean }) => !c.archived))
-        setProjects(projectsData.filter((p: Project & { status?: string }) => p.status === 'active'))
+        console.log('[CreateInvoiceButton] Clients data:', clientsData)
+        console.log('[CreateInvoiceButton] Projects data:', projectsData)
+
+        const filteredClients = clientsData.filter((c: Client & { archived?: boolean }) => !c.archived)
+        const filteredProjects = projectsData.filter((p: Project & { status?: string }) => p.status === 'active')
+
+        console.log('[CreateInvoiceButton] Filtered clients:', filteredClients)
+        console.log('[CreateInvoiceButton] Filtered projects:', filteredProjects)
+
+        setClients(filteredClients)
+        setProjects(filteredProjects)
         setLoading(false)
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('[CreateInvoiceButton] Error loading data:', error)
         setLoading(false)
       })
   }, [])
