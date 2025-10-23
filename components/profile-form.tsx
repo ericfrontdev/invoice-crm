@@ -42,12 +42,10 @@ export function ProfileForm({ user }: { user: User }) {
   const [logo, setLogo] = useState<string | null>(user.logo)
   const [isLoading, setIsLoading] = useState(false)
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const uploadFile = async (file: File) => {
     setIsUploadingLogo(true)
     setMessage(null)
 
@@ -77,6 +75,38 @@ export function ProfileForm({ user }: { user: User }) {
     } finally {
       setIsUploadingLogo(false)
     }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await uploadFile(file)
+  }
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(false)
+
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+
+    // Vérifier que c'est une image
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Le fichier doit être une image' })
+      return
+    }
+
+    await uploadFile(file)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(false)
   }
 
   const handleLogoDelete = async () => {
@@ -181,47 +211,60 @@ export function ProfileForm({ user }: { user: User }) {
                   type="button"
                   variant="outline"
                   size="sm"
+                  onClick={() => document.getElementById('logo-upload')?.click()}
+                  disabled={isUploadingLogo}
+                  className="cursor-pointer"
+                >
+                  {isUploadingLogo ? 'Upload en cours...' : 'Changer le logo'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={handleLogoDelete}
                   disabled={isUploadingLogo}
                   className="cursor-pointer"
                 >
                   Supprimer le logo
                 </Button>
-                <label htmlFor="logo-upload" className="cursor-pointer">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={isUploadingLogo}
-                    className="cursor-pointer w-full"
-                    onClick={() => document.getElementById('logo-upload')?.click()}
-                  >
-                    {isUploadingLogo ? 'Upload en cours...' : 'Changer le logo'}
-                  </Button>
-                </label>
               </div>
             </div>
           ) : (
-            <label htmlFor="logo-upload" className="cursor-pointer">
-              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
-                <svg
-                  className="mx-auto h-12 w-12 text-muted-foreground"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {isUploadingLogo ? 'Upload en cours...' : 'Cliquez pour uploader un logo'}
-                </p>
-              </div>
-            </label>
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                isDragging
+                  ? 'border-primary bg-primary/5'
+                  : 'border-muted-foreground/25 hover:border-primary/50'
+              } ${isUploadingLogo ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={() => !isUploadingLogo && document.getElementById('logo-upload')?.click()}
+            >
+              <svg
+                className="mx-auto h-12 w-12 text-muted-foreground"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <p className="mt-2 text-sm font-medium">
+                {isUploadingLogo
+                  ? 'Upload en cours...'
+                  : isDragging
+                  ? 'Déposez le fichier ici'
+                  : 'Glissez-déposez un logo ou cliquez pour choisir'}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                PNG, JPG ou SVG (max 5MB)
+              </p>
+            </div>
           )}
           <input
             id="logo-upload"

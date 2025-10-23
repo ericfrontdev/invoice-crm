@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
 
 export async function POST(request: Request) {
   try {
@@ -29,25 +26,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Le fichier est trop volumineux (max 5MB)' }, { status: 400 })
     }
 
-    // Créer le dossier uploads/logos s'il n'existe pas
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'logos')
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
-    // Générer un nom unique pour le fichier
-    const fileName = `${session.user.id}-${Date.now()}.${file.type.split('/')[1]}`
-    const filePath = join(uploadDir, fileName)
-
-    // Convertir le fichier en buffer et l'écrire
+    // Convertir le fichier en base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
+    const base64 = buffer.toString('base64')
+    const logoUrl = `data:${file.type};base64,${base64}`
 
-    // URL publique du logo
-    const logoUrl = `/uploads/logos/${fileName}`
-
-    // Mettre à jour l'utilisateur avec l'URL du logo
+    // Mettre à jour l'utilisateur avec le logo en base64
     await prisma.user.update({
       where: { id: session.user.id },
       data: { logo: logoUrl },
@@ -56,7 +41,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ logoUrl }, { status: 200 })
   } catch (error) {
     console.error('Error uploading logo:', error)
-    return NextResponse.json({ error: 'Erreur lors de l\'upload du logo' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Erreur lors de l\'upload du logo',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
 
