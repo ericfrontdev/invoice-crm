@@ -2,6 +2,31 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 
+export async function GET() {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    }
+
+    const clients = await prisma.client.findMany({
+      where: {
+        userId: session.user.id,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    })
+
+    return NextResponse.json(clients)
+  } catch {
+    return NextResponse.json(
+      { error: 'Erreur lors de la récupération des clients.' },
+      { status: 500 },
+    )
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth()
