@@ -1,9 +1,6 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
 
 export async function POST(
   request: Request,
@@ -41,27 +38,17 @@ export async function POST(
       return NextResponse.json({ error: 'Le fichier est trop volumineux (max 10MB)' }, { status: 400 })
     }
 
-    // Créer le dossier d'uploads s'il n'existe pas
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'projects', params.id)
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
-    // Générer un nom de fichier unique
-    const timestamp = Date.now()
-    const filename = `${timestamp}-${file.name}`
-    const filepath = join(uploadsDir, filename)
-
-    // Sauvegarder le fichier
+    // Convertir le fichier en base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filepath, buffer)
+    const base64 = buffer.toString('base64')
+    const fileUrl = `data:${file.type};base64,${base64}`
 
-    // Créer l'entrée dans la base de données
+    // Créer l'entrée dans la base de données avec le fichier en base64
     const projectFile = await prisma.projectFile.create({
       data: {
         filename: file.name,
-        fileUrl: `/uploads/projects/${params.id}/${filename}`,
+        fileUrl: fileUrl,
         fileSize: file.size,
         mimeType: file.type,
         projectId: params.id,
