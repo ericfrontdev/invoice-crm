@@ -45,7 +45,7 @@ export const InvoicePDFTemplate = React.forwardRef<
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
     return (
-      <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: forPrint ? 'auto' : '297mm' }}>
+      <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: '297mm' }}>
         {/* En-tête */}
         <div className={forPrint ? "mb-4" : "mb-6 md:mb-8"}>
           <div className={forPrint ? "flex flex-row justify-between items-start gap-4" : "flex flex-col md:flex-row md:justify-between md:items-start gap-4"}>
@@ -176,7 +176,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Pied de page */}
-        <div className={forPrint ? "mt-6 pt-3 text-center text-xs text-gray-500 border-t" : "mt-auto pt-6 md:pt-8 text-center text-xs text-gray-500 border-t"}>
+        <div className={forPrint ? "mt-auto pt-3 text-center text-xs text-gray-500 border-t" : "mt-auto pt-6 md:pt-8 text-center text-xs text-gray-500 border-t"}>
           <p className="break-words">
             {user.company || user.name}
             {user.neq && ` - NEQ: ${user.neq}`}
