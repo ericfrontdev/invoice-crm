@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, MessageSquare, Loader2 } from 'lucide-react'
+import { X, MessageSquare, Loader2, Bug, Sparkles, Lightbulb, MessageCircle } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,17 +19,17 @@ import { useImageUpload } from '@/lib/upload-image'
 import { useRouter } from 'next/navigation'
 
 const feedbackTypes = [
-  { value: 'bug', label: '🐛 Bug', emoji: '🐛' },
-  { value: 'feature', label: '✨ Nouvelle fonctionnalité', emoji: '✨' },
-  { value: 'improvement', label: '💡 Amélioration', emoji: '💡' },
-  { value: 'other', label: '💬 Autre', emoji: '💬' },
+  { value: 'bug', label: 'Bug', icon: Bug },
+  { value: 'feature', label: 'Nouvelle fonctionnalité', icon: Sparkles },
+  { value: 'improvement', label: 'Amélioration', icon: Lightbulb },
+  { value: 'other', label: 'Autre', icon: MessageCircle },
 ]
 
 const severityLevels = [
-  { value: 'critical', label: '🔴 Critique', description: 'Bloque complètement l\'utilisation' },
-  { value: 'high', label: '🟠 Élevé', description: 'Gêne importante' },
-  { value: 'medium', label: '🟡 Moyen', description: 'Inconvénient mineur' },
-  { value: 'low', label: '🟢 Faible', description: 'Suggestion d\'amélioration' },
+  { value: 'critical', label: 'Critique', description: 'Bloque complètement l\'utilisation' },
+  { value: 'high', label: 'Élevé', description: 'Gêne importante' },
+  { value: 'medium', label: 'Moyen', description: 'Inconvénient mineur' },
+  { value: 'low', label: 'Faible', description: 'Suggestion d\'amélioration' },
 ]
 
 export function FeedbackWidget() {
@@ -324,7 +324,7 @@ export function FeedbackWidget() {
 
               {/* Context info */}
               <div className="text-xs text-muted-foreground space-y-1 p-3 bg-muted/50 rounded-lg">
-                <p className="font-medium">ℹ️ Informations capturées automatiquement:</p>
+                <p className="font-medium">Informations capturées automatiquement:</p>
                 <p>• Page actuelle: {typeof window !== 'undefined' ? window.location.pathname : ''}</p>
                 <p>• Navigateur: {typeof window !== 'undefined' ? navigator.userAgent.split(' ').slice(-2).join(' ') : ''}</p>
               </div>

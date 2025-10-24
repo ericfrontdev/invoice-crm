@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { FeedbackDetailsModal } from '@/components/admin/feedback-details-modal'
-import { Search, RefreshCw } from 'lucide-react'
+import { Search, RefreshCw, Bug, Sparkles, Lightbulb, MessageCircle, MessageSquare } from 'lucide-react'
 
 type Feedback = {
   id: string
@@ -38,11 +38,18 @@ type Feedback = {
   }
 }
 
+const typeIcons: Record<string, typeof Bug> = {
+  bug: Bug,
+  feature: Sparkles,
+  improvement: Lightbulb,
+  other: MessageCircle,
+}
+
 const typeLabels: Record<string, string> = {
-  bug: '🐛 Bug',
-  feature: '✨ Feature',
-  improvement: '💡 Amélioration',
-  other: '💬 Autre',
+  bug: 'Bug',
+  feature: 'Feature',
+  improvement: 'Amélioration',
+  other: 'Autre',
 }
 
 const severityColors: Record<string, string> = {
@@ -158,10 +165,10 @@ export function FeedbackList({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="bug">🐛 Bugs</SelectItem>
-                <SelectItem value="feature">✨ Features</SelectItem>
-                <SelectItem value="improvement">💡 Améliorations</SelectItem>
-                <SelectItem value="other">💬 Autres</SelectItem>
+                <SelectItem value="bug">Bugs</SelectItem>
+                <SelectItem value="feature">Features</SelectItem>
+                <SelectItem value="improvement">Améliorations</SelectItem>
+                <SelectItem value="other">Autres</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -170,11 +177,11 @@ export function FeedbackList({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="new">🆕 Nouveaux</SelectItem>
-                <SelectItem value="reviewing">👀 En révision</SelectItem>
-                <SelectItem value="in_progress">⏳ En cours</SelectItem>
-                <SelectItem value="resolved">✅ Résolus</SelectItem>
-                <SelectItem value="wont_fix">❌ Won&apos;t fix</SelectItem>
+                <SelectItem value="new">Nouveaux</SelectItem>
+                <SelectItem value="reviewing">En révision</SelectItem>
+                <SelectItem value="in_progress">En cours</SelectItem>
+                <SelectItem value="resolved">Résolus</SelectItem>
+                <SelectItem value="wont_fix">Won&apos;t fix</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -217,9 +224,15 @@ export function FeedbackList({
                     onClick={() => setSelectedFeedback(feedback.id)}
                   >
                     <td className="p-3">
-                      <span className="text-sm">
-                        {typeLabels[feedback.type] || feedback.type}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const Icon = typeIcons[feedback.type] || MessageCircle
+                          return <Icon className="h-5 w-5 text-muted-foreground" />
+                        })()}
+                        <span className="text-sm hidden md:inline">
+                          {typeLabels[feedback.type] || feedback.type}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-3">
                       <div className="flex items-center gap-2">

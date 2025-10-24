@@ -61,7 +61,7 @@ export default async function ProfilPage() {
               <div>
                 <h3 className="font-medium">Mes Feedbacks</h3>
                 <p className="text-sm text-muted-foreground">
-                  Consultez l&apos;historique de vos suggestions et bugs signalés
+                  Consultez l&apos;historique de vos suggestions et bugs rapportés
                 </p>
               </div>
             </div>

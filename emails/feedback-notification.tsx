@@ -24,13 +24,6 @@ interface FeedbackNotificationProps {
   adminDashboardUrl: string
 }
 
-const typeEmojis: Record<string, string> = {
-  bug: '🐛',
-  feature: '✨',
-  improvement: '💡',
-  other: '💬',
-}
-
 const typeLabels: Record<string, string> = {
   bug: 'Bug',
   feature: 'Nouvelle fonctionnalité',
@@ -64,7 +57,6 @@ export default function FeedbackNotification({
   deviceType,
   adminDashboardUrl,
 }: FeedbackNotificationProps) {
-  const emoji = typeEmojis[feedbackType] || '💬'
   const typeLabel = typeLabels[feedbackType] || 'Feedback'
   const severityColor = severityColors[feedbackSeverity] || '#3B82F6'
   const severityLabel = severityLabels[feedbackSeverity] || 'Moyen'
@@ -80,7 +72,7 @@ export default function FeedbackNotification({
         <Container style={container}>
           <Section style={headerSection}>
             <Heading style={h1}>
-              {emoji} Nouveau Feedback Reçu
+              Nouveau Feedback Reçu
             </Heading>
           </Section>
 

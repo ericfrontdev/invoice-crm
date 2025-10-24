@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Loader2, Send } from 'lucide-react'
+import { X, Loader2, Send, Bug, Sparkles, Lightbulb, MessageCircle, Shield } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -64,11 +64,11 @@ interface Feedback {
   messages: FeedbackMessage[]
 }
 
-const typeLabels: Record<string, { label: string; emoji: string }> = {
-  bug: { label: 'Bug', emoji: '🐛' },
-  feature: { label: 'Nouvelle fonctionnalité', emoji: '✨' },
-  improvement: { label: 'Amélioration', emoji: '💡' },
-  other: { label: 'Autre', emoji: '💬' },
+const typeIcons: Record<string, typeof Bug> = {
+  bug: Bug,
+  feature: Sparkles,
+  improvement: Lightbulb,
+  other: MessageCircle,
 }
 
 const severityLabels: Record<string, { label: string; color: string }> = {
@@ -86,17 +86,17 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 }
 
 const priorityLevels = [
-  { value: 'critical', label: '🔴 Critique' },
-  { value: 'high', label: '🟠 Élevée' },
-  { value: 'medium', label: '🟡 Moyenne' },
-  { value: 'low', label: '🟢 Faible' },
+  { value: 'critical', label: 'Critique' },
+  { value: 'high', label: 'Élevée' },
+  { value: 'medium', label: 'Moyenne' },
+  { value: 'low', label: 'Faible' },
 ]
 
 const statusOptions = [
-  { value: 'new', label: '🆕 Nouveau' },
-  { value: 'in_progress', label: '⏳ En cours' },
-  { value: 'resolved', label: '✅ Résolu' },
-  { value: 'closed', label: '🔒 Fermé' },
+  { value: 'new', label: 'Nouveau' },
+  { value: 'in_progress', label: 'En cours' },
+  { value: 'resolved', label: 'Résolu' },
+  { value: 'closed', label: 'Fermé' },
 ]
 
 export function FeedbackDetailsModal({
@@ -208,9 +208,10 @@ export function FeedbackDetailsModal({
         {/* Header */}
         <div className="border-b px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">
-              {feedback ? typeLabels[feedback.type]?.emoji : '💬'}
-            </span>
+            {feedback && (() => {
+              const Icon = typeIcons[feedback.type] || MessageCircle
+              return <Icon className="h-6 w-6 text-primary" />
+            })()}
             <div>
               <h2 className="text-xl font-semibold">
                 {loading ? 'Chargement...' : feedback?.title}
@@ -408,8 +409,9 @@ export function FeedbackDetailsModal({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium">
-                            {msg.authorType === 'admin' ? '👑 Admin' : msg.author?.name || 'Utilisateur'}
+                          <span className="text-xs font-medium flex items-center gap-1">
+                            {msg.authorType === 'admin' && <Shield className="h-3 w-3" />}
+                            {msg.authorType === 'admin' ? 'Admin' : msg.author?.name || 'Utilisateur'}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(msg.createdAt).toLocaleString('fr-CA')}

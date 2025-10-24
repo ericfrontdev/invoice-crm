@@ -31,7 +31,7 @@ export default function FeedbackMessageNotification({
   recipientName,
 }: FeedbackMessageNotificationProps) {
   const isAdminMessage = messageAuthorType === 'admin'
-  const authorLabel = isAdminMessage ? '👑 Admin' : messageAuthorName
+  const authorLabel = isAdminMessage ? 'Admin' : messageAuthorName
 
   return (
     <Html>
@@ -42,7 +42,7 @@ export default function FeedbackMessageNotification({
       <Body style={main}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Heading style={h1}>💬 Nouveau Message</Heading>
+            <Heading style={h1}>Nouveau Message</Heading>
           </Section>
 
           <Section style={box}>

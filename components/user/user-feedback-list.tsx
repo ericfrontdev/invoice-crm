@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, RefreshCw, MessageSquare } from 'lucide-react'
+import { Search, RefreshCw, MessageSquare, Bug, Sparkles, Lightbulb, MessageCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FeedbackDetailsModal } from '@/components/admin/feedback-details-modal'
 
@@ -29,11 +29,18 @@ interface UserFeedbackListProps {
   }[]
 }
 
-const typeLabels: Record<string, { label: string; emoji: string }> = {
-  bug: { label: 'Bug', emoji: '🐛' },
-  feature: { label: 'Nouvelle fonctionnalité', emoji: '✨' },
-  improvement: { label: 'Amélioration', emoji: '💡' },
-  other: { label: 'Autre', emoji: '💬' },
+const typeIcons: Record<string, typeof Bug> = {
+  bug: Bug,
+  feature: Sparkles,
+  improvement: Lightbulb,
+  other: MessageCircle,
+}
+
+const typeLabels: Record<string, string> = {
+  bug: 'Bug',
+  feature: 'Nouvelle fonctionnalité',
+  improvement: 'Amélioration',
+  other: 'Autre',
 }
 
 const severityLabels: Record<string, { label: string; color: string }> = {
@@ -97,10 +104,10 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="bug">🐛 Bug</SelectItem>
-                <SelectItem value="feature">✨ Feature</SelectItem>
-                <SelectItem value="improvement">💡 Amélioration</SelectItem>
-                <SelectItem value="other">💬 Autre</SelectItem>
+                <SelectItem value="bug">Bug</SelectItem>
+                <SelectItem value="feature">Feature</SelectItem>
+                <SelectItem value="improvement">Amélioration</SelectItem>
+                <SelectItem value="other">Autre</SelectItem>
               </SelectContent>
             </Select>
 
@@ -111,10 +118,10 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="new">🆕 Nouveau</SelectItem>
-                <SelectItem value="in_progress">⏳ En cours</SelectItem>
-                <SelectItem value="resolved">✅ Résolu</SelectItem>
-                <SelectItem value="closed">🔒 Fermé</SelectItem>
+                <SelectItem value="new">Nouveau</SelectItem>
+                <SelectItem value="in_progress">En cours</SelectItem>
+                <SelectItem value="resolved">Résolu</SelectItem>
+                <SelectItem value="closed">Fermé</SelectItem>
               </SelectContent>
             </Select>
 
@@ -160,11 +167,12 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl">
-                          {typeLabels[feedback.type]?.emoji}
-                        </span>
+                        {(() => {
+                          const Icon = typeIcons[feedback.type] || MessageCircle
+                          return <Icon className="h-5 w-5 text-muted-foreground" />
+                        })()}
                         <span className="text-sm hidden md:inline">
-                          {typeLabels[feedback.type]?.label}
+                          {typeLabels[feedback.type]}
                         </span>
                       </div>
                     </td>
