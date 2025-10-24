@@ -110,7 +110,7 @@ model UnpaidAmount {
   clientId    String
   dueDate     DateTime?
   invoiceId   String?
-  client      Client    @relation(fields: [clientId], references: [id])
+  client      Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 }
 
@@ -134,8 +134,8 @@ model Invoice {
   dueDate       DateTime?      // Date d'échéance de la facture
   clientId      String
   projectId     String?
-  client        Client         @relation(fields: [clientId], references: [id])
-  project       Project?       @relation(fields: [projectId], references: [id])
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   items         InvoiceItem[]
   unpaidAmounts UnpaidAmount[]
 }
@@ -160,7 +160,7 @@ model Project {
   endDate     DateTime?
   createdAt   DateTime      @default(now())
   clientId    String
-  client      Client        @relation(fields: [clientId], references: [id])
+  client      Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
   invoices    Invoice[]
   files       ProjectFile[]
 }
