@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/lib/theme-context'
 import { Navigation } from '@/components/navigation'
+import { FeedbackWidget } from '@/components/feedback-widget'
 import { auth } from '@/auth'
 import { isSuperAdmin } from '@/lib/check-super-admin'
 
@@ -30,6 +31,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <Navigation user={session?.user} isSuperAdmin={isAdmin} />
           <main className="min-h-screen bg-background">{children}</main>
+          {session?.user && <FeedbackWidget />}
         </ThemeProvider>
       </body>
     </html>
