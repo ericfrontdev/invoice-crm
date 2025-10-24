@@ -131,7 +131,7 @@ export function ReminderTimeline({
                     <div className="text-sm space-y-1">
                       <p className="text-red-700 dark:text-red-400 flex items-center gap-2">
                         <XCircle className="h-4 w-4" />
-                        Erreur lors de l'envoi
+                        Erreur lors de l&apos;envoi
                       </p>
                       {reminder.errorMessage && (
                         <p className="text-muted-foreground text-xs">
@@ -166,7 +166,7 @@ export function ReminderTimeline({
                   {status === 'pending' && !scheduledDate && (
                     <div className="text-sm">
                       <p className="text-muted-foreground">
-                        Non programmé (date d'échéance manquante)
+                        Non programmé (date d&apos;échéance manquante)
                       </p>
                     </div>
                   )}
