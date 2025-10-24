@@ -215,7 +215,7 @@ export function InvoiceViewModal({
                 tps: invoice.tps,
                 tvq: invoice.tvq,
                 total: invoice.total,
-                createdAt: invoice.createdAt,
+                createdAt: new Date(invoice.createdAt),
                 client: {
                   name: invoice.client?.name || '',
                   company: invoice.client?.company || null,
@@ -225,8 +225,8 @@ export function InvoiceViewModal({
                 items: (invoice.items || []).map(item => ({
                   description: item.description,
                   amount: item.amount,
-                  date: item.date,
-                  dueDate: item.dueDate || null,
+                  date: new Date(item.date),
+                  dueDate: item.dueDate ? new Date(item.dueDate) : null,
                 })),
               }}
               user={invoice.user}
