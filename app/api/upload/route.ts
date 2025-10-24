@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(bytes)
 
     // Upload vers Cloudinary
-    const result = await new Promise((resolve, reject) => {
+    const result = await new Promise<{secure_url: string; public_id: string}>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           folder: 'solopack-feedback',
@@ -44,16 +44,16 @@ export async function POST(req: NextRequest) {
             { fetch_format: 'auto' }, // Format optimal (WebP si supporté)
           ],
         },
-        (error, result) => {
+        (error, uploadResult) => {
           if (error) reject(error)
-          else resolve(result)
+          else resolve(uploadResult as {secure_url: string; public_id: string})
         }
       ).end(buffer)
     })
 
     return NextResponse.json({
-      url: (result as any).secure_url,
-      publicId: (result as any).public_id,
+      url: result.secure_url,
+      publicId: result.public_id,
     })
   } catch (error) {
     console.error('Error uploading to Cloudinary:', error)

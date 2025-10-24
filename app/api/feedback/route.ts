@@ -20,7 +20,11 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type')
 
     // Build where clause
-    const where: any = {}
+    const where: {
+      userId?: string
+      status?: string
+      type?: string
+    } = {}
 
     // Si pas super admin, user voit seulement ses feedbacks
     if (!isSuperAdmin) {

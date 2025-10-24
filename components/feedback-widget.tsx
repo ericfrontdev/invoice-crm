@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, MessageSquare, Upload, Loader2 } from 'lucide-react'
+import { X, MessageSquare, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -39,7 +40,6 @@ export function FeedbackWidget() {
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(false)
-  const [screenshot, setScreenshot] = useState<File | null>(null)
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -67,8 +67,6 @@ export function FeedbackWidget() {
   const handleScreenshotChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    setScreenshot(file)
 
     // Upload immédiatement
     const result = await upload(file)
@@ -128,7 +126,6 @@ export function FeedbackWidget() {
         setTitle('')
         setMessage('')
         setIsAnonymous(false)
-        setScreenshot(null)
         setScreenshotUrl(null)
         setSuccess(false)
       }, 2000)
@@ -285,16 +282,16 @@ export function FeedbackWidget() {
                   {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
                 </div>
                 {screenshotUrl && (
-                  <div className="mt-2 relative">
-                    <img
+                  <div className="mt-2 relative w-full h-40">
+                    <Image
                       src={screenshotUrl}
                       alt="Screenshot preview"
-                      className="rounded-lg border max-h-40 object-contain"
+                      fill
+                      className="rounded-lg border object-contain"
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        setScreenshot(null)
                         setScreenshotUrl(null)
                       }}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"

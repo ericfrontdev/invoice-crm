@@ -98,7 +98,13 @@ export async function PATCH(
     const body = await req.json()
     const { status, priority, adminNote, linkedIssue } = body
 
-    const data: any = {}
+    const data: {
+      status?: string
+      priority?: string
+      adminNote?: string
+      linkedIssue?: string
+      resolvedAt?: Date
+    } = {}
 
     if (status !== undefined) data.status = status
     if (priority !== undefined) data.priority = priority
