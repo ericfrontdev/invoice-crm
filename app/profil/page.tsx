@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { ProfileForm } from '@/components/profile-form'
+import Link from 'next/link'
+import { MessageSquare, ChevronRight } from 'lucide-react'
 
 export default async function ProfilPage() {
   const session = await auth()
@@ -44,6 +46,27 @@ export default async function ProfilPage() {
           <p className="text-muted-foreground">
             Gérez vos informations personnelles
           </p>
+        </div>
+
+        {/* Quick Links */}
+        <div className="mb-6">
+          <Link
+            href="/profil/mes-feedbacks"
+            className="flex items-center justify-between p-4 bg-card rounded-lg border hover:border-primary transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                <MessageSquare className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-medium">Mes Feedbacks</h3>
+                <p className="text-sm text-muted-foreground">
+                  Consultez l&apos;historique de vos suggestions et bugs signalés
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </Link>
         </div>
 
         <ProfileForm user={user} />
