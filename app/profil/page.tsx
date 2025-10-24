@@ -27,6 +27,8 @@ export default async function ProfilPage() {
       paypalEmail: true,
       stripeAccountId: true,
       logo: true,
+      autoRemindersEnabled: true,
+      reminderMiseEnDemeureTemplate: true,
     },
   })
 

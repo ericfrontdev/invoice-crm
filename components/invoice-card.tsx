@@ -11,6 +11,7 @@ import {
   Calendar,
   Link2,
   RefreshCw,
+  Bell,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -40,6 +41,9 @@ type Invoice = {
     date: string | Date
     dueDate?: string | Date | null
   }>
+  _count?: {
+    reminders?: number
+  }
 }
 
 const statusColors = {
@@ -294,6 +298,12 @@ export function InvoiceCard({
           {invoice.project && (
             <div className="text-xs text-muted-foreground mt-0.5">
               Projet: {invoice.project.name}
+            </div>
+          )}
+          {invoice._count?.reminders && invoice._count.reminders > 0 && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <Bell className="h-3 w-3" />
+              <span>{invoice._count.reminders} rappel{invoice._count.reminders > 1 ? 's' : ''} envoyé{invoice._count.reminders > 1 ? 's' : ''}</span>
             </div>
           )}
         </div>

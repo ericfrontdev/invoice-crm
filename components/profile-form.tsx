@@ -21,6 +21,8 @@ type User = {
   paypalEmail: string | null
   stripeAccountId: string | null
   logo: string | null
+  autoRemindersEnabled: boolean
+  reminderMiseEnDemeureTemplate: string | null
 }
 
 export function ProfileForm({ user }: { user: User }) {
@@ -38,6 +40,8 @@ export function ProfileForm({ user }: { user: User }) {
     paymentProvider: user.paymentProvider || '',
     paypalEmail: user.paypalEmail || '',
     stripeAccountId: user.stripeAccountId || '',
+    autoRemindersEnabled: user.autoRemindersEnabled,
+    reminderMiseEnDemeureTemplate: user.reminderMiseEnDemeureTemplate || '',
   })
   const [logo, setLogo] = useState<string | null>(user.logo)
   const [isLoading, setIsLoading] = useState(false)

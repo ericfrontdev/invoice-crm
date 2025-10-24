@@ -222,7 +222,7 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
           setIsInvoiceModalOpen(false)
           setSelectedProjectForInvoice(null)
         }}
-        onSave={async (items: { description: string; amount: number }[]) => {
+        onSave={async (items: { description: string; amount: number }[], dueDate: string) => {
           // Create the invoice directly with items
           const res = await fetch('/api/invoices', {
             method: 'POST',
@@ -231,6 +231,7 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
               clientId: client.id,
               projectId: selectedProjectForInvoice,
               items,
+              dueDate: new Date(dueDate).toISOString(),
             }),
           })
 

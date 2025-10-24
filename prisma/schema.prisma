@@ -37,6 +37,10 @@ model User {
   paypalEmail      String? // Email PayPal pour recevoir les paiements
   stripeAccountId  String? // ID du compte Stripe Connect
 
+  // Configuration des rappels de paiement
+  autoRemindersEnabled Boolean @default(false) // Activer les rappels automatiques
+  reminderMiseEnDemeureTemplate String? @default("Madame, Monsieur,\n\nMalgré nos précédents rappels, nous constatons que la facture ci-dessous demeure impayée.\n\nNous vous prions de bien vouloir régulariser votre situation dans les plus brefs délais, faute de quoi nous serons contraints d'entamer des procédures de recouvrement.\n\nCordialement,") // Template de mise en demeure personnalisable
+
   accounts      Account[]
   clients       Client[]
   sessions      Session[]
@@ -138,6 +142,18 @@ model Invoice {
   project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   items         InvoiceItem[]
   unpaidAmounts UnpaidAmount[]
+  reminders     InvoiceReminder[]
+}
+
+model InvoiceReminder {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  type        String   // "reminder1", "reminder2", "reminder3", "mise_en_demeure"
+  sentAt      DateTime @default(now())
+  sentTo      String   // Email du destinataire
+  status      String   @default("sent") // "sent", "error"
+  errorMessage String?
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
 model InvoiceItem {

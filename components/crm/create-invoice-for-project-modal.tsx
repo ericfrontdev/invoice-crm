@@ -32,18 +32,23 @@ export function CreateInvoiceForProjectModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  onSave: (items: { description: string; amount: number }[]) => Promise<void>
+  onSave: (items: { description: string; amount: number }[], dueDate: string) => Promise<void>
   project?: Project | null
   client?: Client | null
 }) {
   const [items, setItems] = useState<InvoiceItem[]>([
     { description: '', amount: '' },
   ])
+  const [dueDate, setDueDate] = useState<string>('')
 
-  // Réinitialiser les items quand la modale s'ouvre
+  // Réinitialiser les items et calculer la date d'échéance quand la modale s'ouvre
   useEffect(() => {
     if (isOpen) {
       setItems([{ description: '', amount: '' }])
+      // Calculer la date d'échéance par défaut : aujourd'hui + 30 jours
+      const defaultDueDate = new Date()
+      defaultDueDate.setDate(defaultDueDate.getDate() + 30)
+      setDueDate(defaultDueDate.toISOString().split('T')[0])
     }
   }, [isOpen])
 
@@ -73,16 +78,22 @@ export function CreateInvoiceForProjectModal({
         amount: parseFloat(item.amount),
       }))
 
-    if (validItems.length === 0) return
+    if (validItems.length === 0 || !dueDate) return
 
-    await onSave(validItems)
+    await onSave(validItems, dueDate)
 
     // Réinitialiser
     setItems([{ description: '', amount: '' }])
+    const defaultDueDate = new Date()
+    defaultDueDate.setDate(defaultDueDate.getDate() + 30)
+    setDueDate(defaultDueDate.toISOString().split('T')[0])
   }
 
   const handleClose = () => {
     setItems([{ description: '', amount: '' }])
+    const defaultDueDate = new Date()
+    defaultDueDate.setDate(defaultDueDate.getDate() + 30)
+    setDueDate(defaultDueDate.toISOString().split('T')[0])
     onClose()
   }
 
@@ -175,6 +186,20 @@ export function CreateInvoiceForProjectModal({
                 </Button>
               </div>
             ))}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dueDate">Date d&apos;échéance</Label>
+            <Input
+              id="dueDate"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+            <p className="text-xs text-muted-foreground">
+              Par défaut: 30 jours après la date de création
+            </p>
           </div>
 
           {items.length > 0 && (

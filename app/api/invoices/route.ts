@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     const unpaidAmountIds: string[] | undefined = body?.unpaidAmountIds
     const items: Array<{ description: string; amount: number }> | undefined = body?.items
     const projectId: string | undefined = body?.projectId
+    const dueDate: string | undefined = body?.dueDate
 
     // Support deux modes: unpaidAmountIds (ancien) ou items directement (nouveau)
     if (!clientId) {
@@ -117,6 +118,7 @@ export async function POST(req: Request) {
           tvq,
           total,
           ...(projectId && { projectId }),
+          ...(dueDate && { dueDate: new Date(dueDate) }),
         },
       })
       console.log('[invoices:POST] Invoice created:', invoice.id, invoice.number)
