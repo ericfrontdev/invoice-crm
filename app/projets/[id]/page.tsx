@@ -7,6 +7,7 @@ import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Paperclip } from 
 import { Button } from '@/components/ui/button'
 import { ProjectActions } from '@/components/project-actions'
 import { ProjectFilesList } from '@/components/project-files-list'
+import { ProjectInvoicesList } from '@/components/project-invoices-list'
 
 async function getProject(projectId: string, userId: string) {
   const project = await prisma.project.findFirst({
@@ -196,49 +197,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Invoices */}
-      {project.invoices.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Factures du projet</h2>
-          <div className="rounded-lg border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left py-3 px-4">Numéro</th>
-                  <th className="text-left py-3 px-4">Statut</th>
-                  <th className="text-right py-3 px-4">Montant</th>
-                  <th className="text-left py-3 px-4">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {project.invoices.map((invoice) => (
-                  <tr key={invoice.id} className="border-t">
-                    <td className="py-3 px-4 font-medium">{invoice.number}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
-                          invoice.status === 'paid'
-                            ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-400/10 dark:text-green-300 dark:border-green-300/20'
-                            : invoice.status === 'sent'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-400/10 dark:text-blue-300 dark:border-blue-300/20'
-                            : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-400/10 dark:text-amber-300 dark:border-amber-300/20'
-                        }`}
-                      >
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right font-semibold">
-                      {invoice.total.toFixed(2)} $
-                    </td>
-                    <td className="py-3 px-4">
-                      {new Date(invoice.createdAt).toLocaleDateString('fr-FR')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <ProjectInvoicesList
+        invoices={project.invoices}
+        clientId={project.client.id}
+        clientName={project.client.company || project.client.name}
+        projectId={project.id}
+      />
 
       {/* Files */}
       <ProjectFilesList files={project.files} />
