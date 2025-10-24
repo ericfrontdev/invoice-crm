@@ -45,22 +45,22 @@ export const InvoicePDFTemplate = React.forwardRef<
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
     return (
-      <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: '297mm' }}>
+      <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: forPrint ? 'auto' : '297mm' }}>
         {/* En-tête */}
-        <div className={forPrint ? "mb-8" : "mb-6 md:mb-8"}>
+        <div className={forPrint ? "mb-4" : "mb-6 md:mb-8"}>
           <div className={forPrint ? "flex flex-row justify-between items-start gap-4" : "flex flex-col md:flex-row md:justify-between md:items-start gap-4"}>
             <div>
               {user.logo ? (
                 <img
                   src={user.logo}
                   alt="Logo"
-                  className={forPrint ? "h-16 w-auto mb-4" : "h-12 md:h-16 w-auto mb-2 md:mb-4"}
+                  className={forPrint ? "h-16 w-auto mb-3" : "h-12 md:h-16 w-auto mb-2 md:mb-4"}
                   style={{ maxWidth: '200px', objectFit: 'contain' }}
                 />
               ) : (
                 <h1 className={forPrint ? "text-4xl font-bold text-gray-900" : "text-2xl md:text-4xl font-bold text-gray-900"}>FACTURE</h1>
               )}
-              <p className={forPrint ? "text-xl text-gray-600 mt-2" : "text-lg md:text-xl text-gray-600 mt-1 md:mt-2"}>{invoice.number}</p>
+              <p className={forPrint ? "text-xl text-gray-600 mt-1" : "text-lg md:text-xl text-gray-600 mt-1 md:mt-2"}>{invoice.number}</p>
             </div>
             <div className={forPrint ? "text-right" : "text-left md:text-right"}>
               <p className={forPrint ? "text-lg font-semibold" : "text-base md:text-lg font-semibold"}>{user.company || user.name}</p>
@@ -73,7 +73,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Informations client */}
-        <div className="mb-6 md:mb-8 bg-gray-50 p-4 md:p-6 rounded">
+        <div className={forPrint ? "mb-4 bg-gray-50 p-4 rounded" : "mb-6 md:mb-8 bg-gray-50 p-4 md:p-6 rounded"}>
           <h2 className="text-xs md:text-sm font-semibold text-gray-500 uppercase mb-2 md:mb-3">Facturé à</h2>
           <p className="text-base md:text-lg font-semibold">{invoice.client.company || invoice.client.name}</p>
           {invoice.client.company && invoice.client.name && (
@@ -84,7 +84,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Informations facture */}
-        <div className="mb-6 md:mb-8 grid grid-cols-2 gap-3 md:gap-4">
+        <div className={forPrint ? "mb-4 grid grid-cols-2 gap-3" : "mb-6 md:mb-8 grid grid-cols-2 gap-3 md:gap-4"}>
           <div>
             <p className="text-xs md:text-sm font-semibold text-gray-500">Date d&apos;émission</p>
             <p className="text-sm md:text-base text-gray-900">
@@ -102,7 +102,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Tableau des items */}
-        <div className="mb-6 md:mb-8 overflow-x-auto">
+        <div className={forPrint ? "mb-4 overflow-x-auto" : "mb-6 md:mb-8 overflow-x-auto"}>
           <table className="w-full text-sm md:text-base">
             <thead>
               <tr className="border-b-2 border-gray-900">
@@ -132,7 +132,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Total avec ou sans taxes */}
-        <div className="flex justify-end mb-8 md:mb-12">
+        <div className={forPrint ? "flex justify-end mb-4" : "flex justify-end mb-8 md:mb-12"}>
           <div className="w-full md:w-80">
             {hasTaxes ? (
               <>
@@ -163,20 +163,20 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Notes */}
-        <div className="border-t pt-6 md:pt-8">
+        <div className={forPrint ? "border-t pt-3" : "border-t pt-6 md:pt-8"}>
           <p className="text-xs md:text-sm text-gray-600">
             <strong>Conditions de paiement :</strong> Paiement sous 30 jours
           </p>
           <p className="text-xs md:text-sm text-gray-600 mt-2">
             <strong>Mode de paiement :</strong> Virement bancaire
           </p>
-          <p className="text-xs md:text-sm text-gray-600 mt-3 md:mt-4">
+          <p className={forPrint ? "text-xs md:text-sm text-gray-600 mt-2" : "text-xs md:text-sm text-gray-600 mt-3 md:mt-4"}>
             Merci pour votre confiance !
           </p>
         </div>
 
         {/* Pied de page */}
-        <div className="mt-auto pt-6 md:pt-8 text-center text-xs text-gray-500 border-t">
+        <div className={forPrint ? "mt-6 pt-3 text-center text-xs text-gray-500 border-t" : "mt-auto pt-6 md:pt-8 text-center text-xs text-gray-500 border-t"}>
           <p className="break-words">
             {user.company || user.name}
             {user.neq && ` - NEQ: ${user.neq}`}
