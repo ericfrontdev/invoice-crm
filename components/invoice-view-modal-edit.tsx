@@ -159,22 +159,23 @@ export function InvoiceViewModal({
       <div className="fixed inset-0 bg-black/50 overlay-blur" onClick={isEditing ? undefined : onClose} />
 
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 className="text-base font-semibold">Facture {invoice.number}</h2>
-          <div className="flex items-center gap-2">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
+          <h2 className="text-sm md:text-base font-semibold truncate">Facture {invoice.number}</h2>
+          <div className="flex items-center gap-1 md:gap-2">
             {!isEditing ? (
               <>
-                <Button variant="ghost" size="sm" onClick={handlePrint}>
-                  <FileDown className="h-4 w-4 mr-2" />
-                  Télécharger PDF
+                <Button variant="ghost" size="sm" onClick={handlePrint} className="px-2 md:px-3">
+                  <FileDown className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Télécharger PDF</span>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Modifier
+                <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="px-2 md:px-3">
+                  <Edit2 className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Modifier</span>
                 </Button>
-                <button className="text-sm underline" onClick={onClose}>
-                  Fermer
-                </button>
+                <Button variant="ghost" size="sm" onClick={onClose} className="px-2 md:px-3">
+                  <X className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Fermer</span>
+                </Button>
               </>
             ) : (
               <>
@@ -189,13 +190,14 @@ export function InvoiceViewModal({
                     setEditedDueDate(invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : '')
                   }}
                   disabled={saving}
+                  className="px-2 md:px-3"
                 >
-                  <X className="h-4 w-4 mr-2" />
-                  Annuler
+                  <X className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Annuler</span>
                 </Button>
-                <Button size="sm" onClick={handleSave} disabled={saving}>
-                  <Save className="h-4 w-4 mr-2" />
-                  {saving ? 'Enregistrement...' : 'Enregistrer'}
+                <Button size="sm" onClick={handleSave} disabled={saving} className="px-2 md:px-3">
+                  <Save className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
                 </Button>
               </>
             )}
