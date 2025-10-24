@@ -101,15 +101,15 @@ export default async function AdminFeedbackPage() {
         </div>
         <div className="bg-card rounded-lg border p-4">
           <div className="text-2xl font-bold text-blue-600">{data.newCount}</div>
-          <div className="text-sm text-muted-foreground">🆕 Nouveaux</div>
+          <div className="text-sm text-muted-foreground">Nouveaux</div>
         </div>
         <div className="bg-card rounded-lg border p-4">
           <div className="text-2xl font-bold text-orange-600">{data.inProgressCount}</div>
-          <div className="text-sm text-muted-foreground">⏳ En cours</div>
+          <div className="text-sm text-muted-foreground">En cours</div>
         </div>
         <div className="bg-card rounded-lg border p-4">
           <div className="text-2xl font-bold text-green-600">{data.resolvedCount}</div>
-          <div className="text-sm text-muted-foreground">✅ Résolus</div>
+          <div className="text-sm text-muted-foreground">Résolus</div>
         </div>
       </div>
 
@@ -117,19 +117,19 @@ export default async function AdminFeedbackPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-lg border p-3">
           <div className="text-lg font-semibold">{data.bugCount}</div>
-          <div className="text-xs text-muted-foreground">🐛 Bugs</div>
+          <div className="text-xs text-muted-foreground">Bugs</div>
         </div>
         <div className="bg-card rounded-lg border p-3">
           <div className="text-lg font-semibold">{data.featureCount}</div>
-          <div className="text-xs text-muted-foreground">✨ Features</div>
+          <div className="text-xs text-muted-foreground">Features</div>
         </div>
         <div className="bg-card rounded-lg border p-3">
           <div className="text-lg font-semibold">{data.improvementCount}</div>
-          <div className="text-xs text-muted-foreground">💡 Améliorations</div>
+          <div className="text-xs text-muted-foreground">Améliorations</div>
         </div>
         <div className="bg-card rounded-lg border p-3">
           <div className="text-lg font-semibold text-red-600">{data.criticalCount}</div>
-          <div className="text-xs text-muted-foreground">🔴 Critiques</div>
+          <div className="text-xs text-muted-foreground">Critiques</div>
         </div>
       </div>
 
