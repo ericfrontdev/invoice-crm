@@ -101,6 +101,30 @@ export function InvoiceViewModal({
     new Intl.DateTimeFormat('fr-FR', { timeZone: 'UTC' }).format(new Date(d))
   const created = new Date(invoice.createdAt)
 
+  // Préparer les données de l'invoice pour le template
+  const invoiceData = invoice.user ? {
+    id: invoice.id,
+    number: invoice.number,
+    status: invoice.status,
+    subtotal: invoice.subtotal,
+    tps: invoice.tps,
+    tvq: invoice.tvq,
+    total: invoice.total,
+    createdAt: new Date(invoice.createdAt),
+    client: {
+      name: invoice.client?.name || '',
+      company: invoice.client?.company || null,
+      email: invoice.client?.email || '',
+      address: invoice.client?.address || null,
+    },
+    items: (invoice.items || []).map(item => ({
+      description: item.description,
+      amount: item.amount,
+      date: new Date(item.date),
+      dueDate: item.dueDate ? new Date(item.dueDate) : null,
+    })),
+  } : null
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -205,35 +229,26 @@ export function InvoiceViewModal({
         </div>
 
         {/* Mode Aperçu - Affiche le vrai template de facture */}
-        {!isEditing && invoice.user && (
-          <div className="p-6">
-            <InvoicePDFTemplate
-              ref={pdfRef}
-              invoice={{
-                id: invoice.id,
-                number: invoice.number,
-                status: invoice.status,
-                subtotal: invoice.subtotal,
-                tps: invoice.tps,
-                tvq: invoice.tvq,
-                total: invoice.total,
-                createdAt: new Date(invoice.createdAt),
-                client: {
-                  name: invoice.client?.name || '',
-                  company: invoice.client?.company || null,
-                  email: invoice.client?.email || '',
-                  address: invoice.client?.address || null,
-                },
-                items: (invoice.items || []).map(item => ({
-                  description: item.description,
-                  amount: item.amount,
-                  date: new Date(item.date),
-                  dueDate: item.dueDate ? new Date(item.dueDate) : null,
-                })),
-              }}
-              user={invoice.user}
-            />
-          </div>
+        {!isEditing && invoice.user && invoiceData && (
+          <>
+            {/* Version visible pour la preview (responsive) */}
+            <div className="p-6">
+              <InvoicePDFTemplate
+                invoice={invoiceData}
+                user={invoice.user}
+              />
+            </div>
+
+            {/* Version cachée pour l'impression (layout desktop forcé) */}
+            <div className="hidden">
+              <InvoicePDFTemplate
+                ref={pdfRef}
+                invoice={invoiceData}
+                user={invoice.user}
+                forPrint={true}
+              />
+            </div>
+          </>
         )}
 
         {/* Mode Édition - Affiche les champs éditables */}

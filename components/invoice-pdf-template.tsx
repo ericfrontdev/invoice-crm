@@ -39,35 +39,35 @@ type User = {
 
 export const InvoicePDFTemplate = React.forwardRef<
   HTMLDivElement,
-  { invoice: Invoice; user: User }
->(({ invoice, user }, ref) => {
+  { invoice: Invoice; user: User; forPrint?: boolean }
+>(({ invoice, user, forPrint = false }, ref) => {
     // Déterminer si les taxes sont chargées
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
     return (
       <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: '297mm' }}>
         {/* En-tête */}
-        <div className="mb-8">
-          <div className="flex flex-row justify-between items-start gap-4">
+        <div className={forPrint ? "mb-8" : "mb-6 md:mb-8"}>
+          <div className={forPrint ? "flex flex-row justify-between items-start gap-4" : "flex flex-col md:flex-row md:justify-between md:items-start gap-4"}>
             <div>
               {user.logo ? (
                 <img
                   src={user.logo}
                   alt="Logo"
-                  className="h-16 w-auto mb-4"
+                  className={forPrint ? "h-16 w-auto mb-4" : "h-12 md:h-16 w-auto mb-2 md:mb-4"}
                   style={{ maxWidth: '200px', objectFit: 'contain' }}
                 />
               ) : (
-                <h1 className="text-4xl font-bold text-gray-900">FACTURE</h1>
+                <h1 className={forPrint ? "text-4xl font-bold text-gray-900" : "text-2xl md:text-4xl font-bold text-gray-900"}>FACTURE</h1>
               )}
-              <p className="text-xl text-gray-600 mt-2">{invoice.number}</p>
+              <p className={forPrint ? "text-xl text-gray-600 mt-2" : "text-lg md:text-xl text-gray-600 mt-1 md:mt-2"}>{invoice.number}</p>
             </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold">{user.company || user.name}</p>
-              {user.address && <p className="text-sm text-gray-600">{user.address}</p>}
-              <p className="text-sm text-gray-600">Québec, Canada</p>
-              {user.phone && <p className="text-sm text-gray-600">{user.phone}</p>}
-              {user.email && <p className="text-sm text-gray-600">{user.email}</p>}
+            <div className={forPrint ? "text-right" : "text-left md:text-right"}>
+              <p className={forPrint ? "text-lg font-semibold" : "text-base md:text-lg font-semibold"}>{user.company || user.name}</p>
+              {user.address && <p className={forPrint ? "text-sm text-gray-600" : "text-xs md:text-sm text-gray-600"}>{user.address}</p>}
+              <p className={forPrint ? "text-sm text-gray-600" : "text-xs md:text-sm text-gray-600"}>Québec, Canada</p>
+              {user.phone && <p className={forPrint ? "text-sm text-gray-600" : "text-xs md:text-sm text-gray-600"}>{user.phone}</p>}
+              {user.email && <p className={forPrint ? "text-sm text-gray-600" : "text-xs md:text-sm text-gray-600"}>{user.email}</p>}
             </div>
           </div>
         </div>
