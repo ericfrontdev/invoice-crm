@@ -12,6 +12,7 @@ import {
   Link2,
   RefreshCw,
   Bell,
+  History,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -196,6 +197,15 @@ export function InvoiceCard({
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Voir et modifier
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                asChild
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Link href={`/factures/${invoice.id}/rappels`}>
+                  <History className="h-4 w-4 mr-2" />
+                  Voir les rappels
+                </Link>
               </DropdownMenuItem>
               {invoice.status === 'draft' && invoice.client?.email && (
                 <DropdownMenuItem

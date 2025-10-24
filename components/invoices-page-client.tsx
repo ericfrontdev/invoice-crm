@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { InvoicesTable } from '@/components/invoices-table'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { CreateInvoiceButton } from '@/components/create-invoice-button'
+import { Button } from '@/components/ui/button'
+import { History } from 'lucide-react'
 
 type Invoice = {
   id: string
@@ -72,7 +75,15 @@ export function InvoicesPageClient({
             Gérez toutes vos factures clients
           </p>
         </div>
-        <CreateInvoiceButton />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/factures/rappels">
+              <History className="h-4 w-4 mr-2" />
+              Historique des rappels
+            </Link>
+          </Button>
+          <CreateInvoiceButton />
+        </div>
       </div>
 
       {totalInvoices === 0 ? (
