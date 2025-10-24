@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useMemo, useEffect } from 'react'
-import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw, MoreVertical } from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw, MoreVertical, History } from 'lucide-react'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
@@ -523,6 +523,14 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                             Renvoyer la facture
                           </DropdownMenuItem>
                         )}
+
+                        {/* Voir les rappels */}
+                        <DropdownMenuItem asChild>
+                          <Link href={`/factures/${inv.id}/rappels`}>
+                            <History className="h-4 w-4 mr-2" />
+                            Voir les rappels
+                          </Link>
+                        </DropdownMenuItem>
 
                         {/* Copier lien (si non-draft) */}
                         {inv.status !== 'draft' && (

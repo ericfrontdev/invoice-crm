@@ -58,7 +58,7 @@ export default async function RemindersHistoryPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-6">
-        <Link href="/factures">
+        <Link href="/invoices">
           <Button variant="ghost" size="sm" className="cursor-pointer">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour vers factures
