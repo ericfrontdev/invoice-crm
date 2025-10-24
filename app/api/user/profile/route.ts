@@ -23,7 +23,9 @@ export async function PUT(req: NextRequest) {
       chargesTaxes,
       paymentProvider,
       paypalEmail,
-      stripeAccountId
+      stripeAccountId,
+      autoRemindersEnabled,
+      reminderMiseEnDemeureTemplate
     } = body
 
     // Validate required fields
@@ -50,6 +52,8 @@ export async function PUT(req: NextRequest) {
         paymentProvider: paymentProvider || null,
         paypalEmail: paypalEmail || null,
         stripeAccountId: stripeAccountId || null,
+        autoRemindersEnabled: autoRemindersEnabled ?? false,
+        reminderMiseEnDemeureTemplate: reminderMiseEnDemeureTemplate || null,
       },
     })
 
@@ -69,6 +73,8 @@ export async function PUT(req: NextRequest) {
         paymentProvider: updatedUser.paymentProvider,
         paypalEmail: updatedUser.paypalEmail,
         stripeAccountId: updatedUser.stripeAccountId,
+        autoRemindersEnabled: updatedUser.autoRemindersEnabled,
+        reminderMiseEnDemeureTemplate: updatedUser.reminderMiseEnDemeureTemplate,
       },
     })
   } catch (error) {

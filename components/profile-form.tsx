@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useRouter } from 'next/navigation'
 
 type User = {
@@ -458,6 +460,65 @@ export function ProfileForm({ user }: { user: User }) {
                     </Button>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Configuration des rappels de paiement */}
+        <div className="pt-6 border-t">
+          <h3 className="text-lg font-semibold mb-4">Rappels de paiement</h3>
+
+          <div className="space-y-4">
+            {/* Toggle rappels automatiques */}
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="autoRemindersEnabled"
+                checked={formData.autoRemindersEnabled}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, autoRemindersEnabled: checked as boolean })
+                }
+              />
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="autoRemindersEnabled"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Activer les rappels automatiques
+                </label>
+                <p className="text-sm text-muted-foreground">
+                  Envoyer automatiquement des rappels de paiement aux clients (J-3, J+1, J+7, J+14)
+                </p>
+              </div>
+            </div>
+
+            {/* Template mise en demeure */}
+            {formData.autoRemindersEnabled && (
+              <div className="ml-7 space-y-2 pt-2">
+                <Label htmlFor="reminderMiseEnDemeureTemplate" className="text-sm">
+                  Message de mise en demeure (personnalisable)
+                </Label>
+                <Textarea
+                  id="reminderMiseEnDemeureTemplate"
+                  value={formData.reminderMiseEnDemeureTemplate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, reminderMiseEnDemeureTemplate: e.target.value })
+                  }
+                  rows={6}
+                  className="font-mono text-sm"
+                  placeholder="Madame, Monsieur,&#10;&#10;Malgré nos précédents rappels, nous constatons que la facture ci-dessous demeure impayée.&#10;&#10;Nous vous prions de bien vouloir régulariser votre situation dans les plus brefs délais, faute de quoi nous serons contraints d'entamer des procédures de recouvrement.&#10;&#10;Cordialement,"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ce message sera envoyé dans le 4e rappel (J+14). Les détails de la facture et le bouton de paiement seront ajoutés automatiquement.
+                </p>
+              </div>
+            )}
+
+            {!formData.autoRemindersEnabled && (
+              <div className="ml-7 p-3 bg-muted rounded-md">
+                <p className="text-sm text-muted-foreground">
+                  Lorsque les rappels automatiques sont désactivés, vous pouvez envoyer des rappels manuels depuis la page de chaque facture.
+                </p>
               </div>
             )}
           </div>
