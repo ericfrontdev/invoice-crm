@@ -45,52 +45,52 @@ export const InvoicePDFTemplate = React.forwardRef<
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
     return (
-      <div ref={ref} className="p-12 bg-white text-black flex flex-col" style={{ width: '210mm', minHeight: '297mm' }}>
+      <div ref={ref} className="p-4 md:p-12 bg-white text-black flex flex-col w-full" style={{ maxWidth: '210mm', minHeight: '297mm' }}>
         {/* En-tête */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
             <div>
               {user.logo ? (
                 <img
                   src={user.logo}
                   alt="Logo"
-                  className="h-16 w-auto mb-4"
+                  className="h-12 md:h-16 w-auto mb-2 md:mb-4"
                   style={{ maxWidth: '200px' }}
                 />
               ) : (
-                <h1 className="text-4xl font-bold text-gray-900">FACTURE</h1>
+                <h1 className="text-2xl md:text-4xl font-bold text-gray-900">FACTURE</h1>
               )}
-              <p className="text-xl text-gray-600 mt-2">{invoice.number}</p>
+              <p className="text-lg md:text-xl text-gray-600 mt-1 md:mt-2">{invoice.number}</p>
             </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold">{user.company || user.name}</p>
-              {user.address && <p className="text-sm text-gray-600">{user.address}</p>}
-              <p className="text-sm text-gray-600">Québec, Canada</p>
-              {user.phone && <p className="text-sm text-gray-600">{user.phone}</p>}
-              {user.email && <p className="text-sm text-gray-600">{user.email}</p>}
-              {user.neq && <p className="text-sm text-gray-600 mt-2">NEQ : {user.neq}</p>}
-              {user.tpsNumber && <p className="text-sm text-gray-600">TPS : {user.tpsNumber}</p>}
-              {user.tvqNumber && <p className="text-sm text-gray-600">TVQ : {user.tvqNumber}</p>}
+            <div className="text-left md:text-right">
+              <p className="text-base md:text-lg font-semibold">{user.company || user.name}</p>
+              {user.address && <p className="text-xs md:text-sm text-gray-600">{user.address}</p>}
+              <p className="text-xs md:text-sm text-gray-600">Québec, Canada</p>
+              {user.phone && <p className="text-xs md:text-sm text-gray-600">{user.phone}</p>}
+              {user.email && <p className="text-xs md:text-sm text-gray-600">{user.email}</p>}
+              {user.neq && <p className="text-xs md:text-sm text-gray-600 mt-2">NEQ : {user.neq}</p>}
+              {user.tpsNumber && <p className="text-xs md:text-sm text-gray-600">TPS : {user.tpsNumber}</p>}
+              {user.tvqNumber && <p className="text-xs md:text-sm text-gray-600">TVQ : {user.tvqNumber}</p>}
             </div>
           </div>
         </div>
 
         {/* Informations client */}
-        <div className="mb-8 bg-gray-50 p-6 rounded">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase mb-3">Facturé à</h2>
-          <p className="text-lg font-semibold">{invoice.client.company || invoice.client.name}</p>
+        <div className="mb-6 md:mb-8 bg-gray-50 p-4 md:p-6 rounded">
+          <h2 className="text-xs md:text-sm font-semibold text-gray-500 uppercase mb-2 md:mb-3">Facturé à</h2>
+          <p className="text-base md:text-lg font-semibold">{invoice.client.company || invoice.client.name}</p>
           {invoice.client.company && invoice.client.name && (
-            <p className="text-gray-700">{invoice.client.name}</p>
+            <p className="text-sm md:text-base text-gray-700">{invoice.client.name}</p>
           )}
-          <p className="text-gray-700">{invoice.client.address}</p>
-          <p className="text-gray-700">{invoice.client.email}</p>
+          <p className="text-sm md:text-base text-gray-700">{invoice.client.address}</p>
+          <p className="text-sm md:text-base text-gray-700">{invoice.client.email}</p>
         </div>
 
         {/* Informations facture */}
-        <div className="mb-8 grid grid-cols-2 gap-4">
+        <div className="mb-6 md:mb-8 grid grid-cols-2 gap-3 md:gap-4">
           <div>
-            <p className="text-sm font-semibold text-gray-500">Date d&apos;émission</p>
-            <p className="text-gray-900">
+            <p className="text-xs md:text-sm font-semibold text-gray-500">Date d&apos;émission</p>
+            <p className="text-sm md:text-base text-gray-900">
               {new Date(invoice.createdAt).toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'long',
@@ -99,21 +99,21 @@ export const InvoicePDFTemplate = React.forwardRef<
             </p>
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-500">Statut</p>
-            <p className="text-gray-900 capitalize">{invoice.status}</p>
+            <p className="text-xs md:text-sm font-semibold text-gray-500">Statut</p>
+            <p className="text-sm md:text-base text-gray-900 capitalize">{invoice.status}</p>
           </div>
         </div>
 
         {/* Tableau des items */}
-        <div className="mb-8">
-          <table className="w-full">
+        <div className="mb-6 md:mb-8 overflow-x-auto">
+          <table className="w-full text-sm md:text-base">
             <thead>
               <tr className="border-b-2 border-gray-900">
-                <th className="text-left py-3 text-sm font-semibold text-gray-500 uppercase">
+                <th className="text-left py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">
                   Description
                 </th>
-                <th className="text-left py-3 text-sm font-semibold text-gray-500 uppercase">Date</th>
-                <th className="text-right py-3 text-sm font-semibold text-gray-500 uppercase">
+                <th className="text-left py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">Date</th>
+                <th className="text-right py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">
                   Montant
                 </th>
               </tr>
@@ -121,11 +121,11 @@ export const InvoicePDFTemplate = React.forwardRef<
             <tbody>
               {invoice.items.map((item, index) => (
                 <tr key={index} className="border-b border-gray-200">
-                  <td className="py-4 text-gray-900">{item.description}</td>
-                  <td className="py-4 text-gray-700">
+                  <td className="py-3 md:py-4 text-gray-900">{item.description}</td>
+                  <td className="py-3 md:py-4 text-gray-700 whitespace-nowrap">
                     {new Date(item.date).toLocaleDateString('fr-FR')}
                   </td>
-                  <td className="py-4 text-right text-gray-900 font-medium">
+                  <td className="py-3 md:py-4 text-right text-gray-900 font-medium whitespace-nowrap">
                     {item.amount.toFixed(2)} $
                   </td>
                 </tr>
@@ -135,8 +135,8 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Total avec ou sans taxes */}
-        <div className="flex justify-end mb-12">
-          <div className="w-80">
+        <div className="flex justify-end mb-8 md:mb-12">
+          <div className="w-full md:w-80">
             {hasTaxes ? (
               <>
                 <div className="flex justify-between py-2">
@@ -166,27 +166,27 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Notes */}
-        <div className="border-t pt-8">
-          <p className="text-sm text-gray-600">
+        <div className="border-t pt-6 md:pt-8">
+          <p className="text-xs md:text-sm text-gray-600">
             <strong>Conditions de paiement :</strong> Paiement sous 30 jours
           </p>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-xs md:text-sm text-gray-600 mt-2">
             <strong>Mode de paiement :</strong> Virement bancaire
           </p>
-          <p className="text-sm text-gray-600 mt-4">
+          <p className="text-xs md:text-sm text-gray-600 mt-3 md:mt-4">
             Merci pour votre confiance !
           </p>
         </div>
 
         {/* Pied de page */}
-        <div className="mt-auto pt-8 text-center text-xs text-gray-500 border-t">
-          <p>
+        <div className="mt-auto pt-6 md:pt-8 text-center text-xs text-gray-500 border-t">
+          <p className="break-words">
             {user.company || user.name}
             {user.neq && ` - NEQ: ${user.neq}`}
             {user.tpsNumber && ` - TPS: ${user.tpsNumber}`}
             {user.tvqNumber && ` - TVQ: ${user.tvqNumber}`}
           </p>
-          <p>
+          <p className="break-words">
             {user.address && `${user.address}, `}Québec, Canada
             {user.phone && ` - ${user.phone}`}
             {user.email && ` - ${user.email}`}
