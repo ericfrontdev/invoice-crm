@@ -89,6 +89,29 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
     }
   }, [openProjectModal])
 
+  // Auto-refresh des données quand on revient sur la page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        router.refresh()
+      }
+    }
+
+    const handleFocus = () => {
+      router.refresh()
+    }
+
+    // Écouter quand l'utilisateur revient sur l'onglet
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    // Écouter quand la fenêtre reçoit le focus
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [router])
+
   return (
     <div className="overflow-x-hidden">
       <div className="space-y-6">

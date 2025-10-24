@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import { ClientCRMView } from '@/components/client-crm-view'
 import { auth } from '@/auth'
 
+// Désactiver le cache pour toujours avoir les données fraîches
+export const revalidate = 0
+
 async function getClientWithCRMData(id: string, userId: string) {
   const client = await prisma.client.findUnique({
     where: { id, userId },
