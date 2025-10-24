@@ -123,9 +123,12 @@ export function CreateInvoiceForProjectModal({
             {items.map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[1fr_140px_auto] gap-2 items-start"
+                className="flex flex-col gap-3 p-3 border rounded-lg md:grid md:grid-cols-[1fr_140px_auto] md:gap-2 md:items-start md:p-0 md:border-0 md:rounded-none"
               >
-                <div>
+                <div className="w-full">
+                  <Label className="text-xs text-muted-foreground mb-1 block md:hidden">
+                    Description
+                  </Label>
                   <Textarea
                     placeholder="Description du travail effectué"
                     value={item.description}
@@ -134,15 +137,31 @@ export function CreateInvoiceForProjectModal({
                     required
                   />
                 </div>
-                <div>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Montant"
-                    value={item.amount}
-                    onChange={(e) => updateItem(index, 'amount', e.target.value)}
-                    required
-                  />
+                <div className="w-full md:w-auto">
+                  <Label className="text-xs text-muted-foreground mb-1 block md:hidden">
+                    Montant
+                  </Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="Montant"
+                      value={item.amount}
+                      onChange={(e) => updateItem(index, 'amount', e.target.value)}
+                      required
+                      className="flex-1 md:flex-none"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeItem(index)}
+                      disabled={items.length === 1}
+                      className="cursor-pointer text-destructive disabled:cursor-not-allowed md:hidden"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 <Button
                   type="button"
@@ -150,7 +169,7 @@ export function CreateInvoiceForProjectModal({
                   size="sm"
                   onClick={() => removeItem(index)}
                   disabled={items.length === 1}
-                  className="cursor-pointer text-destructive disabled:cursor-not-allowed"
+                  className="cursor-pointer text-destructive disabled:cursor-not-allowed hidden md:block"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
