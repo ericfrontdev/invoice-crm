@@ -44,6 +44,8 @@ model User {
   accounts      Account[]
   clients       Client[]
   sessions      Session[]
+  feedbacks     Feedback[]
+  feedbackMessages FeedbackMessage[]
 }
 
 model Account {
@@ -269,4 +271,71 @@ model Expense {
   @@index([date])
   @@index([category])
   @@index([userId, date]) // Index composite pour les queries comptables par période
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+
+  // Contenu
+  type        String   // "bug", "feature", "improvement", "other"
+  severity    String   // "critical", "high", "medium", "low" (choisi par user)
+  title       String   // Résumé court
+  message     String   // Description détaillée
+  screenshot  String?  // URL Cloudinary
+
+  // Contexte automatique
+  pageUrl     String   // URL où feedback créé
+  pageTitle   String?  // Titre de la page
+  userAgent   String?  // Browser/OS
+  screenSize  String?  // Ex: "1920x1080"
+  deviceType  String?  // "desktop", "mobile", "tablet"
+
+  // Utilisateur (peut être null si anonyme)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  isAnonymous Boolean  @default(false)
+
+  // Gestion admin
+  status      String   @default("new") // "new", "reviewing", "in_progress", "resolved", "wont_fix"
+  priority    String   @default("medium") // "low", "medium", "high", "critical" (assigné par admin)
+  adminNote   String?  // Notes internes admin
+  linkedIssue String?  // URL GitHub issue / Trello card
+
+  // Dates
+  createdAt   DateTime @default(now())
+  viewedAt    DateTime? // Première fois que admin l'a vu
+  resolvedAt  DateTime?
+
+  // Relations
+  messages    FeedbackMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([severity])
+  @@index([createdAt])
+  @@index([priority])
+}
+
+model FeedbackMessage {
+  id         String   @id @default(cuid())
+  feedbackId String
+  authorId   String
+  authorType String   // "admin" | "user"
+  message    String
+  createdAt  DateTime @default(now())
+
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([feedbackId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model SystemSettings {
+  id                    String   @id @default(cuid())
+  feedbackSystemEnabled Boolean  @default(true)
+  updatedAt             DateTime @updatedAt
+  updatedBy             String?  // Super admin qui a modifié
 }
