@@ -4,6 +4,7 @@ import { signOut } from 'next-auth/react'
 import { LogOut, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { FeedbackBadge } from '@/components/feedback-badge'
 
 export function UserMenu({
   user,
@@ -15,16 +16,19 @@ export function UserMenu({
   return (
     <div className="flex items-center gap-3">
       {isSuperAdmin && (
-        <Link href="/admin">
-          <Button
-            variant="outline"
-            size="sm"
-            className="cursor-pointer"
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Admin
-          </Button>
-        </Link>
+        <>
+          <Link href="/admin">
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer"
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Admin
+            </Button>
+          </Link>
+          <FeedbackBadge isSuperAdmin={isSuperAdmin} />
+        </>
       )}
 
       <Link

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { sendFeedbackCreatedNotification } from '@/lib/feedback-emails'
 
 // GET /api/feedback - Liste des feedbacks (admin voit tout, user voit les siens)
 export async function GET(req: NextRequest) {
@@ -136,8 +137,10 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // TODO: Envoyer notification email à l'admin
-    // On implémentera ça plus tard
+    // Send email notification to admins (don't await to avoid blocking response)
+    sendFeedbackCreatedNotification(feedback.id).catch((error) => {
+      console.error('Failed to send feedback notification email:', error)
+    })
 
     return NextResponse.json(feedback, { status: 201 })
   } catch (error) {
