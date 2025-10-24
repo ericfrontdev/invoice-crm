@@ -55,7 +55,7 @@ export const InvoicePDFTemplate = React.forwardRef<
                   src={user.logo}
                   alt="Logo"
                   className="h-12 md:h-16 w-auto mb-2 md:mb-4"
-                  style={{ maxWidth: '200px' }}
+                  style={{ maxWidth: '200px', objectFit: 'contain' }}
                 />
               ) : (
                 <h1 className="text-2xl md:text-4xl font-bold text-gray-900">FACTURE</h1>
