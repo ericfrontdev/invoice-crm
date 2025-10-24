@@ -12,6 +12,16 @@ async function getClients(userId: string, showArchived: boolean = false) {
     orderBy: {
       createdAt: 'desc',
     },
+    include: {
+      _count: {
+        select: {
+          projects: true,
+          invoices: true,
+          unpaidAmounts: true,
+          notes: true,
+        },
+      },
+    },
   })
   return clients
 }

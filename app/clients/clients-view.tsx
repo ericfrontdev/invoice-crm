@@ -48,6 +48,12 @@ type Client = {
   website: string | null
   archived: boolean
   archivedAt: Date | null
+  _count?: {
+    projects: number
+    invoices: number
+    unpaidAmounts: number
+    notes: number
+  }
   createdAt: Date
   userId: string
 }
@@ -583,11 +589,42 @@ export function ClientsView({
                 <AlertDialogTitle>
                   Supprimer définitivement le client
                 </AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer définitivement le client
-                  &ldquo;{clientToDelete?.name}&rdquo; ? Cette action est
-                  irréversible et supprimera également tous les projets,
-                  factures et données associés à ce client.
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    Êtes-vous sûr de vouloir supprimer définitivement le client
+                    <strong className="text-foreground"> &ldquo;{clientToDelete?.name}&rdquo;</strong> ?
+                  </p>
+
+                  {clientToDelete?._count && (
+                    clientToDelete._count.projects > 0 ||
+                    clientToDelete._count.invoices > 0 ||
+                    clientToDelete._count.unpaidAmounts > 0 ||
+                    clientToDelete._count.notes > 0
+                  ) && (
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
+                      <p className="font-semibold text-destructive mb-2">
+                        Cela supprimera également :
+                      </p>
+                      <ul className="space-y-1 text-sm">
+                        {clientToDelete._count.projects > 0 && (
+                          <li>• {clientToDelete._count.projects} projet{clientToDelete._count.projects > 1 ? 's' : ''}</li>
+                        )}
+                        {clientToDelete._count.invoices > 0 && (
+                          <li>• {clientToDelete._count.invoices} facture{clientToDelete._count.invoices > 1 ? 's' : ''}</li>
+                        )}
+                        {clientToDelete._count.unpaidAmounts > 0 && (
+                          <li>• {clientToDelete._count.unpaidAmounts} montant{clientToDelete._count.unpaidAmounts > 1 ? 's' : ''} impayé{clientToDelete._count.unpaidAmounts > 1 ? 's' : ''}</li>
+                        )}
+                        {clientToDelete._count.notes > 0 && (
+                          <li>• {clientToDelete._count.notes} note{clientToDelete._count.notes > 1 ? 's' : ''}</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  <p className="text-destructive font-semibold">
+                    Cette action est irréversible.
+                  </p>
                 </AlertDialogDescription>
               </AlertDialogHeader>
             </div>
