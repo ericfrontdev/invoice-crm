@@ -68,9 +68,6 @@ export const InvoicePDFTemplate = React.forwardRef<
               <p className="text-xs md:text-sm text-gray-600">Québec, Canada</p>
               {user.phone && <p className="text-xs md:text-sm text-gray-600">{user.phone}</p>}
               {user.email && <p className="text-xs md:text-sm text-gray-600">{user.email}</p>}
-              {user.neq && <p className="text-xs md:text-sm text-gray-600 mt-2">NEQ : {user.neq}</p>}
-              {user.tpsNumber && <p className="text-xs md:text-sm text-gray-600">TPS : {user.tpsNumber}</p>}
-              {user.tvqNumber && <p className="text-xs md:text-sm text-gray-600">TVQ : {user.tvqNumber}</p>}
             </div>
           </div>
         </div>
