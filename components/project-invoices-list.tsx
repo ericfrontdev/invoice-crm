@@ -24,6 +24,27 @@ type Invoice = {
   }>
 }
 
+type InvoiceForView = Invoice & {
+  client: {
+    id: string
+    name: string | null
+    company?: string | null
+    email?: string | null
+    address?: string | null
+  } | null
+  user?: {
+    name: string
+    company: string | null
+    address: string | null
+    phone: string | null
+    email: string
+    neq: string | null
+    tpsNumber: string | null
+    tvqNumber: string | null
+    logo: string | null
+  }
+}
+
 type ProjectInvoicesListProps = {
   invoices: Invoice[]
   clientId: string
@@ -44,7 +65,7 @@ export function ProjectInvoicesList({
     message: string
   } | null>(null)
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null)
+  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceForView | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const doAction = async (
