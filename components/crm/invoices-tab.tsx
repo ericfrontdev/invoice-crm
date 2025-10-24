@@ -3,13 +3,19 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Eye, Mail, CheckCircle, Trash2, Archive } from 'lucide-react'
+import { Eye, Mail, CheckCircle, Trash2, Archive, MoreVertical, Link2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip } from '@/components/ui/tooltip'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { InvoiceCard } from '@/components/invoice-card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 type Invoice = {
   id: string
@@ -441,7 +447,7 @@ export function InvoicesTab({
                     </td>
                     <td className="p-3">
                       <div className="flex gap-1 justify-end">
-                        {/* Voir */}
+                        {/* Voir (toujours visible) */}
                         <Tooltip content="Voir et modifier">
                           <Button
                             variant="ghost"
@@ -453,62 +459,82 @@ export function InvoicesTab({
                           </Button>
                         </Tooltip>
 
-                        {/* Désarchiver (seulement pour les factures archivées) */}
-                        {isArchivedSection && (
-                          <Tooltip content="Désarchiver">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 dark:text-blue-400"
-                              disabled={busyId === invoice.id}
-                              onClick={() => doAction(invoice.id, 'unarchive')}
-                            >
-                              <Archive className="h-4 w-4" />
-                            </Button>
-                          </Tooltip>
-                        )}
-
-                        {/* Envoyer */}
-                        {!isArchivedSection && invoice.status === 'draft' && (
-                          <Tooltip content="Envoyer par email">
+                        {/* Menu dropdown pour actions secondaires */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
                               size="sm"
                               className="h-8 w-8 p-0"
-                              disabled={busyId === invoice.id}
-                              onClick={() => doAction(invoice.id, 'send')}
                             >
-                              <Mail className="h-4 w-4" />
+                              <MoreVertical className="h-4 w-4" />
                             </Button>
-                          </Tooltip>
-                        )}
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {/* Désarchiver (seulement pour les factures archivées) */}
+                            {isArchivedSection && (
+                              <DropdownMenuItem
+                                onClick={() => doAction(invoice.id, 'unarchive')}
+                                disabled={busyId === invoice.id}
+                              >
+                                <Archive className="h-4 w-4 mr-2" />
+                                Désarchiver
+                              </DropdownMenuItem>
+                            )}
 
-                        {/* Marquer payée */}
-                        {!isArchivedSection && invoice.status !== 'paid' && (
-                          <Tooltip content="Marquer comme payée">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400"
-                              disabled={busyId === invoice.id}
-                              onClick={() => doAction(invoice.id, 'paid')}
+                            {/* Envoyer par email (si draft) */}
+                            {!isArchivedSection && invoice.status === 'draft' && (
+                              <DropdownMenuItem
+                                onClick={() => doAction(invoice.id, 'send')}
+                                disabled={busyId === invoice.id}
+                              >
+                                <Mail className="h-4 w-4 mr-2" />
+                                Envoyer par email
+                              </DropdownMenuItem>
+                            )}
+
+                            {/* Renvoyer (si sent) */}
+                            {!isArchivedSection && invoice.status === 'sent' && (
+                              <DropdownMenuItem
+                                onClick={() => doAction(invoice.id, 'send')}
+                                disabled={busyId === invoice.id}
+                              >
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Renvoyer la facture
+                              </DropdownMenuItem>
+                            )}
+
+                            {/* Copier lien de paiement (si non-draft) */}
+                            {!isArchivedSection && invoice.status !== 'draft' && (
+                              <DropdownMenuItem
+                                onClick={() => handleCopyPaymentLink(invoice.id)}
+                              >
+                                <Link2 className="h-4 w-4 mr-2" />
+                                Copier lien de paiement
+                              </DropdownMenuItem>
+                            )}
+
+                            {/* Marquer payée (si non-paid) */}
+                            {!isArchivedSection && invoice.status !== 'paid' && (
+                              <DropdownMenuItem
+                                onClick={() => doAction(invoice.id, 'paid')}
+                                disabled={busyId === invoice.id}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                                Marquer comme payée
+                              </DropdownMenuItem>
+                            )}
+
+                            {/* Supprimer (toujours) */}
+                            <DropdownMenuItem
+                              onClick={() => setDeleteConfirmId(invoice.id)}
+                              className="text-red-600 focus:text-red-600"
                             >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          </Tooltip>
-                        )}
-
-                        {/* Supprimer */}
-                        <Tooltip content="Supprimer">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 dark:text-red-400"
-                            onClick={() => setDeleteConfirmId(invoice.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </Tooltip>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </td>
                   </tr>
