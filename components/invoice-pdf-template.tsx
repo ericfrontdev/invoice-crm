@@ -45,7 +45,7 @@ export const InvoicePDFTemplate = React.forwardRef<
     const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
     return (
-      <div ref={ref} className="p-12 bg-white text-black" style={{ width: '210mm', minHeight: '297mm' }}>
+      <div ref={ref} className="p-12 bg-white text-black flex flex-col" style={{ width: '210mm', minHeight: '297mm' }}>
         {/* En-tête */}
         <div className="mb-8">
           <div className="flex justify-between items-start">
@@ -179,7 +179,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
 
         {/* Pied de page */}
-        <div className="absolute bottom-8 left-12 right-12 text-center text-xs text-gray-500 border-t pt-4">
+        <div className="mt-auto pt-8 text-center text-xs text-gray-500 border-t">
           <p>
             {user.company || user.name}
             {user.neq && ` - NEQ: ${user.neq}`}
