@@ -3,16 +3,13 @@
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { MessageSquare } from 'lucide-react'
 
-export function FeedbackBadge({ isSuperAdmin }: { isSuperAdmin: boolean }) {
+export function AdminNotificationBadge() {
   const [unreadCount, setUnreadCount] = useState(0)
   const pathname = usePathname()
 
   useEffect(() => {
-    if (!isSuperAdmin) return
-
     const fetchUnreadCount = async () => {
       try {
         const res = await fetch('/api/feedback/unread-count')
@@ -31,25 +28,20 @@ export function FeedbackBadge({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const interval = setInterval(fetchUnreadCount, 30000)
 
     return () => clearInterval(interval)
-  }, [isSuperAdmin, pathname]) // Rafraîchir quand la route change
+  }, [pathname]) // Rafraîchir quand la route change
 
-  if (!isSuperAdmin) return null
+  if (unreadCount === 0) {
+    return null
+  }
 
   return (
-    <Link href="/admin/feedback">
-      <Button
-        variant="outline"
-        size="sm"
-        className="cursor-pointer relative"
-      >
-        <MessageSquare className="h-4 w-4 mr-2" />
-        Feedback
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        )}
-      </Button>
+    <Link
+      href="/admin/feedback"
+      className="relative flex items-center justify-center p-2 cursor-pointer hover:opacity-80 transition-opacity"
+      title={`${unreadCount} feedback${unreadCount > 1 ? 's' : ''} non lu${unreadCount > 1 ? 's' : ''}`}
+    >
+      <MessageSquare className="h-5 w-5 text-muted-foreground" />
+      <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-background" />
     </Link>
   )
 }

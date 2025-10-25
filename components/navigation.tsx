@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { ThemeLogo } from '@/components/theme-logo'
 import { UserMenu } from '@/components/user-menu'
 import { UserNotificationBadge } from '@/components/user-notification-badge'
+import { AdminNotificationBadge } from '@/components/admin-notification-badge'
 
 export function Navigation({
   user,
@@ -170,6 +171,7 @@ export function Navigation({
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             {user && !isSuperAdmin && <UserNotificationBadge />}
+            {user && isSuperAdmin && <AdminNotificationBadge />}
 
             <Button
               variant="outline"
