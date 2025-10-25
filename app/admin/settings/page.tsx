@@ -40,7 +40,7 @@ export default async function AdminSettingsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Paramètres système</h1>
         <p className="text-muted-foreground">
-          Configuration globale de l'application
+          Configuration globale de l&apos;application
         </p>
       </div>
 

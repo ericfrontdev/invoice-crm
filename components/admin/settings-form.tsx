@@ -78,7 +78,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         <div>
           <h2 className="text-lg font-semibold mb-1">Fin de la période bêta</h2>
           <p className="text-sm text-muted-foreground">
-            Définissez une date après laquelle l'application sera automatiquement bloquée pour tous les utilisateurs non-abonnés
+            Définissez une date après laquelle l&apos;application sera automatiquement bloquée pour tous les utilisateurs non-abonnés
           </p>
         </div>
         <div className="space-y-2">
@@ -90,7 +90,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
             onChange={(e) => setBetaEndDate(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
-            Laissez vide pour désactiver la limitation. Une fois cette date passée, seuls les utilisateurs avec un abonnement actif pourront accéder à l'application.
+            Laissez vide pour désactiver la limitation. Une fois cette date passée, seuls les utilisateurs avec un abonnement actif pourront accéder à l&apos;application.
           </p>
         </div>
       </div>

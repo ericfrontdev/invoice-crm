@@ -30,7 +30,7 @@ export function BetaEndBlocker() {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">Période bêta terminée</h1>
             <p className="text-muted-foreground">
-              La période d'essai gratuit de SoloPack est maintenant terminée. Pour continuer à utiliser l'application, vous devez souscrire à un abonnement.
+              La période d&apos;essai gratuit de SoloPack est maintenant terminée. Pour continuer à utiliser l&apos;application, vous devez souscrire à un abonnement.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export function BetaEndBlocker() {
               className="w-full"
             >
               <CreditCard className="h-5 w-5 mr-2" />
-              S'abonner maintenant
+              S&apos;abonner maintenant
             </Button>
 
             <Button
