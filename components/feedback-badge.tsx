@@ -10,26 +10,26 @@ export function FeedbackBadge({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   const [unreadCount, setUnreadCount] = useState(0)
   const pathname = usePathname()
 
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await fetch('/api/feedback/unread-count')
+      if (res.ok) {
+        const data = await res.json()
+        setUnreadCount(data.count)
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error)
+    }
+  }
+
   useEffect(() => {
     if (!isSuperAdmin) return
 
-    const fetchUnreadCount = async () => {
-      try {
-        const res = await fetch('/api/feedback/unread-count')
-        if (res.ok) {
-          const data = await res.json()
-          setUnreadCount(data.count)
-        }
-      } catch (error) {
-        console.error('Error fetching unread count:', error)
-      }
-    }
-
     fetchUnreadCount()
 
-    // Si on est sur la page feedback, rafraîchir plus souvent (3 secondes)
+    // Si on est sur la page feedback, rafraîchir plus souvent (2 secondes)
     // Sinon rafraîchir toutes les 30 secondes
-    const refreshInterval = pathname?.includes('/admin/feedback') ? 3000 : 30000
+    const refreshInterval = pathname?.includes('/admin/feedback') ? 2000 : 30000
     const interval = setInterval(fetchUnreadCount, refreshInterval)
 
     return () => clearInterval(interval)
@@ -38,7 +38,7 @@ export function FeedbackBadge({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   if (!isSuperAdmin) return null
 
   return (
-    <Link href="/admin/feedback">
+    <Link href="/admin/feedback" onClick={fetchUnreadCount}>
       <Button
         variant="outline"
         size="sm"
