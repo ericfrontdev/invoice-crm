@@ -95,7 +95,7 @@ export function Navigation({
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center flex-1">
             {user && (
               <div className="flex items-baseline space-x-4">
                 <Link
@@ -139,28 +139,31 @@ export function Navigation({
               </div>
             )}
 
-            {/* Theme Toggle */}
-            <Button
-              className="cursor-pointer"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setTheme(theme === 'light' ? 'dark' : 'light')
-              }}
-            >
-              {theme === 'light' ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
+            {/* Right side items */}
+            <div className="ml-auto flex items-center gap-3">
+              {/* Theme Toggle */}
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setTheme(theme === 'light' ? 'dark' : 'light')
+                }}
+              >
+                {theme === 'light' ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </Button>
 
-            {user && (
-              <UserMenu
-                user={user}
-                isSuperAdmin={isSuperAdmin || false}
-              />
-            )}
+              {user && (
+                <UserMenu
+                  user={user}
+                  isSuperAdmin={isSuperAdmin || false}
+                />
+              )}
+            </div>
           </div>
 
           {/* Mobile menu button */}
