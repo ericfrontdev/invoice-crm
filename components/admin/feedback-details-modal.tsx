@@ -221,9 +221,16 @@ export function FeedbackDetailsModal({
                   <Badge className={severityLabels[feedback.severity]?.color}>
                     {severityLabels[feedback.severity]?.label}
                   </Badge>
-                  <Badge className={statusLabels[feedback.status]?.color}>
-                    {statusLabels[feedback.status]?.label}
-                  </Badge>
+                  {!feedback.viewedAt && (
+                    <Badge className="bg-blue-500">
+                      Nouveau
+                    </Badge>
+                  )}
+                  {feedback.viewedAt && feedback.status !== 'new' && (
+                    <Badge className={statusLabels[feedback.status]?.color}>
+                      {statusLabels[feedback.status]?.label}
+                    </Badge>
+                  )}
                 </div>
               )}
             </div>

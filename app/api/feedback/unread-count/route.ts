@@ -19,17 +19,17 @@ export async function GET() {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
     }
 
-    // Count new feedbacks
+    // Count new feedbacks (not yet viewed by admin)
     const newFeedbacksCount = await prisma.feedback.count({
       where: {
-        status: 'new',
+        viewedAt: null,
       },
     })
 
     // Find feedbacks with unread messages (messages created after lastAdminReadAt)
     const allFeedbacks = await prisma.feedback.findMany({
       where: {
-        status: { not: 'new' }, // Exclude new feedbacks (already counted)
+        viewedAt: { not: null }, // Only check viewed feedbacks for unread messages
       },
       select: {
         id: true,

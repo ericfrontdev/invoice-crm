@@ -29,7 +29,7 @@ async function getFeedbackStats(userId: string) {
     settings
   ] = await Promise.all([
     prisma.feedback.count(),
-    prisma.feedback.count({ where: { status: 'new' } }),
+    prisma.feedback.count({ where: { viewedAt: null } }), // Count unviewed feedbacks instead of status='new'
     prisma.feedback.count({ where: { status: 'in_progress' } }),
     prisma.feedback.count({ where: { status: 'resolved' } }),
     prisma.feedback.count({ where: { type: 'bug' } }),
