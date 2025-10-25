@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { FeedbackBadge } from '@/components/feedback-badge'
 
@@ -17,11 +18,68 @@ export function UserMenu({
   user,
   isSuperAdmin,
   onProfileClick,
+  isMobile = false,
 }: {
   user: { name: string; email: string; image?: string | null }
   isSuperAdmin: boolean
   onProfileClick?: () => void
+  isMobile?: boolean
 }) {
+  // Version mobile - affichage simple sans dropdown
+  if (isMobile) {
+    return (
+      <div className="space-y-2">
+        {/* User info */}
+        <div className="flex items-center gap-3 px-3 py-2">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-sm font-medium flex-shrink-0">
+            {user.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)}
+          </div>
+          <div>
+            <p className="text-sm font-medium">{user.name}</p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          </div>
+        </div>
+
+        {/* Menu items */}
+        <div className="space-y-1">
+          <Link
+            href="/profil"
+            className="flex items-center gap-3 px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+            onClick={onProfileClick}
+          >
+            <User className="h-5 w-5" />
+            <span>Profil</span>
+          </Link>
+
+          {isSuperAdmin && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-3 px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
+              onClick={onProfileClick}
+            >
+              <Shield className="h-5 w-5" />
+              <span>Admin</span>
+            </Link>
+          )}
+
+          <button
+            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            className="flex items-center gap-3 px-3 py-2 text-base font-medium hover:bg-accent rounded-md w-full text-left text-red-600"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Version desktop - dropdown menu
   return (
     <div className="flex items-center gap-3">
       {isSuperAdmin && <FeedbackBadge isSuperAdmin={isSuperAdmin} />}
@@ -36,11 +94,11 @@ export function UserMenu({
               .toUpperCase()
               .slice(0, 2)}
           </div>
-          <div className="hidden md:block text-left">
+          <div className="text-left">
             <p className="text-sm font-medium">{user.name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>
