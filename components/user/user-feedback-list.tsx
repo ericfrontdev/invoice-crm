@@ -132,78 +132,133 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          {filteredFeedbacks.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              {searchQuery || typeFilter !== 'all' || statusFilter !== 'all' ? (
-                <>Aucun feedback ne correspond à vos critères de recherche</>
-              ) : (
-                <>
-                  Vous n&apos;avez pas encore envoyé de feedback.
-                  <br />
-                  Utilisez le bouton sur le côté droit de l&apos;écran pour en envoyer un !
-                </>
-              )}
+        {/* Table Desktop / Cards Mobile */}
+        {filteredFeedbacks.length === 0 ? (
+          <div className="p-8 text-center text-muted-foreground">
+            {searchQuery || typeFilter !== 'all' || statusFilter !== 'all' ? (
+              <>Aucun feedback ne correspond à vos critères de recherche</>
+            ) : (
+              <>
+                Vous n&apos;avez pas encore envoyé de feedback.
+                <br />
+                Utilisez le bouton sur le côté droit de l&apos;écran pour en envoyer un !
+              </>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b bg-muted/50">
+                  <tr>
+                    <th className="text-left p-4 font-medium text-sm">Type</th>
+                    <th className="text-left p-4 font-medium text-sm">Titre</th>
+                    <th className="text-left p-4 font-medium text-sm">Urgence</th>
+                    <th className="text-left p-4 font-medium text-sm">Statut</th>
+                    <th className="text-left p-4 font-medium text-sm">Date</th>
+                    <th className="text-left p-4 font-medium text-sm">Messages</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredFeedbacks.map((feedback) => (
+                    <tr
+                      key={feedback.id}
+                      onClick={() => setSelectedFeedbackId(feedback.id)}
+                      className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          {(() => {
+                            const Icon = typeIcons[feedback.type] || MessageCircle
+                            return <Icon className="h-5 w-5 text-muted-foreground" />
+                          })()}
+                          <span className="text-sm">
+                            {typeLabels[feedback.type]}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="font-medium">{feedback.title}</div>
+                      </td>
+                      <td className="p-4">
+                        <Badge className={severityLabels[feedback.severity]?.color}>
+                          {severityLabels[feedback.severity]?.label}
+                        </Badge>
+                      </td>
+                      <td className="p-4">
+                        <Badge className={statusLabels[feedback.status]?.color}>
+                          {statusLabels[feedback.status]?.label}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-sm text-muted-foreground">
+                        {new Date(feedback.createdAt).toLocaleDateString('fr-CA')}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1 text-sm">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>{feedback._count.messages}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <table className="w-full">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="text-left p-4 font-medium text-sm">Type</th>
-                  <th className="text-left p-4 font-medium text-sm">Titre</th>
-                  <th className="text-left p-4 font-medium text-sm">Urgence</th>
-                  <th className="text-left p-4 font-medium text-sm">Statut</th>
-                  <th className="text-left p-4 font-medium text-sm">Date</th>
-                  <th className="text-left p-4 font-medium text-sm">Messages</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredFeedbacks.map((feedback) => (
-                  <tr
+
+            {/* Mobile Cards */}
+            <div className="md:hidden p-4 space-y-3">
+              {filteredFeedbacks.map((feedback) => {
+                const Icon = typeIcons[feedback.type] || MessageCircle
+                return (
+                  <div
                     key={feedback.id}
                     onClick={() => setSelectedFeedbackId(feedback.id)}
-                    className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
+                    className="border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors"
                   >
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          const Icon = typeIcons[feedback.type] || MessageCircle
-                          return <Icon className="h-5 w-5 text-muted-foreground" />
-                        })()}
-                        <span className="text-sm hidden md:inline">
-                          {typeLabels[feedback.type]}
-                        </span>
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-2 flex-1">
+                        <Icon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <div>
+                          <h3 className="font-medium text-sm">{feedback.title}</h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {typeLabels[feedback.type]}
+                          </p>
+                        </div>
                       </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-medium">{feedback.title}</div>
-                    </td>
-                    <td className="p-4">
-                      <Badge className={severityLabels[feedback.severity]?.color}>
-                        {severityLabels[feedback.severity]?.label}
-                      </Badge>
-                    </td>
-                    <td className="p-4">
-                      <Badge className={statusLabels[feedback.status]?.color}>
-                        {statusLabels[feedback.status]?.label}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-sm text-muted-foreground">
-                      {new Date(feedback.createdAt).toLocaleDateString('fr-CA')}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-1 text-sm">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>{feedback._count.messages}</span>
+                      {feedback._count.messages > 0 && (
+                        <Badge variant="outline" className="flex-shrink-0">
+                          <MessageSquare className="h-3 w-3 mr-1" />
+                          {feedback._count.messages}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className={severityLabels[feedback.severity]?.color}>
+                          {severityLabels[feedback.severity]?.label}
+                        </Badge>
+                        <span className="text-muted-foreground">•</span>
+                        <Badge className={statusLabels[feedback.status]?.color}>
+                          {statusLabels[feedback.status]?.label}
+                        </Badge>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(feedback.createdAt).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Details Modal */}
