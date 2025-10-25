@@ -26,7 +26,7 @@ export function Navigation({
   if (!isMounted) {
     return (
       <nav className="border-b bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex justify-between items-center h-16">
             <Link
               href="/"
@@ -80,7 +80,7 @@ export function Navigation({
 
   return (
     <nav className="border-b bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link
