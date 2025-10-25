@@ -169,6 +169,8 @@ export function Navigation({
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
+            {user && !isSuperAdmin && <UserNotificationBadge />}
+
             <Button
               variant="outline"
               size="sm"
@@ -182,8 +184,6 @@ export function Navigation({
                 <Sun className="h-4 w-4" />
               )}
             </Button>
-
-            {user && !isSuperAdmin && <UserNotificationBadge />}
 
             <Button
               variant="outline"
