@@ -44,7 +44,7 @@ export function UserMenu({
             <p className="text-sm font-medium">{user.name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
-          {!isSuperAdmin && <UserNotificationBadge />}
+          {!isSuperAdmin && <UserNotificationBadge onClick={onProfileClick} />}
         </div>
 
         {/* Menu items */}
