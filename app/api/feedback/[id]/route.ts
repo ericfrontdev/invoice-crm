@@ -56,11 +56,26 @@ export async function GET(
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
     }
 
-    // Si admin et feedback pas encore vu, marquer comme vu
-    if (isSuperAdmin && !feedback.viewedAt) {
+    // Mettre à jour les timestamps de lecture
+    const updateData: { viewedAt?: Date; lastAdminReadAt?: Date; lastUserReadAt?: Date } = {}
+
+    if (isSuperAdmin) {
+      // Si admin et feedback pas encore vu, marquer comme vu
+      if (!feedback.viewedAt) {
+        updateData.viewedAt = new Date()
+      }
+      // Toujours mettre à jour lastAdminReadAt quand admin ouvre le feedback
+      updateData.lastAdminReadAt = new Date()
+    } else {
+      // User normal - mettre à jour lastUserReadAt
+      updateData.lastUserReadAt = new Date()
+    }
+
+    // Mettre à jour si nécessaire
+    if (Object.keys(updateData).length > 0) {
       await prisma.feedback.update({
         where: { id },
-        data: { viewedAt: new Date() }
+        data: updateData
       })
     }
 

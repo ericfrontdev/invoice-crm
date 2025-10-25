@@ -302,9 +302,11 @@ model Feedback {
   linkedIssue String?  // URL GitHub issue / Trello card
 
   // Dates
-  createdAt   DateTime @default(now())
-  viewedAt    DateTime? // Première fois que admin l'a vu
-  resolvedAt  DateTime?
+  createdAt        DateTime  @default(now())
+  viewedAt         DateTime? // Première fois que admin l'a vu
+  resolvedAt       DateTime?
+  lastAdminReadAt  DateTime? // Dernière fois qu'un admin a lu les messages
+  lastUserReadAt   DateTime? // Dernière fois que l'utilisateur a lu les messages
 
   // Relations
   messages    FeedbackMessage[]

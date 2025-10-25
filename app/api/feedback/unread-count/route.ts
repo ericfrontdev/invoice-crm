@@ -19,12 +19,45 @@ export async function GET() {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
     }
 
-    // Count feedbacks with status 'new' (not yet viewed)
-    const count = await prisma.feedback.count({
+    // Count new feedbacks
+    const newFeedbacksCount = await prisma.feedback.count({
       where: {
         status: 'new',
       },
     })
+
+    // Find feedbacks with unread messages (messages created after lastAdminReadAt)
+    const allFeedbacks = await prisma.feedback.findMany({
+      where: {
+        status: { not: 'new' }, // Exclude new feedbacks (already counted)
+      },
+      select: {
+        id: true,
+        lastAdminReadAt: true,
+        messages: {
+          where: {
+            authorType: 'user',
+          },
+          select: {
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1, // Just get the most recent user message
+        },
+      },
+    })
+
+    // Filter feedbacks that have unread messages
+    const feedbacksWithUnreadMessages = allFeedbacks.filter((feedback) => {
+      if (feedback.messages.length === 0) return false
+      const lastUserMessage = feedback.messages[0]
+      // If no lastAdminReadAt, or last user message is after lastAdminReadAt
+      return !feedback.lastAdminReadAt || lastUserMessage.createdAt > feedback.lastAdminReadAt
+    })
+
+    const count = newFeedbacksCount + feedbacksWithUnreadMessages.length
 
     return NextResponse.json({ count })
   } catch (error) {
