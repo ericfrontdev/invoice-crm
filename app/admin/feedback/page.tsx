@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { FeedbackList } from '@/components/admin/feedback-list'
+import { Bug, Sparkles, Lightbulb, AlertCircle, Clock, CheckCircle, MessageSquare } from 'lucide-react'
 
 export const revalidate = 0
 
@@ -96,40 +97,80 @@ export default async function AdminFeedbackPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold">{data.total}</div>
-          <div className="text-sm text-muted-foreground">Total</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold">{data.total}</div>
+              <div className="text-sm text-muted-foreground">Total</div>
+            </div>
+            <MessageSquare className="h-8 w-8 text-muted-foreground" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold text-blue-600">{data.newCount}</div>
-          <div className="text-sm text-muted-foreground">Nouveaux</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold text-blue-600">{data.newCount}</div>
+              <div className="text-sm text-muted-foreground">Nouveaux</div>
+            </div>
+            <AlertCircle className="h-8 w-8 text-blue-600" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold text-orange-600">{data.inProgressCount}</div>
-          <div className="text-sm text-muted-foreground">En cours</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold text-orange-600">{data.inProgressCount}</div>
+              <div className="text-sm text-muted-foreground">En cours</div>
+            </div>
+            <Clock className="h-8 w-8 text-orange-600" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-4">
-          <div className="text-2xl font-bold text-green-600">{data.resolvedCount}</div>
-          <div className="text-sm text-muted-foreground">Résolus</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold text-green-600">{data.resolvedCount}</div>
+              <div className="text-sm text-muted-foreground">Résolus</div>
+            </div>
+            <CheckCircle className="h-8 w-8 text-green-600" />
+          </div>
         </div>
       </div>
 
       {/* Secondary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-card rounded-lg border p-3">
-          <div className="text-lg font-semibold">{data.bugCount}</div>
-          <div className="text-xs text-muted-foreground">Bugs</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-lg font-semibold">{data.bugCount}</div>
+              <div className="text-xs text-muted-foreground">Bugs</div>
+            </div>
+            <Bug className="h-6 w-6 text-muted-foreground" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-3">
-          <div className="text-lg font-semibold">{data.featureCount}</div>
-          <div className="text-xs text-muted-foreground">Features</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-lg font-semibold">{data.featureCount}</div>
+              <div className="text-xs text-muted-foreground">Features</div>
+            </div>
+            <Sparkles className="h-6 w-6 text-muted-foreground" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-3">
-          <div className="text-lg font-semibold">{data.improvementCount}</div>
-          <div className="text-xs text-muted-foreground">Améliorations</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-lg font-semibold">{data.improvementCount}</div>
+              <div className="text-xs text-muted-foreground">Améliorations</div>
+            </div>
+            <Lightbulb className="h-6 w-6 text-muted-foreground" />
+          </div>
         </div>
         <div className="bg-card rounded-lg border p-3">
-          <div className="text-lg font-semibold text-red-600">{data.criticalCount}</div>
-          <div className="text-xs text-muted-foreground">Critiques</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-lg font-semibold text-red-600">{data.criticalCount}</div>
+              <div className="text-xs text-muted-foreground">Critiques</div>
+            </div>
+            <AlertCircle className="h-6 w-6 text-red-600" />
+          </div>
         </div>
       </div>
 
