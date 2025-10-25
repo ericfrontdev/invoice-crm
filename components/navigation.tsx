@@ -7,6 +7,7 @@ import { Moon, Sun, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { ThemeLogo } from '@/components/theme-logo'
 import { UserMenu } from '@/components/user-menu'
+import { UserNotificationBadge } from '@/components/user-notification-badge'
 
 export function Navigation({
   user,
@@ -181,6 +182,8 @@ export function Navigation({
                 <Sun className="h-4 w-4" />
               )}
             </Button>
+
+            {user && !isSuperAdmin && <UserNotificationBadge />}
 
             <Button
               variant="outline"

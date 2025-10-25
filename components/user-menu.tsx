@@ -40,11 +40,10 @@ export function UserMenu({
               .toUpperCase()
               .slice(0, 2)}
           </div>
-          <div className="flex-1">
+          <div>
             <p className="text-sm font-medium">{user.name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
-          {!isSuperAdmin && <UserNotificationBadge onClick={onProfileClick} />}
         </div>
 
         {/* Menu items */}
