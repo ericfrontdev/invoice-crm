@@ -32,12 +32,12 @@ export function UserNotificationBadge({ onClick }: { onClick?: () => void }) {
   return (
     <Link
       href="/profil/mes-feedbacks"
-      className="relative cursor-pointer hover:opacity-80 transition-opacity"
+      className="relative flex items-center justify-center p-2 cursor-pointer hover:opacity-80 transition-opacity"
       title={`${unreadCount} message${unreadCount > 1 ? 's' : ''} non lu${unreadCount > 1 ? 's' : ''}`}
       onClick={onClick}
     >
       <MessageCircle className="h-5 w-5 text-muted-foreground" />
-      <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-background" />
+      <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-background" />
     </Link>
   )
 }
