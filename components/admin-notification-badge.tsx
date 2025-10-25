@@ -24,8 +24,10 @@ export function AdminNotificationBadge() {
 
     fetchUnreadCount()
 
-    // Refresh count every 30 seconds
-    const interval = setInterval(fetchUnreadCount, 30000)
+    // Si on est sur la page feedback, rafraîchir plus souvent (3 secondes)
+    // Sinon rafraîchir toutes les 30 secondes
+    const refreshInterval = pathname?.includes('/admin/feedback') ? 3000 : 30000
+    const interval = setInterval(fetchUnreadCount, refreshInterval)
 
     return () => clearInterval(interval)
   }, [pathname]) // Rafraîchir quand la route change
