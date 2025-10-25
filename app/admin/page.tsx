@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { isSuperAdmin } from '@/lib/check-super-admin'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Settings } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 async function getAdminData() {
   const users = await prisma.user.findMany({
@@ -49,11 +51,26 @@ export default async function AdminPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Dashboard Super Admin</h1>
-        <p className="text-muted-foreground">
-          Informations des utilisateurs de la plateforme
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Dashboard Super Admin</h1>
+          <p className="text-muted-foreground">
+            Informations des utilisateurs de la plateforme
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/admin/feedback">
+            <Button variant="outline">
+              Feedback
+            </Button>
+          </Link>
+          <Link href="/admin/settings">
+            <Button variant="outline">
+              <Settings className="h-4 w-4 mr-2" />
+              Paramètres
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Users Table */}

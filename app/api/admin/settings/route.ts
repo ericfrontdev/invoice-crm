@@ -59,7 +59,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { feedbackSystemEnabled } = body
+    const { feedbackSystemEnabled, betaEndDate } = body
 
     // Récupérer ou créer les settings
     let settings = await prisma.systemSettings.findFirst()
@@ -78,6 +78,7 @@ export async function PATCH(req: NextRequest) {
         where: { id: settings.id },
         data: {
           feedbackSystemEnabled: feedbackSystemEnabled ?? settings.feedbackSystemEnabled,
+          betaEndDate: betaEndDate !== undefined ? (betaEndDate ? new Date(betaEndDate) : null) : settings.betaEndDate,
           updatedBy: session.user.id,
         }
       })

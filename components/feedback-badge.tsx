@@ -35,7 +35,11 @@ export function FeedbackBadge({ isSuperAdmin }: { isSuperAdmin: boolean }) {
 
   return (
     <Link href="/admin/feedback">
-      <Button variant="outline" size="sm" className="cursor-pointer relative">
+      <Button
+        variant="outline"
+        size="sm"
+        className="cursor-pointer relative"
+      >
         <MessageSquare className="h-4 w-4 mr-2" />
         Feedback
         {unreadCount > 0 && (

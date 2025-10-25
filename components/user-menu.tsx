@@ -9,9 +9,11 @@ import { FeedbackBadge } from '@/components/feedback-badge'
 export function UserMenu({
   user,
   isSuperAdmin,
+  onProfileClick,
 }: {
   user: { name: string; email: string; image?: string | null }
   isSuperAdmin: boolean
+  onProfileClick?: () => void
 }) {
   return (
     <div className="flex items-center gap-3">
@@ -34,6 +36,7 @@ export function UserMenu({
       <Link
         href="/profil"
         className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity rounded-md"
+        onClick={onProfileClick}
       >
         <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 grid place-items-center text-white text-xs font-medium flex-shrink-0">
           {user.name

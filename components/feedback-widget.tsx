@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, MessageSquare, Loader2, Bug, Sparkles, Lightbulb, MessageCircle } from 'lucide-react'
+import {
+  X,
+  MessageSquare,
+  Loader2,
+  Bug,
+  Sparkles,
+  Lightbulb,
+  MessageCircle,
+} from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,10 +34,14 @@ const feedbackTypes = [
 ]
 
 const severityLevels = [
-  { value: 'critical', label: 'Critique', description: 'Bloque complètement l\'utilisation' },
+  {
+    value: 'critical',
+    label: 'Critique',
+    description: "Bloque complètement l'utilisation",
+  },
   { value: 'high', label: 'Élevé', description: 'Gêne importante' },
   { value: 'medium', label: 'Moyen', description: 'Inconvénient mineur' },
-  { value: 'low', label: 'Faible', description: 'Suggestion d\'amélioration' },
+  { value: 'low', label: 'Faible', description: "Suggestion d'amélioration" },
 ]
 
 export function FeedbackWidget() {
@@ -64,7 +76,9 @@ export function FeedbackWidget() {
     checkEnabled()
   }, [])
 
-  const handleScreenshotChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleScreenshotChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -81,7 +95,12 @@ export function FeedbackWidget() {
       pageTitle: document.title,
       userAgent: navigator.userAgent,
       screenSize: `${window.screen.width}x${window.screen.height}`,
-      deviceType: window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
+      deviceType:
+        window.innerWidth < 768
+          ? 'mobile'
+          : window.innerWidth < 1024
+            ? 'tablet'
+            : 'desktop',
     }
   }
 
@@ -112,7 +131,7 @@ export function FeedbackWidget() {
       })
 
       if (!res.ok) {
-        throw new Error('Erreur lors de l\'envoi')
+        throw new Error("Erreur lors de l'envoi")
       }
 
       // Success!
@@ -134,7 +153,7 @@ export function FeedbackWidget() {
       router.refresh()
     } catch (error) {
       console.error('Error submitting feedback:', error)
-      alert('Erreur lors de l\'envoi du feedback. Veuillez réessayer.')
+      alert("Erreur lors de l'envoi du feedback. Veuillez réessayer.")
     } finally {
       setSubmitting(false)
     }
@@ -147,16 +166,34 @@ export function FeedbackWidget() {
 
   return (
     <>
-      {/* Tab flottante */}
+      {/* Spacer pour éviter que le contenu soit caché par le bouton mobile */}
+      {!isOpen && <div className="md:hidden h-14" />}
+
+      {/* Tab flottante - Desktop */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed right-0 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-3 py-6 rounded-l-lg shadow-lg hover:bg-primary/90 transition-all z-50 flex items-center gap-2 font-medium"
-          style={{ writingMode: 'vertical-rl' }}
-        >
-          <MessageSquare className="h-5 w-5" style={{ writingMode: 'horizontal-tb' }} />
-          <span>Feedback</span>
-        </button>
+        <>
+          {/* Version desktop - bouton vertical sur le côté */}
+          <button
+            onClick={() => setIsOpen(true)}
+            className="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-2 py-6 rounded-l-lg shadow-lg hover:bg-primary/90 transition-all z-50 items-center gap-2 font-medium"
+            style={{ writingMode: 'vertical-rl' }}
+          >
+            <MessageSquare
+              className="h-5 w-5"
+              style={{ writingMode: 'horizontal-tb' }}
+            />
+            <span>Feedback</span>
+          </button>
+
+          {/* Version mobile - bannière sticky en bas */}
+          <button
+            onClick={() => setIsOpen(true)}
+            className="md:hidden fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground px-4 py-3 shadow-lg hover:bg-primary/90 transition-all z-50 flex items-center justify-center gap-2 font-medium"
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span>Envoyer un feedback</span>
+          </button>
+        </>
       )}
 
       {/* Drawer */}
@@ -173,7 +210,9 @@ export function FeedbackWidget() {
             {/* Header */}
             <div className="sticky top-0 bg-background border-b px-6 py-4 flex items-center justify-between z-10">
               <div>
-                <h2 className="text-xl font-semibold">💬 Partagez votre feedback</h2>
+                <h2 className="text-xl font-semibold">
+                  💬 Partagez votre feedback
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   Aidez-nous à améliorer SoloPack
                 </p>
@@ -198,17 +237,26 @@ export function FeedbackWidget() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="p-6 space-y-6"
+            >
               {/* Type */}
               <div className="space-y-2">
                 <Label htmlFor="type">Type de feedback *</Label>
-                <Select value={type} onValueChange={setType}>
+                <Select
+                  value={type}
+                  onValueChange={setType}
+                >
                   <SelectTrigger id="type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {feedbackTypes.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
+                      <SelectItem
+                        key={t.value}
+                        value={t.value}
+                      >
                         {t.label}
                       </SelectItem>
                     ))}
@@ -219,14 +267,20 @@ export function FeedbackWidget() {
               {/* Severity */}
               <div className="space-y-2">
                 <Label htmlFor="severity">Urgence *</Label>
-                <Select value={severity} onValueChange={setSeverity}>
-                  <SelectTrigger id="severity">
+                <Select
+                  value={severity}
+                  onValueChange={setSeverity}
+                >
+                  <SelectTrigger id="severity" className="!py-3 h-auto">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="py-2">
                     {severityLevels.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
-                        <div>
+                      <SelectItem
+                        key={s.value}
+                        value={s.value}
+                      >
+                        <div className="text-left">
                           <div>{s.label}</div>
                           <div className="text-xs text-muted-foreground">
                             {s.description}
@@ -269,7 +323,9 @@ export function FeedbackWidget() {
 
               {/* Screenshot */}
               <div className="space-y-2">
-                <Label htmlFor="screenshot">Capture d&apos;écran (optionnel)</Label>
+                <Label htmlFor="screenshot">
+                  Capture d&apos;écran (optionnel)
+                </Label>
                 <div className="flex items-center gap-2">
                   <Input
                     id="screenshot"
@@ -307,7 +363,9 @@ export function FeedbackWidget() {
                 <Checkbox
                   id="anonymous"
                   checked={isAnonymous}
-                  onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setIsAnonymous(checked as boolean)
+                  }
                 />
                 <div className="grid gap-1.5 leading-none">
                   <label
@@ -324,9 +382,21 @@ export function FeedbackWidget() {
 
               {/* Context info */}
               <div className="text-xs text-muted-foreground space-y-1 p-3 bg-muted/50 rounded-lg">
-                <p className="font-medium">Informations capturées automatiquement:</p>
-                <p>• Page actuelle: {typeof window !== 'undefined' ? window.location.pathname : ''}</p>
-                <p>• Navigateur: {typeof window !== 'undefined' ? navigator.userAgent.split(' ').slice(-2).join(' ') : ''}</p>
+                <p className="font-medium">
+                  Informations capturées automatiquement:
+                </p>
+                <p>
+                  • Page actuelle:{' '}
+                  {typeof window !== 'undefined'
+                    ? window.location.pathname
+                    : ''}
+                </p>
+                <p>
+                  • Navigateur:{' '}
+                  {typeof window !== 'undefined'
+                    ? navigator.userAgent.split(' ').slice(-2).join(' ')
+                    : ''}
+                </p>
               </div>
 
               {/* Buttons */}

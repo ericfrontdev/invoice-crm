@@ -4,8 +4,10 @@ import './globals.css'
 import { ThemeProvider } from '@/lib/theme-context'
 import { Navigation } from '@/components/navigation'
 import { FeedbackWidget } from '@/components/feedback-widget'
+import { BetaEndBlocker } from '@/components/beta-end-blocker'
 import { auth } from '@/auth'
 import { isSuperAdmin } from '@/lib/check-super-admin'
+import { prisma } from '@/lib/prisma'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +24,30 @@ export default async function RootLayout({
   const session = await auth()
   const isAdmin = session?.user?.id ? await isSuperAdmin(session.user.id) : false
 
+  // Vérifier si la période bêta est terminée
+  let isBetaEnded = false
+  if (session?.user?.id && !isAdmin) {
+    const settings = await prisma.systemSettings.findFirst()
+    if (settings?.betaEndDate) {
+      const now = new Date()
+      const endDate = new Date(settings.betaEndDate)
+
+      // Si la date de fin est passée
+      if (now > endDate) {
+        // Vérifier si l'utilisateur a un plan payant
+        const user = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { plan: true }
+        })
+
+        // Bloquer si pas de plan ou plan gratuit
+        if (!user?.plan || user.plan === 'free') {
+          isBetaEnded = true
+        }
+      }
+    }
+  }
+
   return (
     <html
       lang="fr"
@@ -29,9 +55,15 @@ export default async function RootLayout({
     >
       <body className={inter.className}>
         <ThemeProvider>
-          <Navigation user={session?.user} isSuperAdmin={isAdmin} />
-          <main className="min-h-screen bg-background">{children}</main>
-          {session?.user && <FeedbackWidget />}
+          {isBetaEnded ? (
+            <BetaEndBlocker />
+          ) : (
+            <>
+              <Navigation user={session?.user} isSuperAdmin={isAdmin} />
+              <main className="min-h-screen bg-background">{children}</main>
+              {session?.user && <FeedbackWidget />}
+            </>
+          )}
         </ThemeProvider>
       </body>
     </html>

@@ -248,6 +248,7 @@ export function Navigation({
                   <UserMenu
                     user={user}
                     isSuperAdmin={isSuperAdmin || false}
+                    onProfileClick={() => setIsMenuOpen(false)}
                   />
                 </div>
               </div>
