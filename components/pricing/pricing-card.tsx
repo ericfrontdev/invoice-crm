@@ -38,14 +38,19 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
         method: 'POST',
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        throw new Error('Erreur lors de la création de la session')
+        setError(data.error || 'Erreur lors de la création de la session')
+        setLoading(false)
+        return
       }
 
-      const { url } = await res.json()
-
-      if (url) {
-        window.location.href = url
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setError('Aucune URL de paiement reçue')
+        setLoading(false)
       }
     } catch (err) {
       console.error('Error:', err)
