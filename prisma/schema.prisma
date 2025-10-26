@@ -32,6 +32,12 @@ model User {
   betaTester       Boolean @default(false) // Identifie les beta testeurs
   lifetimeDiscount Int     @default(0)     // Pourcentage de réduction à vie (ex: 50 pour 50%)
 
+  // Abonnement SoloPack (paiements reçus par nous)
+  stripeCustomerId     String?   // ID du client Stripe pour les abonnements SoloPack
+  stripeSubscriptionId String?   // ID de l'abonnement actif Stripe
+  subscriptionStatus   String?   // "active", "past_due", "canceled", "incomplete"
+  subscriptionEndsAt   DateTime? // Date de fin de l'abonnement
+
   // Configuration des paiements (pour recevoir des paiements des clients)
   paymentProvider  String? // "paypal" ou "stripe"
   paypalEmail      String? // Email PayPal pour recevoir les paiements
