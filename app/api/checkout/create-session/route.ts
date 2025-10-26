@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-09-30.clover',
 })
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const session = await auth()
     if (!session?.user?.id) {
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Déterminer le prix selon si beta tester ou non
-    let priceId = process.env.STRIPE_PRICE_ID_PRO!
+    const priceId = process.env.STRIPE_PRICE_ID_PRO!
 
     // Si beta tester avec discount, on va créer un coupon
     let discounts = undefined

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Check, Loader2, AlertCircle } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 interface PricingCardProps {
   isBetaTester: boolean
@@ -24,7 +23,6 @@ const features = [
 export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   const regularPrice = 29
   const discountedPrice = isBetaTester && lifetimeDiscount > 0
