@@ -21,7 +21,7 @@ type User = {
   chargesTaxes: boolean
   paymentProvider: string | null
   paypalEmail: string | null
-  stripeAccountId: string | null
+  stripeSecretKey: string | null
   logo: string | null
   autoRemindersEnabled: boolean
   reminderMiseEnDemeureTemplate: string | null
@@ -41,7 +41,7 @@ export function ProfileForm({ user }: { user: User }) {
     chargesTaxes: user.chargesTaxes,
     paymentProvider: user.paymentProvider || '',
     paypalEmail: user.paypalEmail || '',
-    stripeAccountId: user.stripeAccountId || '',
+    stripeSecretKey: user.stripeSecretKey || '',
     autoRemindersEnabled: user.autoRemindersEnabled,
     reminderMiseEnDemeureTemplate: user.reminderMiseEnDemeureTemplate || '',
   })
@@ -407,59 +407,32 @@ export function ProfileForm({ user }: { user: User }) {
 
             {formData.paymentProvider === 'stripe' && (
               <div>
-                <Label className="mb-2 block">
-                  Connexion Stripe
+                <Label htmlFor="stripeSecretKey" className="mb-2 block">
+                  Clé secrète Stripe
                 </Label>
-
-                {formData.stripeAccountId ? (
-                  // Compte Stripe déjà connecté
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-                      <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                          Compte Stripe connecté
-                        </p>
-                        <p className="text-xs text-green-700 dark:text-green-300">
-                          ID: {formData.stripeAccountId}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setFormData({ ...formData, stripeAccountId: '' })}
-                      className="cursor-pointer"
-                    >
-                      Déconnecter Stripe
-                    </Button>
-                  </div>
-                ) : (
-                  // Pas encore connecté
-                  <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      Connectez votre compte Stripe pour recevoir les paiements directement.
-                      Les fonds iront automatiquement sur votre compte Stripe.
-                    </p>
-                    <Button
-                      type="button"
-                      variant="default"
-                      onClick={() => {
-                        // Rediriger vers l'API de connexion Stripe OAuth
-                        window.location.href = '/api/stripe/connect'
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"/>
-                      </svg>
-                      Connecter avec Stripe
-                    </Button>
-                  </div>
-                )}
+                <Input
+                  id="stripeSecretKey"
+                  type="password"
+                  value={formData.stripeSecretKey}
+                  onChange={(e) => setFormData({ ...formData, stripeSecretKey: e.target.value })}
+                  placeholder="sk_test_... ou sk_live_..."
+                />
+                <div className="mt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Créez un compte Stripe sur{' '}
+                    <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      stripe.com
+                    </a>
+                    , puis copiez votre clé secrète depuis <strong>Developers → API keys</strong>.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ⚠️ <strong>Important</strong>: Utilisez la clé <strong>Test</strong> (sk_test_...) pour tester,
+                    puis passez à la clé <strong>Live</strong> (sk_live_...) une fois prêt en production.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    🔒 Votre clé est stockée de manière sécurisée et n&apos;est jamais partagée.
+                  </p>
+                </div>
               </div>
             )}
           </div>

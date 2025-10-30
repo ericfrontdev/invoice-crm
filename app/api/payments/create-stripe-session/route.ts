@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
             email: true,
             user: {
               select: {
-                stripeAccountId: true,
+                stripeSecretKey: true,
                 paymentProvider: true,
               },
             },
@@ -45,41 +45,25 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (!invoice.client.user.stripeAccountId) {
+    if (!invoice.client.user.stripeSecretKey) {
       return NextResponse.json(
-        { error: 'ID de compte Stripe manquant' },
+        { error: 'Clé Stripe manquante. Veuillez configurer votre clé Stripe dans vos paramètres.' },
         { status: 400 }
       )
     }
 
-    // Vérifier que la clé secrète Stripe est configurée
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('[create-stripe-session] STRIPE_SECRET_KEY not configured')
-      return NextResponse.json(
-        { error: 'Stripe n\'est pas configuré sur le serveur. Veuillez contacter l\'administrateur.' },
-        { status: 500 }
-      )
-    }
-
-    // Initialiser Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    // Initialiser Stripe avec la clé de l'utilisateur
+    const stripe = new Stripe(invoice.client.user.stripeSecretKey, {
       apiVersion: '2025-09-30.clover',
     })
 
-    // Calculer la commission de la plateforme (optionnel)
-    // Vous pouvez configurer une commission via une variable d'environnement
-    // Par exemple: STRIPE_APPLICATION_FEE_PERCENT=2 pour 2%
-    const applicationFeePercent = parseFloat(process.env.STRIPE_APPLICATION_FEE_PERCENT || '0')
-    const applicationFeeAmount = Math.round(invoice.total * 100 * (applicationFeePercent / 100))
-
-    console.log('[create-stripe-session] Creating session with destination charge:', {
-      destinationAccount: invoice.client.user.stripeAccountId,
+    console.log('[create-stripe-session] Creating session:', {
+      invoiceNumber: invoice.number,
       totalAmount: Math.round(invoice.total * 100),
-      applicationFee: applicationFeeAmount,
-      feePercent: applicationFeePercent,
     })
 
-    // Créer une session de paiement avec Stripe Connect (Destination Charges)
+    // Créer une session de paiement Stripe standard
+    // Les fonds vont directement sur le compte Stripe de l'utilisateur
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
@@ -101,16 +85,6 @@ export async function POST(req: NextRequest) {
       customer_email: invoice.client.email || undefined,
       metadata: {
         invoiceId: invoice.id,
-      },
-      // Stripe Connect: Destination Charges
-      // L'argent va directement sur le compte du solopreneur
-      // La plateforme peut optionnellement prendre une commission
-      payment_intent_data: {
-        transfer_data: {
-          destination: invoice.client.user.stripeAccountId,
-        },
-        // N'ajouter application_fee_amount que si > 0
-        ...(applicationFeeAmount > 0 && { application_fee_amount: applicationFeeAmount }),
       },
     }
 

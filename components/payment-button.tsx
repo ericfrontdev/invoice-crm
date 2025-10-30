@@ -9,7 +9,6 @@ type PaymentButtonProps = {
   invoiceNumber: string
   paymentProvider: string
   paypalEmail: string | null
-  stripeAccountId: string | null
 }
 
 export function PaymentButton({

@@ -23,7 +23,7 @@ export async function PUT(req: NextRequest) {
       chargesTaxes,
       paymentProvider,
       paypalEmail,
-      stripeAccountId,
+      stripeSecretKey,
       autoRemindersEnabled,
       reminderMiseEnDemeureTemplate
     } = body
@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest) {
         chargesTaxes: chargesTaxes ?? false,
         paymentProvider: paymentProvider || null,
         paypalEmail: paypalEmail || null,
-        stripeAccountId: stripeAccountId || null,
+        stripeSecretKey: stripeSecretKey || null,
         autoRemindersEnabled: autoRemindersEnabled ?? false,
         reminderMiseEnDemeureTemplate: reminderMiseEnDemeureTemplate || null,
       },
@@ -72,7 +72,7 @@ export async function PUT(req: NextRequest) {
         chargesTaxes: updatedUser.chargesTaxes,
         paymentProvider: updatedUser.paymentProvider,
         paypalEmail: updatedUser.paypalEmail,
-        stripeAccountId: updatedUser.stripeAccountId,
+        stripeSecretKey: updatedUser.stripeSecretKey,
         autoRemindersEnabled: updatedUser.autoRemindersEnabled,
         reminderMiseEnDemeureTemplate: updatedUser.reminderMiseEnDemeureTemplate,
       },

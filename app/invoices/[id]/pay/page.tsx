@@ -19,7 +19,6 @@ async function getInvoice(id: string) {
               company: true,
               paymentProvider: true,
               paypalEmail: true,
-              stripeAccountId: true,
             },
           },
         },
@@ -210,7 +209,6 @@ export default async function InvoicePayPage(props: {
               invoiceNumber={invoice.number}
               paymentProvider={invoice.client.user.paymentProvider}
               paypalEmail={invoice.client.user.paypalEmail}
-              stripeAccountId={invoice.client.user.stripeAccountId}
             />
           </div>
 

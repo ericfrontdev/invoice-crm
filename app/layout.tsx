@@ -27,10 +27,20 @@ export default async function RootLayout({
   // Vérifier si la période bêta est terminée
   let isBetaEnded = false
   if (session?.user?.id && !isAdmin) {
-    const settings = await prisma.systemSettings.findFirst()
-    if (settings?.betaEndDate) {
-      const now = new Date()
-      const endDate = new Date(settings.betaEndDate)
+    try {
+      // Récupérer ou créer les paramètres système
+      let settings = await prisma.systemSettings.findFirst()
+      if (!settings) {
+        settings = await prisma.systemSettings.create({
+          data: {
+            feedbackSystemEnabled: true,
+            betaEndDate: null,
+          },
+        })
+      }
+      if (settings?.betaEndDate) {
+        const now = new Date()
+        const endDate = new Date(settings.betaEndDate)
 
       // Si la date de fin est passée
       if (now > endDate) {
@@ -45,6 +55,10 @@ export default async function RootLayout({
           isBetaEnded = true
         }
       }
+      }
+    } catch (error) {
+      console.error('Error checking beta status:', error)
+      // En cas d'erreur, on continue sans bloquer l'utilisateur
     }
   }
 

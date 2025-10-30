@@ -41,7 +41,7 @@ model User {
   // Configuration des paiements (pour recevoir des paiements des clients)
   paymentProvider  String? // "paypal" ou "stripe"
   paypalEmail      String? // Email PayPal pour recevoir les paiements
-  stripeAccountId  String? // ID du compte Stripe Connect
+  stripeSecretKey  String? // Clé secrète Stripe de l'utilisateur
 
   // Configuration des rappels de paiement
   autoRemindersEnabled Boolean @default(false) // Activer les rappels automatiques

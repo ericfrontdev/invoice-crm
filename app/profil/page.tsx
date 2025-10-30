@@ -27,7 +27,7 @@ export default async function ProfilPage() {
       chargesTaxes: true,
       paymentProvider: true,
       paypalEmail: true,
-      stripeAccountId: true,
+      stripeSecretKey: true,
       logo: true,
       autoRemindersEnabled: true,
       reminderMiseEnDemeureTemplate: true,
