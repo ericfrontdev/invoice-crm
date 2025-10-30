@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { ThemeLogo } from '@/components/theme-logo'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import Stripe from 'stripe'
 
 async function getInvoice(id: string) {
   const invoice = await prisma.invoice.findUnique({
@@ -16,10 +17,12 @@ async function getInvoice(id: string) {
       client: {
         select: {
           name: true,
+          email: true,
           user: {
             select: {
               name: true,
               company: true,
+              stripeSecretKey: true,
             },
           },
         },
@@ -34,11 +37,57 @@ async function getInvoice(id: string) {
   return invoice
 }
 
+async function verifyAndUpdatePayment(invoiceId: string, sessionId: string, stripeSecretKey: string) {
+  try {
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2025-09-30.clover',
+    })
+
+    // Récupérer la session Stripe pour vérifier le paiement
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    // Si le paiement est complété et la facture n'est pas encore payée
+    if (session.payment_status === 'paid') {
+      await prisma.invoice.update({
+        where: { id: invoiceId },
+        data: {
+          status: 'paid',
+          paidAt: new Date(),
+          paymentProvider: 'stripe',
+          paymentTransactionId: session.payment_intent as string,
+        },
+      })
+
+      // Marquer les unpaidAmounts comme payés
+      await prisma.unpaidAmount.updateMany({
+        where: { invoiceId },
+        data: { status: 'paid' },
+      })
+
+      return true
+    }
+
+    return false
+  } catch (error) {
+    console.error('[payment-success] Error verifying payment:', error)
+    return false
+  }
+}
+
 export default async function PaymentSuccessPage(props: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ session_id?: string }>
 }) {
   const params = await props.params
+  const searchParams = await props.searchParams
   const invoice = await getInvoice(params.id)
+
+  // Si on a un session_id et que la facture n'est pas encore payée, vérifier le paiement
+  if (searchParams.session_id && invoice.status !== 'paid' && invoice.client.user.stripeSecretKey) {
+    await verifyAndUpdatePayment(params.id, searchParams.session_id, invoice.client.user.stripeSecretKey)
+    // Rediriger pour rafraîchir les données
+    redirect(`/invoices/${params.id}/pay/success`)
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
