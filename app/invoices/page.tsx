@@ -9,10 +9,22 @@ async function getInvoices(userId: string) {
     return await prisma.invoice.findMany({
       where: { client: { userId } },
       orderBy: { createdAt: 'desc' },
-      include: {
+      select: {
+        id: true,
+        number: true,
+        status: true,
+        subtotal: true,
+        tps: true,
+        tvq: true,
+        total: true,
+        createdAt: true,
+        dueDate: true,
+        clientId: true,
+        projectId: true,
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
         items: { select: { id: true, description: true, amount: true, date: true, dueDate: true } },
         project: { select: { id: true, name: true } },
+        _count: { select: { reminders: true } },
       },
     })
   } catch {
@@ -20,9 +32,21 @@ async function getInvoices(userId: string) {
     return prisma.invoice.findMany({
       where: { client: { userId } },
       orderBy: { createdAt: 'desc' },
-      include: {
+      select: {
+        id: true,
+        number: true,
+        status: true,
+        subtotal: true,
+        tps: true,
+        tvq: true,
+        total: true,
+        createdAt: true,
+        dueDate: true,
+        clientId: true,
+        projectId: true,
         client: { select: { id: true, name: true, company: true, email: true, address: true } },
         project: { select: { id: true, name: true } },
+        _count: { select: { reminders: true } },
       },
     })
   }

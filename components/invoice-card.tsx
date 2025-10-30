@@ -32,6 +32,7 @@ type Invoice = {
   tvq: number
   total: number
   createdAt: string | Date
+  dueDate?: string | Date | null
   clientId: string
   client: { id: string; name: string | null; email?: string } | null
   project?: { id: string; name: string } | null
@@ -99,6 +100,11 @@ export function InvoiceCard({
 
   const formatDate = (d: string | Date) =>
     new Intl.DateTimeFormat('fr-FR', { timeZone: 'UTC' }).format(new Date(d))
+
+  // Vérifier si la facture est en retard
+  const isOverdue = invoice.status === 'sent' &&
+    invoice.dueDate &&
+    new Date(invoice.dueDate) < new Date()
 
   const handleTouchStart = () => {
     if (isSelectionMode) return
@@ -276,18 +282,25 @@ export function InvoiceCard({
           <div className="flex-1">
             <h3 className="font-semibold text-base">{invoice.number}</h3>
           </div>
-          <span
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ml-2 ${
-              statusColors[invoice.status as keyof typeof statusColors] ||
-              statusColors.draft
-            }`}
-          >
-            <span>
-              {statusIcons[invoice.status as keyof typeof statusIcons] || '📝'}
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${
+                statusColors[invoice.status as keyof typeof statusColors] ||
+                statusColors.draft
+              }`}
+            >
+              <span>
+                {statusIcons[invoice.status as keyof typeof statusIcons] || '📝'}
+              </span>
+              {statusLabels[invoice.status as keyof typeof statusLabels] ||
+                invoice.status}
             </span>
-            {statusLabels[invoice.status as keyof typeof statusLabels] ||
-              invoice.status}
-          </span>
+            {isOverdue && (
+              <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300">
+                ⚠️ En retard
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Client */}
