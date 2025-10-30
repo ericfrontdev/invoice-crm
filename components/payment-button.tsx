@@ -7,7 +7,7 @@ type PaymentButtonProps = {
   invoiceId: string
   total: number
   invoiceNumber: string
-  paymentProvider: string
+  paymentProvider: string | null
   paypalEmail: string | null
   isPaid?: boolean
 }
