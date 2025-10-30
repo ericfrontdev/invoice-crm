@@ -9,6 +9,7 @@ type PaymentButtonProps = {
   invoiceNumber: string
   paymentProvider: string
   paypalEmail: string | null
+  isPaid?: boolean
 }
 
 export function PaymentButton({
@@ -17,6 +18,7 @@ export function PaymentButton({
   invoiceNumber,
   paymentProvider,
   paypalEmail,
+  isPaid = false,
 }: PaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -78,6 +80,8 @@ export function PaymentButton({
   }
 
   const handlePayment = () => {
+    if (isPaid) return // Ne rien faire si déjà payé
+
     if (paymentProvider === 'paypal') {
       handlePayPalPayment()
     } else if (paymentProvider === 'stripe') {
@@ -95,11 +99,28 @@ export function PaymentButton({
 
       <Button
         onClick={handlePayment}
-        disabled={isProcessing}
+        disabled={isProcessing || isPaid}
         size="lg"
         className="w-full text-lg cursor-pointer"
       >
-        {isProcessing ? (
+        {isPaid ? (
+          <span className="flex items-center gap-2">
+            <svg
+              className="w-5 h-5 text-green-600 dark:text-green-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            Facture payée
+          </span>
+        ) : isProcessing ? (
           <span className="flex items-center gap-2">
             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
               <circle

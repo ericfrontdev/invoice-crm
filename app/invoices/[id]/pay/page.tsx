@@ -42,46 +42,11 @@ export default async function InvoicePayPage(props: {
   const params = await props.params
   const invoice = await getInvoice(params.id)
 
-  // Si la facture est déjà payée
-  if (invoice.status === 'paid') {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
-          <div className="text-center mb-8">
-            <ThemeLogo width={200} height={50} className="mx-auto mb-4" />
-          </div>
+  const isPaid = invoice.status === 'paid'
+  const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
-          <div className="bg-card border rounded-xl shadow-lg p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
-              <svg
-                className="w-8 h-8 text-green-600 dark:text-green-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold mb-2">Facture déjà payée</h1>
-            <p className="text-muted-foreground">
-              Cette facture a été payée le{' '}
-              {invoice.paidAt
-                ? new Intl.DateTimeFormat('fr-FR').format(new Date(invoice.paidAt))
-                : 'N/A'}
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Si le provider n'a pas configuré de moyen de paiement
-  if (!invoice.client.user.paymentProvider) {
+  // Si le provider n'a pas configuré de moyen de paiement et que la facture n'est pas payée
+  if (!invoice.client.user.paymentProvider && !isPaid) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
@@ -101,17 +66,22 @@ export default async function InvoicePayPage(props: {
     )
   }
 
-  const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
-
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-3xl mx-auto py-8">
         <div className="text-center mb-8">
           <ThemeLogo width={200} height={50} className="mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-2">Paiement de facture</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            {isPaid ? 'Facture payée' : 'Paiement de facture'}
+          </h1>
           <p className="text-muted-foreground">
             Facture {invoice.number}
           </p>
+          {isPaid && invoice.paidAt && (
+            <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+              Payée le {new Intl.DateTimeFormat('fr-FR').format(new Date(invoice.paidAt))}
+            </p>
+          )}
         </div>
 
         <div className="bg-card border rounded-xl shadow-lg p-6 mb-6">
@@ -209,6 +179,7 @@ export default async function InvoicePayPage(props: {
               invoiceNumber={invoice.number}
               paymentProvider={invoice.client.user.paymentProvider}
               paypalEmail={invoice.client.user.paypalEmail}
+              isPaid={isPaid}
             />
           </div>
 
