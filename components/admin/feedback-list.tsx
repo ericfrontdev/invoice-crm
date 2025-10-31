@@ -108,7 +108,7 @@ export function FeedbackList({
   }
 
   const handleMarkResolved = async (feedbackId: string, e: React.MouseEvent) => {
-    e.stopPropagation() // Empêcher l'ouverture de la modal
+    e.stopPropagation() // Empêcher l'ouverture de la modal pendant le clic sur le bouton
     setResolvingId(feedbackId)
 
     try {
@@ -120,6 +120,7 @@ export function FeedbackList({
 
       if (res.ok) {
         router.refresh()
+        // Après le refresh, l'admin peut toujours cliquer sur la ligne pour ouvrir la modal
       } else {
         alert('Erreur lors de la mise à jour')
       }
