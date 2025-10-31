@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
 
+interface HelcimWebhookData {
+  type?: string
+  eventType?: string
+  customer?: {
+    customerCode?: string
+    id?: string
+  }
+  customerCode?: string
+  customerId?: string
+}
+
 export async function POST(request: Request) {
   try {
     // Vérifier la signature Helcim pour la sécurité
@@ -38,7 +49,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function processWebhook(body: any) {
+async function processWebhook(body: HelcimWebhookData) {
   try {
 
     // Vérifier le type d'événement
@@ -74,7 +85,7 @@ async function processWebhook(body: any) {
   }
 }
 
-async function handlePaymentSuccess(data: any) {
+async function handlePaymentSuccess(data: HelcimWebhookData) {
   const customerCode = data.customer?.customerCode || data.customerCode
 
   if (!customerCode) {
@@ -96,7 +107,7 @@ async function handlePaymentSuccess(data: any) {
   console.log(`Abonnement activé pour l'utilisateur ${customerCode}`)
 }
 
-async function handlePaymentFailed(data: any) {
+async function handlePaymentFailed(data: HelcimWebhookData) {
   const customerCode = data.customer?.customerCode || data.customerCode
 
   if (!customerCode) {
@@ -117,7 +128,7 @@ async function handlePaymentFailed(data: any) {
   // TODO: Envoyer un email à l'utilisateur pour l'informer
 }
 
-async function handleSubscriptionCancelled(data: any) {
+async function handleSubscriptionCancelled(data: HelcimWebhookData) {
   const customerCode = data.customer?.customerCode || data.customerCode
 
   if (!customerCode) {
