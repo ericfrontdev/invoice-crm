@@ -37,7 +37,18 @@ async function getFeedbackStats(userId: string) {
     prisma.feedback.count({ where: { type: 'improvement' } }),
     prisma.feedback.count({ where: { severity: 'critical' } }),
     prisma.feedback.findMany({
-      include: {
+      select: {
+        id: true,
+        type: true,
+        severity: true,
+        title: true,
+        message: true,
+        status: true,
+        priority: true,
+        createdAt: true,
+        viewedAt: true,
+        isAnonymous: true,
+        lastAdminReadAt: true,
         user: {
           select: {
             id: true,
@@ -49,7 +60,19 @@ async function getFeedbackStats(userId: string) {
           select: {
             messages: true
           }
-        }
+        },
+        messages: {
+          where: {
+            authorType: 'user',
+          },
+          select: {
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
+        },
       },
       orderBy: {
         createdAt: 'desc'
@@ -57,6 +80,19 @@ async function getFeedbackStats(userId: string) {
     }),
     prisma.systemSettings.findFirst()
   ])
+
+  // Calculer s'il y a des messages non lus par l'admin
+  const feedbacksWithUnread = feedbacks.map(feedback => {
+    const hasUnreadMessages =
+      feedback.messages.length > 0 &&
+      (!feedback.lastAdminReadAt ||
+       new Date(feedback.messages[0].createdAt) > new Date(feedback.lastAdminReadAt))
+
+    return {
+      ...feedback,
+      hasUnreadMessages,
+    }
+  })
 
   return {
     total,
@@ -67,7 +103,7 @@ async function getFeedbackStats(userId: string) {
     featureCount,
     improvementCount,
     criticalCount,
-    feedbacks,
+    feedbacks: feedbacksWithUnread,
     feedbackSystemEnabled: settings?.feedbackSystemEnabled ?? true
   }
 }

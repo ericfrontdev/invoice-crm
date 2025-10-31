@@ -28,6 +28,7 @@ type Feedback = {
   createdAt: Date
   viewedAt: Date | null
   isAnonymous: boolean
+  hasUnreadMessages: boolean
   user: {
     id: string
     name: string
@@ -285,7 +286,14 @@ export function FeedbackList({
                       </td>
                       <td className="p-3 text-center">
                         {feedback._count.messages > 0 && (
-                          <Badge variant="outline">
+                          <Badge
+                            variant="outline"
+                            className={
+                              feedback.hasUnreadMessages
+                                ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-400/10 dark:text-red-300 dark:border-red-400/30 font-semibold'
+                                : ''
+                            }
+                          >
                             {feedback._count.messages}
                           </Badge>
                         )}
@@ -322,7 +330,14 @@ export function FeedbackList({
                         </div>
                       </div>
                       {feedback._count.messages > 0 && (
-                        <Badge variant="outline" className="flex-shrink-0">
+                        <Badge
+                          variant="outline"
+                          className={`flex-shrink-0 ${
+                            feedback.hasUnreadMessages
+                              ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-400/10 dark:text-red-300 dark:border-red-400/30 font-semibold'
+                              : ''
+                          }`}
+                        >
                           <MessageSquare className="h-3 w-3 mr-1" />
                           {feedback._count.messages}
                         </Badge>
