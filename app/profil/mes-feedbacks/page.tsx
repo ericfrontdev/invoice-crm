@@ -12,11 +12,30 @@ async function getUserFeedbacks(userId: string) {
       where: {
         userId,
       },
-      include: {
+      select: {
+        id: true,
+        type: true,
+        severity: true,
+        title: true,
+        status: true,
+        createdAt: true,
+        lastUserReadAt: true,
         _count: {
           select: {
             messages: true,
           },
+        },
+        messages: {
+          where: {
+            authorType: 'admin',
+          },
+          select: {
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
         },
       },
       orderBy: {
@@ -24,16 +43,29 @@ async function getUserFeedbacks(userId: string) {
       },
     })
 
+    // Calculer s'il y a des messages non lus
+    const feedbacksWithUnread = feedbacks.map(feedback => {
+      const hasUnreadMessages =
+        feedback.messages.length > 0 &&
+        (!feedback.lastUserReadAt ||
+         new Date(feedback.messages[0].createdAt) > new Date(feedback.lastUserReadAt))
+
+      return {
+        ...feedback,
+        hasUnreadMessages,
+      }
+    })
+
     const stats = {
-      total: feedbacks.length,
-      new: feedbacks.filter((f) => f.status === 'new').length,
-      in_progress: feedbacks.filter((f) => f.status === 'in_progress').length,
-      resolved: feedbacks.filter((f) => f.status === 'resolved').length,
-      bugs: feedbacks.filter((f) => f.type === 'bug').length,
-      features: feedbacks.filter((f) => f.type === 'feature').length,
+      total: feedbacksWithUnread.length,
+      new: feedbacksWithUnread.filter((f) => f.status === 'new').length,
+      in_progress: feedbacksWithUnread.filter((f) => f.status === 'in_progress').length,
+      resolved: feedbacksWithUnread.filter((f) => f.status === 'resolved').length,
+      bugs: feedbacksWithUnread.filter((f) => f.type === 'bug').length,
+      features: feedbacksWithUnread.filter((f) => f.type === 'feature').length,
     }
 
-    return { feedbacks, stats }
+    return { feedbacks: feedbacksWithUnread, stats }
   } catch (error) {
     console.error('Error fetching user feedbacks:', error)
     return null

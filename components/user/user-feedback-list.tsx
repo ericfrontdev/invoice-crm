@@ -23,6 +23,7 @@ interface UserFeedbackListProps {
     title: string
     status: string
     createdAt: Date
+    hasUnreadMessages: boolean
     _count: {
       messages: number
     }
@@ -195,7 +196,11 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
                         {new Date(feedback.createdAt).toLocaleDateString('fr-CA')}
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center gap-1 text-sm">
+                        <div className={`flex items-center gap-1 text-sm ${
+                          feedback.hasUnreadMessages
+                            ? 'text-red-600 dark:text-red-400 font-semibold'
+                            : ''
+                        }`}>
                           <MessageSquare className="h-4 w-4" />
                           <span>{feedback._count.messages}</span>
                         </div>
@@ -227,7 +232,14 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
                         </div>
                       </div>
                       {feedback._count.messages > 0 && (
-                        <Badge variant="outline" className="flex-shrink-0">
+                        <Badge
+                          variant="outline"
+                          className={`flex-shrink-0 ${
+                            feedback.hasUnreadMessages
+                              ? 'bg-red-100 text-red-800 border-red-300 dark:bg-red-400/10 dark:text-red-300 dark:border-red-400/30 font-semibold'
+                              : ''
+                          }`}
+                        >
                           <MessageSquare className="h-3 w-3 mr-1" />
                           {feedback._count.messages}
                         </Badge>
