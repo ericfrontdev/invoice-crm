@@ -26,6 +26,9 @@ export default async function RootLayout({
 
   // Vérifier si la période bêta est terminée
   let isBetaEnded = false
+  let betaEndDate: Date | null = null
+  let isWithin30Days = false
+
   if (session?.user?.id && !isAdmin) {
     try {
       // Récupérer ou créer les paramètres système
@@ -38,23 +41,47 @@ export default async function RootLayout({
           },
         })
       }
+
       if (settings?.betaEndDate) {
         const now = new Date()
         const endDate = new Date(settings.betaEndDate)
+        betaEndDate = endDate
 
-      // Si la date de fin est passée
-      if (now > endDate) {
-        // Vérifier si l'utilisateur a un plan payant
-        const user = await prisma.user.findUnique({
-          where: { id: session.user.id },
-          select: { plan: true }
-        })
+        // Si la date de fin est passée
+        if (now > endDate) {
+          // Vérifier si l'utilisateur a un plan payant
+          const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: {
+              plan: true,
+              betaTester: true,
+              lifetimeDiscount: true,
+              createdAt: true
+            }
+          })
 
-        // Bloquer si pas de plan ou plan gratuit
-        if (!user?.plan || user.plan === 'free') {
-          isBetaEnded = true
+          // Bloquer si pas de plan ou plan gratuit
+          if (!user?.plan || user.plan === 'free') {
+            isBetaEnded = true
+
+            // Vérifier si on est dans les 30 jours après la fin du beta
+            const thirtyDaysAfterEnd = new Date(endDate)
+            thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30)
+            isWithin30Days = now <= thirtyDaysAfterEnd
+
+            // Marquer automatiquement comme beta tester avec 50% si dans les 30 jours
+            // et pas déjà marqué
+            if (isWithin30Days && (!user.betaTester || user.lifetimeDiscount !== 50)) {
+              await prisma.user.update({
+                where: { id: session.user.id },
+                data: {
+                  betaTester: true,
+                  lifetimeDiscount: 50,
+                },
+              })
+            }
+          }
         }
-      }
       }
     } catch (error) {
       console.error('Error checking beta status:', error)
@@ -70,7 +97,10 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           {isBetaEnded ? (
-            <BetaEndBlocker />
+            <BetaEndBlocker
+              betaEndDate={betaEndDate}
+              isWithin30Days={isWithin30Days}
+            />
           ) : (
             <>
               <Navigation user={session?.user} isSuperAdmin={isAdmin} />
