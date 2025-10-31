@@ -507,7 +507,9 @@ export function FeedbackDetailsModal({
                   </div>
                 ) : (
                   <div className="text-sm text-muted-foreground text-center py-4 bg-muted/30 rounded-lg">
-                    Ce feedback est fermé. Réouvrez-le pour continuer la conversation.
+                    {isSuperAdmin
+                      ? "Ce feedback est fermé. Réouvrez-le pour continuer la conversation."
+                      : "Ce feedback a été fermé par l'équipe. Il n'est plus possible d'envoyer de messages."}
                   </div>
                 )}
               </div>
