@@ -479,31 +479,37 @@ export function FeedbackDetailsModal({
                 </div>
 
                 {/* New message */}
-                <div className="space-y-2">
-                  <Label htmlFor="newMessage">Nouveau message</Label>
-                  <div className="flex gap-2">
-                    <Textarea
-                      id="newMessage"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Répondre..."
-                      rows={2}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={sending || !newMessage.trim()}
-                      size="sm"
-                      className="self-end"
-                    >
-                      {sending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Send className="h-4 w-4" />
-                      )}
-                    </Button>
+                {feedback.status !== 'closed' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="newMessage">Nouveau message</Label>
+                    <div className="flex gap-2">
+                      <Textarea
+                        id="newMessage"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Répondre..."
+                        rows={2}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={sending || !newMessage.trim()}
+                        size="sm"
+                        className="self-end"
+                      >
+                        {sending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Send className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground text-center py-4 bg-muted/30 rounded-lg">
+                    Ce feedback est fermé. Réouvrez-le pour continuer la conversation.
+                  </div>
+                )}
               </div>
             </div>
           )}

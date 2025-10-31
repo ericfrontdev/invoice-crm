@@ -15,7 +15,13 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { FeedbackDetailsModal } from '@/components/admin/feedback-details-modal'
-import { Search, RefreshCw, Bug, Sparkles, Lightbulb, MessageCircle, MessageSquare, Check } from 'lucide-react'
+import { Search, RefreshCw, Bug, Sparkles, Lightbulb, MessageCircle, MessageSquare, MoreVertical, Check, X, RotateCcw } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 type Feedback = {
   id: string
@@ -100,31 +106,30 @@ export function FeedbackList({
       } else {
         alert('Erreur lors de la mise à jour')
       }
-    } catch (error) {
+    } catch {
       alert('Erreur lors de la mise à jour')
     } finally {
       setToggling(false)
     }
   }
 
-  const handleMarkResolved = async (feedbackId: string, e: React.MouseEvent) => {
-    e.stopPropagation() // Empêcher l'ouverture de la modal pendant le clic sur le bouton
+  const handleStatusChange = async (feedbackId: string, newStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Empêcher l'ouverture de la modal pendant le clic sur le menu
     setResolvingId(feedbackId)
 
     try {
       const res = await fetch(`/api/feedback/${feedbackId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'resolved' }),
+        body: JSON.stringify({ status: newStatus }),
       })
 
       if (res.ok) {
         router.refresh()
-        // Après le refresh, l'admin peut toujours cliquer sur la ligne pour ouvrir la modal
       } else {
         alert('Erreur lors de la mise à jour')
       }
-    } catch (error) {
+    } catch {
       alert('Erreur lors de la mise à jour')
     } finally {
       setResolvingId(null)
@@ -325,24 +330,66 @@ export function FeedbackList({
                         )}
                       </td>
                       <td className="p-3 text-center">
-                        {feedback.status !== 'resolved' && feedback.status !== 'closed' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => handleMarkResolved(feedback.id, e)}
-                            disabled={resolvingId === feedback.id}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          >
-                            {resolvingId === feedback.id ? (
-                              <span className="text-xs">...</span>
-                            ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              disabled={resolvingId === feedback.id}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {(feedback.status === 'new' || feedback.status === 'in_progress') && (
                               <>
-                                <Check className="h-3 w-3 mr-1" />
-                                Résolu
+                                <DropdownMenuItem
+                                  onClick={(e) => handleStatusChange(feedback.id, 'resolved', e)}
+                                  disabled={resolvingId === feedback.id}
+                                >
+                                  <Check className="h-4 w-4 mr-2 text-green-600" />
+                                  Marquer comme résolu
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
+                                  disabled={resolvingId === feedback.id}
+                                >
+                                  <X className="h-4 w-4 mr-2 text-gray-600" />
+                                  Fermer
+                                </DropdownMenuItem>
                               </>
                             )}
-                          </Button>
-                        )}
+                            {feedback.status === 'resolved' && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={(e) => handleStatusChange(feedback.id, 'in_progress', e)}
+                                  disabled={resolvingId === feedback.id}
+                                >
+                                  <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                                  Réouvrir
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
+                                  disabled={resolvingId === feedback.id}
+                                >
+                                  <X className="h-4 w-4 mr-2 text-gray-600" />
+                                  Fermer
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            {feedback.status === 'closed' && (
+                              <DropdownMenuItem
+                                onClick={(e) => handleStatusChange(feedback.id, 'in_progress', e)}
+                                disabled={resolvingId === feedback.id}
+                              >
+                                <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                                Réouvrir
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))}
@@ -422,26 +469,69 @@ export function FeedbackList({
                       </div>
                     </div>
 
-                    {feedback.status !== 'resolved' && feedback.status !== 'closed' && (
-                      <div className="mt-3 pt-3 border-t">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => handleMarkResolved(feedback.id, e)}
-                          disabled={resolvingId === feedback.id}
-                          className="w-full text-green-600 hover:text-green-700 hover:bg-green-50"
-                        >
-                          {resolvingId === feedback.id ? (
-                            <span className="text-xs">Marquage en cours...</span>
-                          ) : (
+                    <div className="mt-3 pt-3 border-t">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            disabled={resolvingId === feedback.id}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreVertical className="h-4 w-4 mr-2" />
+                            Actions
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="center" className="w-48">
+                          {(feedback.status === 'new' || feedback.status === 'in_progress') && (
                             <>
-                              <Check className="h-3 w-3 mr-1" />
-                              Marquer comme résolu
+                              <DropdownMenuItem
+                                onClick={(e) => handleStatusChange(feedback.id, 'resolved', e)}
+                                disabled={resolvingId === feedback.id}
+                              >
+                                <Check className="h-4 w-4 mr-2 text-green-600" />
+                                Marquer comme résolu
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
+                                disabled={resolvingId === feedback.id}
+                              >
+                                <X className="h-4 w-4 mr-2 text-gray-600" />
+                                Fermer
+                              </DropdownMenuItem>
                             </>
                           )}
-                        </Button>
-                      </div>
-                    )}
+                          {feedback.status === 'resolved' && (
+                            <>
+                              <DropdownMenuItem
+                                onClick={(e) => handleStatusChange(feedback.id, 'in_progress', e)}
+                                disabled={resolvingId === feedback.id}
+                              >
+                                <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                                Réouvrir
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
+                                disabled={resolvingId === feedback.id}
+                              >
+                                <X className="h-4 w-4 mr-2 text-gray-600" />
+                                Fermer
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                          {feedback.status === 'closed' && (
+                            <DropdownMenuItem
+                              onClick={(e) => handleStatusChange(feedback.id, 'in_progress', e)}
+                              disabled={resolvingId === feedback.id}
+                            >
+                              <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                              Réouvrir
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 )
               })}
