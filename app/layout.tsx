@@ -71,7 +71,7 @@ export default async function RootLayout({
 
             // Marquer automatiquement comme beta tester avec 50% si dans les 30 jours
             // et pas déjà marqué
-            if (isWithin30Days && (!user.betaTester || user.lifetimeDiscount !== 50)) {
+            if (user && isWithin30Days && (!user.betaTester || user.lifetimeDiscount !== 50)) {
               await prisma.user.update({
                 where: { id: session.user.id },
                 data: {
