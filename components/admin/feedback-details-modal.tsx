@@ -114,6 +114,7 @@ export function FeedbackDetailsModal({
   const [priority, setPriority] = useState('')
   const [adminNote, setAdminNote] = useState('')
   const [linkedIssue, setLinkedIssue] = useState('')
+  const [resolving, setResolving] = useState(false)
 
   const router = useRouter()
 
@@ -193,6 +194,33 @@ export function FeedbackDetailsModal({
     }
   }
 
+  const handleMarkResolved = async () => {
+    setResolving(true)
+    try {
+      const res = await fetch(`/api/feedback/${feedbackId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'resolved',
+          priority,
+          adminNote: adminNote.trim() || null,
+          linkedIssue: linkedIssue.trim() || null,
+        }),
+      })
+
+      if (res.ok) {
+        await loadFeedback()
+        router.refresh()
+        alert('✅ Feedback marqué comme résolu')
+      }
+    } catch (error) {
+      console.error('Error marking as resolved:', error)
+      alert('Erreur lors de la mise à jour')
+    } finally {
+      setResolving(false)
+    }
+  }
+
   if (!isOpen) return null
 
   return (
@@ -235,14 +263,34 @@ export function FeedbackDetailsModal({
               )}
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {isSuperAdmin && feedback && feedback.status !== 'resolved' && feedback.status !== 'closed' && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleMarkResolved}
+                disabled={resolving}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {resolving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Marquage...
+                  </>
+                ) : (
+                  '✓ Marquer comme résolu'
+                )}
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Content */}

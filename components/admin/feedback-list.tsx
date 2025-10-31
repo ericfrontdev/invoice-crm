@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { FeedbackDetailsModal } from '@/components/admin/feedback-details-modal'
-import { Search, RefreshCw, Bug, Sparkles, Lightbulb, MessageCircle, MessageSquare } from 'lucide-react'
+import { Search, RefreshCw, Bug, Sparkles, Lightbulb, MessageCircle, MessageSquare, Check } from 'lucide-react'
 
 type Feedback = {
   id: string
@@ -82,6 +82,7 @@ export function FeedbackList({
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null)
   const [toggling, setToggling] = useState(false)
+  const [resolvingId, setResolvingId] = useState<string | null>(null)
 
   const handleToggleSystem = async (enabled: boolean) => {
     setToggling(true)
@@ -103,6 +104,29 @@ export function FeedbackList({
       alert('Erreur lors de la mise à jour')
     } finally {
       setToggling(false)
+    }
+  }
+
+  const handleMarkResolved = async (feedbackId: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Empêcher l'ouverture de la modal
+    setResolvingId(feedbackId)
+
+    try {
+      const res = await fetch(`/api/feedback/${feedbackId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'resolved' }),
+      })
+
+      if (res.ok) {
+        router.refresh()
+      } else {
+        alert('Erreur lors de la mise à jour')
+      }
+    } catch (error) {
+      alert('Erreur lors de la mise à jour')
+    } finally {
+      setResolvingId(null)
     }
   }
 
@@ -217,6 +241,7 @@ export function FeedbackList({
                     <th className="text-left p-3 font-medium text-sm">Statut</th>
                     <th className="text-left p-3 font-medium text-sm">Date</th>
                     <th className="text-center p-3 font-medium text-sm">Messages</th>
+                    <th className="text-center p-3 font-medium text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -298,6 +323,26 @@ export function FeedbackList({
                           </Badge>
                         )}
                       </td>
+                      <td className="p-3 text-center">
+                        {feedback.status !== 'resolved' && feedback.status !== 'closed' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => handleMarkResolved(feedback.id, e)}
+                            disabled={resolvingId === feedback.id}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            {resolvingId === feedback.id ? (
+                              <span className="text-xs">...</span>
+                            ) : (
+                              <>
+                                <Check className="h-3 w-3 mr-1" />
+                                Résolu
+                              </>
+                            )}
+                          </Button>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -375,6 +420,27 @@ export function FeedbackList({
                         })}
                       </div>
                     </div>
+
+                    {feedback.status !== 'resolved' && feedback.status !== 'closed' && (
+                      <div className="mt-3 pt-3 border-t">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleMarkResolved(feedback.id, e)}
+                          disabled={resolvingId === feedback.id}
+                          className="w-full text-green-600 hover:text-green-700 hover:bg-green-50"
+                        >
+                          {resolvingId === feedback.id ? (
+                            <span className="text-xs">Marquage en cours...</span>
+                          ) : (
+                            <>
+                              <Check className="h-3 w-3 mr-1" />
+                              Marquer comme résolu
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )
               })}

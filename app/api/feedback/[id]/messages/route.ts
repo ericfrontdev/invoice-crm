@@ -112,6 +112,14 @@ export async function POST(
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
     }
 
+    // Si c'est un admin qui répond, changer automatiquement le statut à "in_progress" si c'est encore "new"
+    if (isSuperAdmin && feedback.status === 'new') {
+      await prisma.feedback.update({
+        where: { id },
+        data: { status: 'in_progress' }
+      })
+    }
+
     const newMessage = await prisma.feedbackMessage.create({
       data: {
         feedbackId: id,
