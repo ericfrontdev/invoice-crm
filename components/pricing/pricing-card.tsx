@@ -34,7 +34,7 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
     setError(null)
 
     try {
-      const res = await fetch('/api/checkout/create-session', {
+      const res = await fetch('/api/helcim/create-checkout', {
         method: 'POST',
       })
 
@@ -137,7 +137,7 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
         </Button>
 
         <p className="text-xs text-center text-muted-foreground mt-4">
-          Paiement sécurisé via Stripe • Annulez à tout moment
+          Paiement sécurisé via Helcim • Annulez à tout moment
         </p>
       </div>
 
