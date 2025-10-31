@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { LogOut, CreditCard, Sparkles, Clock } from 'lucide-react'
 import { signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 interface BetaEndBlockerProps {
   betaEndDate: Date | null
@@ -11,11 +10,9 @@ interface BetaEndBlockerProps {
 }
 
 export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerProps) {
-  const router = useRouter()
-
   const handleSubscribe = () => {
-    // Rediriger vers la page de pricing/abonnement
-    router.push('/pricing')
+    // Utiliser window.location pour forcer un rechargement complet
+    window.location.href = '/pricing'
   }
 
   const handleSignOut = () => {
