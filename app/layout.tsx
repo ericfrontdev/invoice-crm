@@ -8,6 +8,7 @@ import { BetaEndBlocker } from '@/components/beta-end-blocker'
 import { auth } from '@/auth'
 import { isSuperAdmin } from '@/lib/check-super-admin'
 import { prisma } from '@/lib/prisma'
+import { headers } from 'next/headers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +24,11 @@ export default async function RootLayout({
 }) {
   const session = await auth()
   const isAdmin = session?.user?.id ? await isSuperAdmin(session.user.id) : false
+
+  // Vérifier l'URL actuelle pour permettre l'accès à /pricing
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  const isPricingPage = pathname.startsWith('/pricing')
 
   // Vérifier si la période bêta est terminée
   let isBetaEnded = false
@@ -96,7 +102,7 @@ export default async function RootLayout({
     >
       <body className={inter.className}>
         <ThemeProvider>
-          {isBetaEnded ? (
+          {isBetaEnded && !isPricingPage ? (
             <BetaEndBlocker
               betaEndDate={betaEndDate}
               isWithin30Days={isWithin30Days}
