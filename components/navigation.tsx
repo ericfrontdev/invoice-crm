@@ -9,6 +9,7 @@ import { ThemeLogo } from '@/components/theme-logo'
 import { UserMenu } from '@/components/user-menu'
 import { UserNotificationBadge } from '@/components/user-notification-badge'
 import { AdminNotificationBadge } from '@/components/admin-notification-badge'
+import { LanguageSelector } from '@/components/language-selector'
 
 export function Navigation({
   user,
@@ -143,6 +144,9 @@ export function Navigation({
 
             {/* Right side items */}
             <div className="ml-auto flex items-center gap-3">
+              {/* Language Selector */}
+              <LanguageSelector />
+
               {/* Theme Toggle */}
               <Button
                 className="cursor-pointer"

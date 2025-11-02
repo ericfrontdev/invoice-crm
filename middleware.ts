@@ -1,18 +1,35 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
+import { NextRequest, NextResponse } from 'next/server'
+
+const intlMiddleware = createMiddleware({
+  locales: ['en', 'fr'],
+  defaultLocale: 'fr',
+  localePrefix: 'as-needed'
+})
 
 export function middleware(request: NextRequest) {
-  // Ajouter le pathname dans les headers pour pouvoir y accéder dans le layout
+  // Apply next-intl middleware
+  const response = intlMiddleware(request)
+
+  // Add pathname to headers for layout access
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', request.nextUrl.pathname)
 
-  return NextResponse.next({
+  // Clone the response and add custom headers
+  const modifiedResponse = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   })
+
+  // Copy cookies from intl middleware
+  response.cookies.getAll().forEach(cookie => {
+    modifiedResponse.cookies.set(cookie)
+  })
+
+  return modifiedResponse
 }
 
 export const config = {
-  matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 }
