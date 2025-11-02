@@ -44,13 +44,13 @@ export function LanguageSelector() {
           onClick={() => switchLanguage('fr')}
           className={currentLocale === 'fr' ? 'bg-accent' : ''}
         >
-          🇫🇷 Français
+          Français
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => switchLanguage('en')}
           className={currentLocale === 'en' ? 'bg-accent' : ''}
         >
-          🇨🇦 English
+          English
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
