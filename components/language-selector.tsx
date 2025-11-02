@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Globe } from 'lucide-react'
 import {
@@ -9,28 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function LanguageSelector() {
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const switchLanguage = (locale: 'en' | 'fr') => {
-    // Remove current locale from pathname if present
-    let newPathname = pathname
-    if (pathname.startsWith('/en')) {
-      newPathname = pathname.replace(/^\/en/, '')
-    } else if (pathname.startsWith('/fr')) {
-      newPathname = pathname.replace(/^\/fr/, '')
-    }
-
-    // Add new locale prefix if not French (default)
-    const targetPath = locale === 'en' ? `/en${newPathname || '/'}` : newPathname || '/'
-
-    router.push(targetPath)
-  }
-
-  // Detect current locale from pathname
-  const currentLocale = pathname.startsWith('/en') ? 'en' : 'fr'
+  const { locale, setLocale } = useTranslation()
 
   return (
     <DropdownMenu>
@@ -41,14 +22,14 @@ export function LanguageSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
-          onClick={() => switchLanguage('fr')}
-          className={currentLocale === 'fr' ? 'bg-accent' : ''}
+          onClick={() => setLocale('fr')}
+          className={locale === 'fr' ? 'bg-accent' : ''}
         >
           Français
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => switchLanguage('en')}
-          className={currentLocale === 'en' ? 'bg-accent' : ''}
+          onClick={() => setLocale('en')}
+          className={locale === 'en' ? 'bg-accent' : ''}
         >
           English
         </DropdownMenuItem>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from '@/lib/theme-context'
+import { useTranslation } from '@/lib/i18n-context'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import Link from 'next/link'
@@ -19,6 +20,7 @@ export function Navigation({
   isSuperAdmin?: boolean
 }) {
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -105,26 +107,26 @@ export function Navigation({
                   href="/"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Tableau de bord
+                  {t('nav.dashboard')}
                 </Link>
 
                 <Link
                   href="/clients"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Clients
+                  {t('nav.clients')}
                 </Link>
                 <Link
                   href="/invoices"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Factures
+                  {t('nav.invoices')}
                 </Link>
                 <Link
                   href="/projets"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Projets
+                  {t('nav.projects')}
                 </Link>
 
                 <Link
@@ -137,7 +139,7 @@ export function Navigation({
                   href="/accounting"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Comptabilité
+                  {t('nav.accounting')}
                 </Link>
               </div>
             )}
