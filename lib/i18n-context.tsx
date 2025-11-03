@@ -5,7 +5,6 @@ import en from '@/locales/en.json'
 import fr from '@/locales/fr.json'
 
 type Locale = 'en' | 'fr'
-type Messages = typeof fr
 
 interface I18nContextType {
   locale: Locale
@@ -15,9 +14,9 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
-const messages: Record<Locale, Messages> = {
-  en,
-  fr,
+const messages: Record<Locale, Record<string, any>> = {
+  en: en as Record<string, any>,
+  fr: fr as Record<string, any>,
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
