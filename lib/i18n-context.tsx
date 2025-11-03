@@ -14,8 +14,11 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const messages: Record<Locale, Record<string, any>> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   en: en as Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fr: fr as Record<string, any>,
 }
 
