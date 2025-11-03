@@ -82,7 +82,9 @@
     "info": "Information",
     "title": "Titre",
     "for": "pour",
-    "addTag": "Ajouter une étiquette"
+    "addTag": "Ajouter une étiquette",
+    "modifiedOn": "Modifié le",
+    "createdOn": "Créé le"
   },
   "nav": {
     "dashboard": "Tableau de bord",

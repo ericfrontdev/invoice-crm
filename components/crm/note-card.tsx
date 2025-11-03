@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Edit, Trash2, Calendar } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Note = {
   id: string
@@ -21,6 +22,8 @@ export function NoteCard({
   onEdit: (note: Note) => void
   onDelete: (noteId: string) => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="bg-card rounded-lg border p-4 hover:shadow-lg transition-shadow">
       {/* Header */}
@@ -69,7 +72,7 @@ export function NoteCard({
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Calendar className="h-3 w-3" />
         <span>
-          Modifié le {new Date(note.updatedAt).toLocaleDateString()}
+          {t('common.modifiedOn')} {new Date(note.updatedAt).toLocaleDateString()}
         </span>
       </div>
     </div>

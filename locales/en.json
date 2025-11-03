@@ -70,7 +70,9 @@
     "version": "Version",
     "title": "Title",
     "for": "for",
-    "addTag": "Add a tag"
+    "addTag": "Add a tag",
+    "modifiedOn": "Modified on",
+    "createdOn": "Created on"
   },
   "nav": {
     "dashboard": "Dashboard",
