@@ -67,7 +67,10 @@
     "help": "Help",
     "support": "Support",
     "documentation": "Documentation",
-    "version": "Version"
+    "version": "Version",
+    "title": "Title",
+    "for": "for",
+    "addTag": "Add a tag"
   },
   "nav": {
     "dashboard": "Dashboard",

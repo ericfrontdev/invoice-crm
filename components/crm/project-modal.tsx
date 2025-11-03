@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -39,6 +40,7 @@ export function ProjectModal({
   project: Project | null
   clientName?: string
 }) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -94,10 +96,10 @@ export function ProjectModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {project ? 'Modifier le projet' : 'Nouveau projet'}
+            {project ? t('projects.editProject') : t('projects.newProject')}
             {clientName && !project && (
               <span className="text-sm font-normal text-muted-foreground ml-2">
-                pour {clientName}
+                {t('common.for')} {clientName}
               </span>
             )}
           </DialogTitle>
@@ -105,7 +107,7 @@ export function ProjectModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name" className="mb-2 block">Nom du projet *</Label>
+            <Label htmlFor="name" className="mb-2 block">{t('projects.projectName')} *</Label>
             <Input
               id="name"
               value={formData.name}
@@ -117,7 +119,7 @@ export function ProjectModal({
           </div>
 
           <div>
-            <Label htmlFor="description" className="mb-2 block">Description</Label>
+            <Label htmlFor="description" className="mb-2 block">{t('common.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -130,7 +132,7 @@ export function ProjectModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="status" className="mb-2 block">Statut</Label>
+              <Label htmlFor="status" className="mb-2 block">{t('common.status')}</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
@@ -141,16 +143,16 @@ export function ProjectModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Actif</SelectItem>
-                  <SelectItem value="completed">Terminé</SelectItem>
-                  <SelectItem value="paused">En pause</SelectItem>
-                  <SelectItem value="cancelled">Annulé</SelectItem>
+                  <SelectItem value="active">{t('projects.active')}</SelectItem>
+                  <SelectItem value="completed">{t('projects.completed')}</SelectItem>
+                  <SelectItem value="paused">{t('projects.onHold')}</SelectItem>
+                  <SelectItem value="cancelled">{t('projects.cancelled')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="budget" className="mb-2 block">Budget</Label>
+              <Label htmlFor="budget" className="mb-2 block">{t('projects.budget')}</Label>
               <Input
                 id="budget"
                 type="number"
@@ -166,7 +168,7 @@ export function ProjectModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startDate" className="mb-2 block">Date de début</Label>
+              <Label htmlFor="startDate" className="mb-2 block">{t('projects.startDate')}</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -178,7 +180,7 @@ export function ProjectModal({
             </div>
 
             <div>
-              <Label htmlFor="endDate" className="mb-2 block">Date de fin</Label>
+              <Label htmlFor="endDate" className="mb-2 block">{t('projects.endDate')}</Label>
               <Input
                 id="endDate"
                 type="date"
@@ -192,10 +194,10 @@ export function ProjectModal({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {project ? 'Mettre à jour' : 'Créer'}
+              {project ? t('common.update') : t('common.create')}
             </Button>
           </div>
         </form>

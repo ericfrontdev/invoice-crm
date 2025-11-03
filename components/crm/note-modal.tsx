@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { X } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Note = {
   id: string
@@ -26,6 +27,7 @@ export function NoteModal({
   onSave: (data: { title: string; content: string; tags: string[] }) => Promise<void>
   note: Note | null
 }) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -82,13 +84,13 @@ export function NoteModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {note ? 'Modifier la note' : 'Nouvelle note'}
+            {note ? t('crm.editNote') : t('crm.addNote')}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Titre *</Label>
+            <Label htmlFor="title">{t('common.title')} *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -100,7 +102,7 @@ export function NoteModal({
           </div>
 
           <div>
-            <Label htmlFor="content">Contenu *</Label>
+            <Label htmlFor="content">{t('crm.noteContent')} *</Label>
             <Textarea
               id="content"
               value={formData.content}
@@ -113,7 +115,7 @@ export function NoteModal({
           </div>
 
           <div>
-            <Label htmlFor="tags">Tags</Label>
+            <Label htmlFor="tags">{t('common.tags')}</Label>
             <div className="flex gap-2">
               <Input
                 id="tags"
@@ -127,14 +129,14 @@ export function NoteModal({
                     handleAddTag()
                   }
                 }}
-                placeholder="Ajouter un tag"
+                placeholder={t('common.addTag')}
               />
               <Button
                 type="button"
                 onClick={handleAddTag}
                 variant="outline"
               >
-                Ajouter
+                {t('common.add')}
               </Button>
             </div>
 
@@ -161,10 +163,10 @@ export function NoteModal({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {note ? 'Mettre à jour' : 'Créer'}
+              {note ? t('common.update') : t('common.create')}
             </Button>
           </div>
         </form>

@@ -7,6 +7,7 @@ import { LayoutGrid, List, Plus } from 'lucide-react'
 import { NoteCard } from './note-card'
 import { NoteList } from './note-list'
 import { NoteModal } from './note-modal'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Note = {
   id: string
@@ -32,6 +33,7 @@ export function NotesTab({
   externalNoteModalOpen?: boolean
   onExternalNoteModalClose?: () => void
 }) {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
@@ -73,7 +75,7 @@ export function NotesTab({
   }
 
   const handleDeleteNote = async (noteId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return
+    if (!confirm(t('crm.deleteNoteConfirm'))) return
 
     const res = await fetch(`/api/notes/${noteId}`, {
       method: 'DELETE',
@@ -109,20 +111,20 @@ export function NotesTab({
 
         <Button onClick={handleCreateNote} className="cursor-pointer">
           <Plus className="h-4 w-4 mr-2" />
-          Nouvelle note
+          {t('crm.addNote')}
         </Button>
       </div>
 
       {/* Content */}
       {client.notes.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Aucune note pour ce client</p>
+          <p>{t('crm.noNotes')}</p>
           <Button
             onClick={handleCreateNote}
             variant="outline"
             className="mt-4 cursor-pointer"
           >
-            Créer la première note
+            {t('crm.addFirstNote')}
           </Button>
         </div>
       ) : viewMode === 'cards' ? (

@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   ChevronDown,
 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Client = {
   id: string
@@ -67,6 +68,8 @@ export function OverviewTab({
   onCreateInvoiceForProject: (projectId: string) => void
   onAddNote: () => void
 }) {
+  const { t } = useTranslation()
+
   // Calculs des métriques
   const activeProjects = client.projects.filter((p) => p.status === 'active').length
   const completedProjects = client.projects.filter((p) => p.status === 'completed').length
@@ -108,12 +111,12 @@ export function OverviewTab({
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <FolderKanban className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-xs text-muted-foreground">Projets</span>
+            <span className="text-xs text-muted-foreground">{t('crm.projects')}</span>
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold">{totalProjects}</p>
             <p className="text-xs text-muted-foreground">
-              {activeProjects} actifs • {completedProjects} terminés
+              {activeProjects} {t('crm.overview.active')} • {completedProjects} {t('crm.overview.completed')}
             </p>
           </div>
         </div>
