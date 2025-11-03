@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -65,6 +66,7 @@ export function ProjectsTab({
   externalProjectModalOpen?: boolean
   onExternalProjectModalClose?: () => void
 }) {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
@@ -248,20 +250,20 @@ export function ProjectsTab({
 
         <Button onClick={handleCreateProject} className="cursor-pointer">
           <Plus className="h-4 w-4 mr-2" />
-          Nouveau projet
+          {t('projects.newProject')}
         </Button>
       </div>
 
       {/* Content */}
       {client.projects.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Aucun projet pour ce client</p>
+          <p>{t('crm.overview.noProjects')}</p>
           <Button
             onClick={handleCreateProject}
             variant="outline"
             className="mt-4 cursor-pointer"
           >
-            Créer le premier projet
+            {t('projects.createFirstProject')}
           </Button>
         </div>
       ) : viewMode === 'cards' ? (
@@ -307,21 +309,20 @@ export function ProjectsTab({
             </div>
             <div className="flex-1">
               <AlertDialogHeader>
-                <AlertDialogTitle>Supprimer le projet</AlertDialogTitle>
+                <AlertDialogTitle>{t('projects.deleteProject')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le projet &ldquo;{projectToDelete?.name}&rdquo; ?
-                  Cette action est irréversible et supprimera également tous les fichiers associés.
+                  {t('projects.deleteConfirm')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
             </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
             >
-              Supprimer
+              {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
