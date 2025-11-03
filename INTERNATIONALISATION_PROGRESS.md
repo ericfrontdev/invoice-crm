@@ -1,7 +1,7 @@
 # État d'avancement de l'internationalisation SoloPack
 
-**Date:** 3 novembre 2025  
-**Progression globale:** 42% (31/73 composants)
+**Date:** 3 novembre 2025
+**Progression globale:** 53% (42/73 composants)
 
 ## ✅ Infrastructure complétée (100%)
 
@@ -11,7 +11,7 @@
 - [x] Sélecteur de langue dans header
 - [x] Build production qui passe
 
-## ✅ Composants traduits (31/73 - 42%)
+## ✅ Composants traduits (42/73 - 58%)
 
 ### Navigation & Core (4/4)
 - [x] Navigation
@@ -46,21 +46,21 @@
 - [x] expense-modal
 - [x] add-revenue-modal
 
-### CRM (4/12)
+### CRM (11/12) ✅
 - [x] notes-tab
 - [x] note-modal
 - [x] note-card
 - [x] project-modal
+- [x] overview-tab (100% traduit)
+- [x] projects-tab (100% traduit)
+- [x] project-card (100% traduit)
+- [x] project-list (100% traduit)
+- [x] invoices-tab (50+ strings traduits)
 
-## 🔄 À compléter (42/73 - 58%)
+## 🔄 À compléter (31/73 - 42%)
 
-### CRM restants (8/12)
-- [ ] overview-tab (partiellement fait - besoin de finir lignes 128-334)
-- [ ] projects-tab (lignes 250-326 à traduire)
-- [ ] project-card
-- [ ] project-list
-- [ ] invoices-tab
-- [ ] note-list
+### CRM restants (2/12) - Optionnels
+- [ ] note-list (peut-être pas utilisé?)
 - [ ] upload-documents-modal
 - [ ] create-invoice-for-project-modal
 
