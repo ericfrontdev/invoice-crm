@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n-context'
 
 type User = {
   id: string
@@ -28,6 +29,7 @@ type User = {
 }
 
 export function ProfileForm({ user }: { user: User }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: user.name,
@@ -66,17 +68,17 @@ export function ProfileForm({ user }: { user: User }) {
 
       if (!res.ok) {
         const error = await res.json()
-        throw new Error(error.error || 'Erreur lors de l\'upload')
+        throw new Error(error.error || t('errors.uploadFailed'))
       }
 
       const data = await res.json()
       setLogo(data.logoUrl)
-      setMessage({ type: 'success', text: 'Logo uploadé avec succès' })
+      setMessage({ type: 'success', text: t('profile.logoUploaded') })
       router.refresh()
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Erreur lors de l\'upload du logo'
+        text: error instanceof Error ? error.message : t('errors.uploadFailed')
       })
     } finally {
       setIsUploadingLogo(false)
@@ -96,9 +98,8 @@ export function ProfileForm({ user }: { user: User }) {
     const file = e.dataTransfer.files?.[0]
     if (!file) return
 
-    // Vérifier que c'est une image
     if (!file.type.startsWith('image/')) {
-      setMessage({ type: 'error', text: 'Le fichier doit être une image' })
+      setMessage({ type: 'error', text: t('errors.fileTypeNotSupported') })
       return
     }
 
@@ -125,14 +126,14 @@ export function ProfileForm({ user }: { user: User }) {
       })
 
       if (!res.ok) {
-        throw new Error('Erreur lors de la suppression')
+        throw new Error(t('errors.deleteFailed'))
       }
 
       setLogo(null)
-      setMessage({ type: 'success', text: 'Logo supprimé avec succès' })
+      setMessage({ type: 'success', text: t('profile.logoRemoved') })
       router.refresh()
     } catch (_error) {
-      setMessage({ type: 'error', text: 'Erreur lors de la suppression du logo' })
+      setMessage({ type: 'error', text: t('errors.deleteFailed') })
     } finally {
       setIsUploadingLogo(false)
     }
@@ -151,13 +152,13 @@ export function ProfileForm({ user }: { user: User }) {
       })
 
       if (!res.ok) {
-        throw new Error('Erreur lors de la mise à jour')
+        throw new Error(t('errors.updateFailed'))
       }
 
-      setMessage({ type: 'success', text: 'Profil mis à jour avec succès' })
+      setMessage({ type: 'success', text: t('profile.profileUpdated') })
       router.refresh()
     } catch (_error) {
-      setMessage({ type: 'error', text: 'Erreur lors de la mise à jour du profil' })
+      setMessage({ type: 'error', text: t('errors.updateFailed') })
     } finally {
       setIsLoading(false)
     }
@@ -167,7 +168,7 @@ export function ProfileForm({ user }: { user: User }) {
     <div className="rounded-xl border bg-card p-6">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="name" className="mb-2 block">Nom complet *</Label>
+          <Label htmlFor="name" className="mb-2 block">{t('profile.fullName')} *</Label>
           <Input
             id="name"
             value={formData.name}
@@ -177,7 +178,7 @@ export function ProfileForm({ user }: { user: User }) {
         </div>
 
         <div>
-          <Label htmlFor="email" className="mb-2 block">Adresse courriel *</Label>
+          <Label htmlFor="email" className="mb-2 block">{t('profile.email')} *</Label>
           <Input
             id="email"
             type="email"
@@ -188,7 +189,7 @@ export function ProfileForm({ user }: { user: User }) {
         </div>
 
         <div>
-          <Label htmlFor="company" className="mb-2 block">Nom de compagnie</Label>
+          <Label htmlFor="company" className="mb-2 block">{t('profile.businessName')}</Label>
           <Input
             id="company"
             value={formData.company}
@@ -198,9 +199,9 @@ export function ProfileForm({ user }: { user: User }) {
 
         {/* Logo */}
         <div className="pt-4 border-t">
-          <Label className="mb-2 block">Logo pour les factures</Label>
+          <Label className="mb-2 block">{t('profile.logo')}</Label>
           <p className="text-sm text-muted-foreground mb-3">
-            Le logo apparaîtra sur vos factures. Format: PNG, JPG, SVG (max 5MB)
+            {t('profile.logoDescription')}
           </p>
 
           {logo ? (
@@ -221,7 +222,7 @@ export function ProfileForm({ user }: { user: User }) {
                   disabled={isUploadingLogo}
                   className="cursor-pointer"
                 >
-                  {isUploadingLogo ? 'Upload en cours...' : 'Changer le logo'}
+                  {isUploadingLogo ? t('profile.uploading') : t('profile.changeLogo')}
                 </Button>
                 <Button
                   type="button"
@@ -231,7 +232,7 @@ export function ProfileForm({ user }: { user: User }) {
                   disabled={isUploadingLogo}
                   className="cursor-pointer"
                 >
-                  Supprimer le logo
+                  {t('profile.removeLogo')}
                 </Button>
               </div>
             </div>
@@ -262,13 +263,13 @@ export function ProfileForm({ user }: { user: User }) {
               </svg>
               <p className="mt-2 text-sm font-medium">
                 {isUploadingLogo
-                  ? 'Upload en cours...'
+                  ? t('profile.uploading')
                   : isDragging
-                  ? 'Déposez le fichier ici'
-                  : 'Glissez-déposez un logo ou cliquez pour choisir'}
+                  ? t('profile.dropFile')
+                  : t('profile.dragDropOrClick')}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                PNG, JPG ou SVG (max 5MB)
+                {t('profile.logoFormats')}
               </p>
             </div>
           )}
@@ -283,7 +284,7 @@ export function ProfileForm({ user }: { user: User }) {
         </div>
 
         <div>
-          <Label htmlFor="phone" className="mb-2 block">Numéro de téléphone</Label>
+          <Label htmlFor="phone" className="mb-2 block">{t('profile.phone')}</Label>
           <Input
             id="phone"
             type="tel"
@@ -293,7 +294,7 @@ export function ProfileForm({ user }: { user: User }) {
         </div>
 
         <div>
-          <Label htmlFor="address" className="mb-2 block">Adresse postale</Label>
+          <Label htmlFor="address" className="mb-2 block">{t('profile.businessAddress')}</Label>
           <Input
             id="address"
             value={formData.address}
@@ -303,12 +304,12 @@ export function ProfileForm({ user }: { user: User }) {
 
         {/* Champs spécifiques Québec */}
         <div className="pt-4 border-t">
-          <h3 className="text-lg font-semibold mb-4">Informations fiscales</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('profile.taxSettings')}</h3>
 
           <div className="space-y-4">
             <div>
               <Label htmlFor="neq" className="mb-2 block">
-                NEQ (Numéro d&apos;entreprise du Québec)
+                {t('profile.neq')}
               </Label>
               <Input
                 id="neq"
@@ -320,7 +321,7 @@ export function ProfileForm({ user }: { user: User }) {
 
             <div>
               <Label htmlFor="tpsNumber" className="mb-2 block">
-                Numéro TPS (fédéral)
+                {t('profile.tpsNumber')}
               </Label>
               <Input
                 id="tpsNumber"
@@ -332,7 +333,7 @@ export function ProfileForm({ user }: { user: User }) {
 
             <div>
               <Label htmlFor="tvqNumber" className="mb-2 block">
-                Numéro TVQ (provincial)
+                {t('profile.tvqNumber')}
               </Label>
               <Input
                 id="tvqNumber"
@@ -352,11 +353,10 @@ export function ProfileForm({ user }: { user: User }) {
               />
               <div className="flex-1">
                 <Label htmlFor="chargesTaxes" className="cursor-pointer font-medium">
-                  Charger les taxes TPS/TVQ sur mes factures
+                  {t('profile.chargeTaxes')}
                 </Label>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Activez cette option si votre chiffre d&apos;affaires dépasse 30 000$ par année et que vous êtes inscrit aux fichiers de la TPS et de la TVQ.
-                  Les taxes seront automatiquement calculées sur toutes vos nouvelles factures.
+                  {t('profile.chargeTaxesDescription')}
                 </p>
               </div>
             </div>
@@ -365,15 +365,15 @@ export function ProfileForm({ user }: { user: User }) {
 
         {/* Configuration des paiements */}
         <div className="pt-4 border-t">
-          <h3 className="text-lg font-semibold mb-4">Configuration des paiements</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('profile.paymentSettings')}</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Configurez PayPal ou Stripe pour permettre à vos clients de payer leurs factures en ligne.
+            {t('profile.paymentSettingsDescription')}
           </p>
 
           <div className="space-y-4">
             <div>
               <Label htmlFor="paymentProvider" className="mb-2 block">
-                Fournisseur de paiement
+                {t('profile.paymentProvider')}
               </Label>
               <select
                 id="paymentProvider"
@@ -381,7 +381,7 @@ export function ProfileForm({ user }: { user: User }) {
                 onChange={(e) => setFormData({ ...formData, paymentProvider: e.target.value })}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="">Aucun (paiements désactivés)</option>
+                <option value="">{t('profile.noPaymentProvider')}</option>
                 <option value="paypal">PayPal</option>
                 <option value="stripe">Stripe</option>
               </select>
@@ -390,7 +390,7 @@ export function ProfileForm({ user }: { user: User }) {
             {formData.paymentProvider === 'paypal' && (
               <div>
                 <Label htmlFor="paypalEmail" className="mb-2 block">
-                  Adresse courriel PayPal
+                  {t('profile.paypalEmail')}
                 </Label>
                 <Input
                   id="paypalEmail"
@@ -400,7 +400,7 @@ export function ProfileForm({ user }: { user: User }) {
                   placeholder="votre-email@example.com"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Cette adresse sera utilisée pour recevoir les paiements PayPal de vos clients.
+                  {t('profile.paypalEmailDescription')}
                 </p>
               </div>
             )}
@@ -408,7 +408,7 @@ export function ProfileForm({ user }: { user: User }) {
             {formData.paymentProvider === 'stripe' && (
               <div>
                 <Label htmlFor="stripeSecretKey" className="mb-2 block">
-                  Clé secrète Stripe
+                  {t('profile.stripeSecretKey')}
                 </Label>
                 <Input
                   id="stripeSecretKey"
@@ -419,18 +419,13 @@ export function ProfileForm({ user }: { user: User }) {
                 />
                 <div className="mt-2 space-y-2">
                   <p className="text-xs text-muted-foreground">
-                    Créez un compte Stripe sur{' '}
-                    <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                      stripe.com
-                    </a>
-                    , puis copiez votre clé secrète depuis <strong>Developers → API keys</strong>.
+                    {t('profile.stripeInstructions')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    ⚠️ <strong>Important</strong>: Utilisez la clé <strong>Test</strong> (sk_test_...) pour tester,
-                    puis passez à la clé <strong>Live</strong> (sk_live_...) une fois prêt en production.
+                    ⚠️ <strong>{t('common.important')}</strong>: {t('profile.stripeTestMode')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    🔒 Votre clé est stockée de manière sécurisée et n&apos;est jamais partagée.
+                    🔒 {t('profile.stripeSecure')}
                   </p>
                 </div>
               </div>
@@ -440,7 +435,7 @@ export function ProfileForm({ user }: { user: User }) {
 
         {/* Configuration des rappels de paiement */}
         <div className="pt-6 border-t">
-          <h3 className="text-lg font-semibold mb-4">Rappels de paiement</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('reminders.title')}</h3>
 
           <div className="space-y-4">
             {/* Toggle rappels automatiques */}
@@ -457,10 +452,10 @@ export function ProfileForm({ user }: { user: User }) {
                   htmlFor="autoRemindersEnabled"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
-                  Activer les rappels automatiques
+                  {t('reminders.enable')}
                 </label>
                 <p className="text-sm text-muted-foreground">
-                  Envoyer automatiquement des rappels de paiement aux clients (J-3, J+1, J+7, J+14)
+                  {t('reminders.autoRemindersDescription')}
                 </p>
               </div>
             </div>
@@ -469,7 +464,7 @@ export function ProfileForm({ user }: { user: User }) {
             {formData.autoRemindersEnabled && (
               <div className="ml-7 space-y-2 pt-2">
                 <Label htmlFor="reminderMiseEnDemeureTemplate" className="text-sm">
-                  Message de mise en demeure (personnalisable)
+                  {t('reminders.customTemplate')}
                 </Label>
                 <Textarea
                   id="reminderMiseEnDemeureTemplate"
@@ -479,10 +474,10 @@ export function ProfileForm({ user }: { user: User }) {
                   }
                   rows={6}
                   className="font-mono text-sm"
-                  placeholder="Madame, Monsieur,&#10;&#10;Malgré nos précédents rappels, nous constatons que la facture ci-dessous demeure impayée.&#10;&#10;Nous vous prions de bien vouloir régulariser votre situation dans les plus brefs délais, faute de quoi nous serons contraints d'entamer des procédures de recouvrement.&#10;&#10;Cordialement,"
+                  placeholder={t('reminders.templatePlaceholder')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Ce message sera envoyé dans le 4e rappel (J+14). Les détails de la facture et le bouton de paiement seront ajoutés automatiquement.
+                  {t('reminders.templateDescription')}
                 </p>
               </div>
             )}
@@ -490,7 +485,7 @@ export function ProfileForm({ user }: { user: User }) {
             {!formData.autoRemindersEnabled && (
               <div className="ml-7 p-3 bg-muted rounded-md">
                 <p className="text-sm text-muted-foreground">
-                  Lorsque les rappels automatiques sont désactivés, vous pouvez envoyer des rappels manuels depuis la page de chaque facture.
+                  {t('reminders.manualRemindersInfo')}
                 </p>
               </div>
             )}
@@ -516,10 +511,10 @@ export function ProfileForm({ user }: { user: User }) {
             onClick={() => router.back()}
             disabled={isLoading}
           >
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Enregistrement...' : 'Enregistrer'}
+            {isLoading ? t('profile.saving') : t('common.save')}
           </Button>
         </div>
       </form>

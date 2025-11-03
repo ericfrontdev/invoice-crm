@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function ConfirmDialog({
   isOpen,
@@ -11,8 +12,8 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
-  confirmText = 'Confirmer',
-  cancelText = 'Annuler',
+  confirmText,
+  cancelText,
   isLoading = false,
 }: {
   isOpen: boolean
@@ -24,6 +25,10 @@ export function ConfirmDialog({
   cancelText?: string
   isLoading?: boolean
 }) {
+  const { t } = useTranslation()
+
+  const defaultConfirmText = confirmText || t('common.confirm')
+  const defaultCancelText = cancelText || t('common.cancel')
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isLoading) onClose()
@@ -56,7 +61,7 @@ export function ConfirmDialog({
 
           <div className="flex justify-end gap-3 mt-6">
             <Button variant="outline" onClick={onClose} disabled={isLoading}>
-              {cancelText}
+              {defaultCancelText}
             </Button>
             <Button
               variant="destructive"
@@ -64,7 +69,7 @@ export function ConfirmDialog({
               disabled={isLoading}
               className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
             >
-              {isLoading ? 'Suppression...' : confirmText}
+              {isLoading ? t('common.loading') : defaultConfirmText}
             </Button>
           </div>
         </div>

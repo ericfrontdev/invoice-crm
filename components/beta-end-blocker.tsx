@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { LogOut, CreditCard, Sparkles, Clock } from 'lucide-react'
 import { signOut } from 'next-auth/react'
+import { useTranslation } from '@/lib/i18n-context'
 
 interface BetaEndBlockerProps {
   betaEndDate: Date | null
@@ -10,6 +11,8 @@ interface BetaEndBlockerProps {
 }
 
 export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerProps) {
+  const { t } = useTranslation()
+
   const handleSubscribe = () => {
     // Utiliser window.location pour forcer un rechargement complet
     window.location.href = '/pricing'
@@ -48,29 +51,29 @@ export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerPr
           {/* Title */}
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">
-              {isWithin30Days ? "Merci d'avoir testé SoloPack !" : "Abonnement requis"}
+              {isWithin30Days ? t('betaEnd.titleWithOffer') : t('betaEnd.title')}
             </h1>
             <p className="text-muted-foreground">
               {isWithin30Days ? (
                 <>
-                  La période bêta est maintenant terminée. En tant que beta testeur, profitez d&apos;une offre exclusive : <span className="font-bold text-blue-600 dark:text-blue-400">50% de réduction à vie</span> si vous vous abonnez avant le {deadlineDate ? formatDate(deadlineDate) : ''} !
+                  {t('betaEnd.messageWithOffer')} <span className="font-bold text-blue-600 dark:text-blue-400">{t('pricing.lifetimeDiscount')}</span> {deadlineDate ? formatDate(deadlineDate) : ''} !
                 </>
               ) : (
-                "Pour continuer à utiliser SoloPack, vous devez souscrire à un abonnement."
+                t('betaEnd.message')
               )}
             </p>
           </div>
 
           {/* Benefits */}
           <div className={`${isWithin30Days ? 'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-2 border-blue-200 dark:border-blue-800' : 'bg-muted/50'} rounded-lg p-4 text-left`}>
-            <p className="text-sm font-medium mb-2">En vous abonnant, vous bénéficiez de :</p>
+            <p className="text-sm font-medium mb-2">{t('betaEnd.benefits')}</p>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Accès illimité à toutes les fonctionnalités</li>
+              <li>• {t('betaEnd.allFeatures')}</li>
               {isWithin30Days && (
-                <li className="font-bold text-blue-600 dark:text-blue-400">• 14.50$/mois au lieu de 29$/mois - À VIE !</li>
+                <li className="font-bold text-blue-600 dark:text-blue-400">• {t('betaEnd.specialPrice')} - {t('betaEnd.lifetime')}</li>
               )}
-              <li>• Support prioritaire</li>
-              <li>• Mises à jour régulières</li>
+              <li>• {t('betaEnd.prioritySupport')}</li>
+              <li>• {t('betaEnd.regularUpdates')}</li>
             </ul>
           </div>
 
@@ -80,11 +83,9 @@ export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerPr
               <div className="flex gap-2 items-start">
                 <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                  <p className="font-semibold mb-1">⚠️ Important</p>
+                  <p className="font-semibold mb-1">⚠️ {t('betaEnd.warning')}</p>
                   <p>
-                    Cette réduction de 50% est garantie à vie tant que vous restez abonné.
-                    Si vous annulez votre abonnement, vous perdrez ce tarif privilégié.
-                    L&apos;offre expire le {deadlineDate ? formatDate(deadlineDate) : ''}.
+                    {t('betaEnd.warningMessage')} {deadlineDate ? formatDate(deadlineDate) : ''}.
                   </p>
                 </div>
               </div>
@@ -101,12 +102,12 @@ export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerPr
               {isWithin30Days ? (
                 <>
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Profiter de l&apos;offre exclusive
+                  {t('betaEnd.subscribeExclusive')}
                 </>
               ) : (
                 <>
                   <CreditCard className="h-5 w-5 mr-2" />
-                  S&apos;abonner maintenant
+                  {t('betaEnd.subscribe')}
                 </>
               )}
             </Button>
@@ -118,13 +119,13 @@ export function BetaEndBlocker({ betaEndDate, isWithin30Days }: BetaEndBlockerPr
               className="w-full"
             >
               <LogOut className="h-5 w-5 mr-2" />
-              Se déconnecter
+              {t('betaEnd.signOut')}
             </Button>
           </div>
 
           {/* Footer */}
           <p className="text-xs text-muted-foreground pt-4 border-t">
-            Vous avez des questions? Contactez-nous à support@solopack.com
+            {t('betaEnd.contact')} support@solopack.com
           </p>
         </div>
       </div>

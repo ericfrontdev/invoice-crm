@@ -25,26 +25,10 @@ import {
 } from '@/components/ui/select'
 import { useImageUpload } from '@/lib/upload-image'
 import { useRouter } from 'next/navigation'
-
-const feedbackTypes = [
-  { value: 'bug', label: 'Bug', icon: Bug },
-  { value: 'feature', label: 'Nouvelle fonctionnalité', icon: Sparkles },
-  { value: 'improvement', label: 'Amélioration', icon: Lightbulb },
-  { value: 'other', label: 'Autre', icon: MessageCircle },
-]
-
-const severityLevels = [
-  {
-    value: 'critical',
-    label: 'Critique',
-    description: "Bloque complètement l'utilisation",
-  },
-  { value: 'high', label: 'Élevé', description: 'Gêne importante' },
-  { value: 'medium', label: 'Moyen', description: 'Inconvénient mineur' },
-  { value: 'low', label: 'Faible', description: "Suggestion d'amélioration" },
-]
+import { useTranslation } from '@/lib/i18n-context'
 
 export function FeedbackWidget() {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [isEnabled, setIsEnabled] = useState(true)
   const [type, setType] = useState('bug')
@@ -58,6 +42,24 @@ export function FeedbackWidget() {
 
   const { upload, uploading } = useImageUpload()
   const router = useRouter()
+
+  const feedbackTypes = [
+    { value: 'bug', label: t('feedback.bug'), icon: Bug },
+    { value: 'feature', label: t('feedback.feature'), icon: Sparkles },
+    { value: 'improvement', label: t('feedback.improvement'), icon: Lightbulb },
+    { value: 'other', label: t('feedback.other'), icon: MessageCircle },
+  ]
+
+  const severityLevels = [
+    {
+      value: 'critical',
+      label: t('feedback.critical'),
+      description: t('feedback.criticalDescription'),
+    },
+    { value: 'high', label: t('feedback.high'), description: t('feedback.highDescription') },
+    { value: 'medium', label: t('feedback.medium'), description: t('feedback.mediumDescription') },
+    { value: 'low', label: t('feedback.low'), description: t('feedback.lowDescription') },
+  ]
 
   // Check if feedback system is enabled
   useEffect(() => {
@@ -153,7 +155,7 @@ export function FeedbackWidget() {
       router.refresh()
     } catch (error) {
       console.error('Error submitting feedback:', error)
-      alert("Erreur lors de l'envoi du feedback. Veuillez réessayer.")
+      alert(t('feedback.feedbackError'))
     } finally {
       setSubmitting(false)
     }
@@ -182,7 +184,7 @@ export function FeedbackWidget() {
               className="h-5 w-5"
               style={{ writingMode: 'horizontal-tb' }}
             />
-            <span>Feedback</span>
+            <span>{t('feedback.title')}</span>
           </button>
 
           {/* Version mobile - bannière sticky en bas */}
@@ -191,7 +193,7 @@ export function FeedbackWidget() {
             className="md:hidden fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground px-4 py-3 shadow-lg hover:bg-primary/90 transition-all z-50 flex items-center justify-center gap-2 font-medium"
           >
             <MessageSquare className="h-5 w-5" />
-            <span>Envoyer un feedback</span>
+            <span>{t('feedback.submitFeedback')}</span>
           </button>
         </>
       )}
@@ -211,10 +213,10 @@ export function FeedbackWidget() {
             <div className="sticky top-0 bg-background border-b px-6 py-4 flex items-center justify-between z-10">
               <div>
                 <h2 className="text-xl font-semibold">
-                  💬 Partagez votre feedback
+                  💬 {t('feedback.submitFeedback')}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Aidez-nous à améliorer SoloPack
+                  {t('feedback.helpImprove')}
                 </p>
               </div>
               <Button
@@ -231,7 +233,7 @@ export function FeedbackWidget() {
             {success && (
               <div className="mx-6 mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                 <p className="text-green-800 dark:text-green-200 font-medium text-center">
-                  ✅ Merci pour votre feedback!
+                  ✅ {t('feedback.thankYou')}
                 </p>
               </div>
             )}
@@ -243,7 +245,7 @@ export function FeedbackWidget() {
             >
               {/* Type */}
               <div className="space-y-2">
-                <Label htmlFor="type">Type de feedback *</Label>
+                <Label htmlFor="type">{t('feedback.feedbackType')} *</Label>
                 <Select
                   value={type}
                   onValueChange={setType}
@@ -266,7 +268,7 @@ export function FeedbackWidget() {
 
               {/* Severity */}
               <div className="space-y-2">
-                <Label htmlFor="severity">Urgence *</Label>
+                <Label htmlFor="severity">{t('feedback.severity')} *</Label>
                 <Select
                   value={severity}
                   onValueChange={setSeverity}
@@ -294,28 +296,28 @@ export function FeedbackWidget() {
 
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Titre *</Label>
+                <Label htmlFor="title">{t('feedback.subject')} *</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Résumé en quelques mots..."
+                  placeholder={t('feedback.subjectPlaceholder')}
                   maxLength={100}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  {title.length}/100 caractères
+                  {title.length}/100 {t('feedback.characters')}
                 </p>
               </div>
 
               {/* Message */}
               <div className="space-y-2">
-                <Label htmlFor="message">Description détaillée *</Label>
+                <Label htmlFor="message">{t('feedback.description')} *</Label>
                 <Textarea
                   id="message"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Décrivez le problème ou votre suggestion en détail..."
+                  placeholder={t('feedback.descriptionPlaceholder')}
                   rows={5}
                   required
                 />
@@ -324,7 +326,7 @@ export function FeedbackWidget() {
               {/* Screenshot */}
               <div className="space-y-2">
                 <Label htmlFor="screenshot">
-                  Capture d&apos;écran (optionnel)
+                  {t('feedback.screenshot')}
                 </Label>
                 <div className="flex items-center gap-2">
                   <Input
@@ -372,10 +374,10 @@ export function FeedbackWidget() {
                     htmlFor="anonymous"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Envoyer anonymement
+                    {t('feedback.sendAnonymously')}
                   </label>
                   <p className="text-xs text-muted-foreground">
-                    Votre identité ne sera pas associée à ce feedback
+                    {t('feedback.anonymousDescription')}
                   </p>
                 </div>
               </div>
@@ -383,16 +385,16 @@ export function FeedbackWidget() {
               {/* Context info */}
               <div className="text-xs text-muted-foreground space-y-1 p-3 bg-muted/50 rounded-lg">
                 <p className="font-medium">
-                  Informations capturées automatiquement:
+                  {t('feedback.autoCapturedInfo')}
                 </p>
                 <p>
-                  • Page actuelle:{' '}
+                  • {t('feedback.currentPage')}:{' '}
                   {typeof window !== 'undefined'
                     ? window.location.pathname
                     : ''}
                 </p>
                 <p>
-                  • Navigateur:{' '}
+                  • {t('feedback.browser')}:{' '}
                   {typeof window !== 'undefined'
                     ? navigator.userAgent.split(' ').slice(-2).join(' ')
                     : ''}
@@ -408,7 +410,7 @@ export function FeedbackWidget() {
                   className="flex-1"
                   disabled={submitting}
                 >
-                  Annuler
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -418,10 +420,10 @@ export function FeedbackWidget() {
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Envoi...
+                      {t('feedback.sending')}
                     </>
                   ) : (
-                    'Envoyer'
+                    t('common.send')
                   )}
                 </Button>
               </div>

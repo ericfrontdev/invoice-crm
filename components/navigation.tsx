@@ -216,28 +216,28 @@ export function Navigation({
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Tableau de bord
+                {t('nav.dashboard')}
               </Link>
               <Link
                 href="/clients"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Clients
+                {t('nav.clients')}
               </Link>
               <Link
                 href="/invoices"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Factures
+                {t('nav.invoices')}
               </Link>
               <Link
                 href="/projets"
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Projets
+                {t('nav.projects')}
               </Link>
               <Link
                 href="/crm"
@@ -251,7 +251,7 @@ export function Navigation({
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Comptabilité
+                {t('nav.accounting')}
               </Link>
             </div>
 

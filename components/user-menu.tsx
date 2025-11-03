@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { FeedbackBadge } from '@/components/feedback-badge'
 import { UserNotificationBadge } from '@/components/user-notification-badge'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function UserMenu({
   user,
@@ -26,6 +27,8 @@ export function UserMenu({
   onProfileClick?: () => void
   isMobile?: boolean
 }) {
+  const { t } = useTranslation()
+
   // Version mobile - affichage simple sans dropdown
   if (isMobile) {
     return (
@@ -54,7 +57,7 @@ export function UserMenu({
             onClick={onProfileClick}
           >
             <User className="h-5 w-5" />
-            <span>Profil</span>
+            <span>{t('nav.profile')}</span>
           </Link>
 
           {isSuperAdmin && (
@@ -64,7 +67,7 @@ export function UserMenu({
               onClick={onProfileClick}
             >
               <Shield className="h-5 w-5" />
-              <span>Admin</span>
+              <span>{t('nav.admin')}</span>
             </Link>
           )}
 
@@ -73,7 +76,7 @@ export function UserMenu({
             className="flex items-center gap-3 px-3 py-2 text-base font-medium hover:bg-accent rounded-md w-full text-left text-red-600"
           >
             <LogOut className="h-5 w-5" />
-            <span>Déconnexion</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
       </div>
@@ -119,14 +122,14 @@ export function UserMenu({
                 onClick={onProfileClick}
               >
                 <User className="mr-2 h-4 w-4" />
-                <span>Profil</span>
+                <span>{t('nav.profile')}</span>
               </Link>
             </DropdownMenuItem>
             {isSuperAdmin && (
               <DropdownMenuItem asChild>
                 <Link href="/admin" className="cursor-pointer">
                   <Shield className="mr-2 h-4 w-4" />
-                  <span>Admin</span>
+                  <span>{t('nav.admin')}</span>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -136,7 +139,7 @@ export function UserMenu({
               onClick={() => signOut({ callbackUrl: '/auth/login' })}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Déconnexion</span>
+              <span>{t('nav.logout')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
