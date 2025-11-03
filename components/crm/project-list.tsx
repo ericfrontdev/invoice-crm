@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Edit, Trash2, Plus, Upload } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -12,13 +13,6 @@ type Project = {
   endDate: Date | null
   invoices: Array<{ total: number }>
   files: Array<{ id: string }>
-}
-
-const statusLabels = {
-  active: 'Actif',
-  completed: 'Terminé',
-  paused: 'En pause',
-  cancelled: 'Annulé',
 }
 
 export function ProjectList({
@@ -34,18 +28,27 @@ export function ProjectList({
   onCreateInvoice: (project: Project) => void
   onUploadDocuments: (project: Project) => void
 }) {
+  const { t } = useTranslation()
+
+  const statusLabels: Record<string, string> = {
+    active: t('projects.active'),
+    completed: t('projects.completed'),
+    paused: t('projects.onHold'),
+    cancelled: t('projects.cancelled'),
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead className="bg-muted">
           <tr>
-            <th className="text-left p-3 font-medium">Nom</th>
-            <th className="text-left p-3 font-medium">Statut</th>
-            <th className="text-left p-3 font-medium">Budget</th>
-            <th className="text-left p-3 font-medium">Facturé</th>
-            <th className="text-left p-3 font-medium">Fichiers</th>
-            <th className="text-left p-3 font-medium">Dates</th>
-            <th className="text-right p-3 font-medium">Actions</th>
+            <th className="text-left p-3 font-medium">{t('common.name')}</th>
+            <th className="text-left p-3 font-medium">{t('common.status')}</th>
+            <th className="text-left p-3 font-medium">{t('projects.budget')}</th>
+            <th className="text-left p-3 font-medium">{t('crm.overview.invoiced')}</th>
+            <th className="text-left p-3 font-medium">{t('crm.projectCard.files')}</th>
+            <th className="text-left p-3 font-medium">{t('common.date')}</th>
+            <th className="text-right p-3 font-medium">{t('common.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -83,7 +86,7 @@ export function ProjectList({
                       size="sm"
                       onClick={() => onCreateInvoice(project)}
                       className="cursor-pointer"
-                      title="Créer facture"
+                      title={t('crm.projectCard.createInvoice')}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -92,7 +95,7 @@ export function ProjectList({
                       size="sm"
                       onClick={() => onUploadDocuments(project)}
                       className="cursor-pointer"
-                      title="Téléverser documents"
+                      title={t('crm.projectCard.upload')}
                     >
                       <Upload className="h-4 w-4" />
                     </Button>
@@ -101,7 +104,7 @@ export function ProjectList({
                       size="sm"
                       onClick={() => onEdit(project)}
                       className="cursor-pointer"
-                      title="Modifier"
+                      title={t('common.edit')}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -110,7 +113,7 @@ export function ProjectList({
                       size="sm"
                       onClick={() => onDelete(project.id)}
                       className="cursor-pointer text-destructive"
-                      title="Supprimer"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

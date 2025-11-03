@@ -13,6 +13,7 @@ import {
   Upload,
   ArrowRight,
 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -41,13 +42,6 @@ const statusColors = {
   cancelled: 'bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300',
 }
 
-const statusLabels = {
-  active: 'Actif',
-  completed: 'Terminé',
-  paused: 'En pause',
-  cancelled: 'Annulé',
-}
-
 export function ProjectCard({
   project,
   onEdit,
@@ -61,7 +55,15 @@ export function ProjectCard({
   onCreateInvoice: (project: Project) => void
   onUploadDocuments: (project: Project) => void
 }) {
+  const { t } = useTranslation()
   const [isFlipped, setIsFlipped] = useState(false)
+
+  const statusLabels: Record<string, string> = {
+    active: t('projects.active'),
+    completed: t('projects.completed'),
+    paused: t('projects.onHold'),
+    cancelled: t('projects.cancelled'),
+  }
   const totalInvoiced = project.invoices.reduce((sum, inv) => sum + inv.total, 0)
   const percentageBudget = project.budget
     ? Math.round((totalInvoiced / project.budget) * 100)
@@ -133,18 +135,18 @@ export function ProjectCard({
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <FileText className="h-4 w-4" />
-                <span>{project.invoices.length} factures</span>
+                <span>{project.invoices.length} {t('crm.projectCard.invoices')}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Folder className="h-4 w-4" />
-                <span>{project.files.length} fichiers</span>
+                <span>{project.files.length} {t('crm.projectCard.files')}</span>
               </div>
             </div>
 
             {project.budget && (
               <div>
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">Budget</span>
+                  <span className="text-muted-foreground">{t('crm.projectCard.budget')}</span>
                   <span className="font-medium">
                     {totalInvoiced.toFixed(2)} $ / {project.budget.toFixed(2)} $
                   </span>
@@ -176,7 +178,7 @@ export function ProjectCard({
 
           <div className="mt-auto flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Cliquer pour plus d&apos;options
+              {t('crm.projectCard.clickForMore')}
             </p>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
           </div>
@@ -190,7 +192,7 @@ export function ProjectCard({
             {/* Additional Info */}
             <div className="space-y-2 flex-1">
               <div className="text-sm">
-                <p className="text-muted-foreground">Statut</p>
+                <p className="text-muted-foreground">{t('crm.projectCard.status')}</p>
                 <p className="font-medium">
                   {statusLabels[project.status as keyof typeof statusLabels] || project.status}
                 </p>
@@ -198,18 +200,18 @@ export function ProjectCard({
 
               {project.description && (
                 <div className="text-sm">
-                  <p className="text-muted-foreground">Description</p>
+                  <p className="text-muted-foreground">{t('crm.projectCard.description')}</p>
                   <p className="line-clamp-3 text-xs">{project.description}</p>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Factures</p>
+                  <p className="text-muted-foreground">{t('crm.projectCard.invoices')}</p>
                   <p className="font-medium">{project.invoices.length}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Fichiers</p>
+                  <p className="text-muted-foreground">{t('crm.projectCard.files')}</p>
                   <p className="font-medium">{project.files.length}</p>
                 </div>
               </div>
@@ -227,7 +229,7 @@ export function ProjectCard({
                 }}
               >
                 <Plus className="h-4 w-4 mr-1" />
-                Créer facture
+                {t('crm.projectCard.createInvoice')}
               </Button>
               <Button
                 size="sm"
@@ -238,7 +240,7 @@ export function ProjectCard({
                 }}
               >
                 <Upload className="h-4 w-4 mr-1" />
-                Téléverser
+                {t('crm.projectCard.upload')}
               </Button>
             </div>
           </div>

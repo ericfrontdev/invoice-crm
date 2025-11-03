@@ -10,6 +10,7 @@ import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { InvoiceCard } from '@/components/invoice-card'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,11 +55,7 @@ const statusColors = {
   paid: 'bg-green-100 text-green-800 dark:bg-green-400/10 dark:text-green-300',
 }
 
-const statusLabels = {
-  draft: 'Brouillon',
-  sent: 'Envoyée',
-  paid: 'Payée',
-}
+// Status labels will be dynamically translated using i18n hook
 
 export function InvoicesTab({
   client,
@@ -70,6 +67,7 @@ export function InvoicesTab({
   setShowArchived?: (show: boolean) => void
 }) {
   const router = useRouter()
+  const { t } = useTranslation()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<{
     type: 'success' | 'error'
@@ -176,7 +174,7 @@ export function InvoicesTab({
         )
         setToast({
           type: 'success',
-          message: `${selectedInvoiceIds.length} facture(s) supprimée(s)`,
+          message: t('crm.invoicesTab.invoicesDeleted'),
         })
       } else if (action === 'archive') {
         await Promise.all(
@@ -190,7 +188,7 @@ export function InvoicesTab({
         )
         setToast({
           type: 'success',
-          message: `${selectedInvoiceIds.length} facture(s) archivée(s)`,
+          message: t('crm.invoicesTab.invoicesArchived'),
         })
       }
 
@@ -198,7 +196,7 @@ export function InvoicesTab({
       setBatchAction(null)
       router.refresh()
     } catch {
-      setToast({ type: 'error', message: "Erreur lors de l'action" })
+      setToast({ type: 'error', message: t('crm.invoicesTab.batchActionError') })
     } finally {
       setBusyId(null)
       setTimeout(() => setToast(null), 2500)
@@ -217,18 +215,18 @@ export function InvoicesTab({
 
       if (kind === 'send') {
         url = '/api/invoices/send'
-        successMsg = 'Facture envoyée'
+        successMsg = t('crm.invoicesTab.invoiceSent')
       } else if (kind === 'paid') {
         url = '/api/invoices/mark-paid'
-        successMsg = 'Facture payée'
+        successMsg = t('crm.invoicesTab.invoicePaid')
       } else if (kind === 'unarchive') {
         url = `/api/invoices/${invoiceId}`
         method = 'PATCH'
-        successMsg = 'Facture désarchivée'
+        successMsg = t('crm.invoicesTab.invoiceUnarchived')
       } else if (kind === 'delete') {
         url = `/api/invoices/${invoiceId}`
         method = 'DELETE'
-        successMsg = 'Facture supprimée'
+        successMsg = t('crm.invoicesTab.invoiceDeleted')
       }
 
       const res = await fetch(url, {
@@ -242,14 +240,14 @@ export function InvoicesTab({
               : undefined,
       })
       if (!res.ok) {
-        setToast({ type: 'error', message: 'Action impossible' })
+        setToast({ type: 'error', message: t('crm.invoicesTab.actionError') })
         return
       }
       router.refresh()
       setToast({ type: 'success', message: successMsg })
       setDeleteConfirmId(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('crm.invoicesTab.networkError') })
     } finally {
       setBusyId(null)
       setTimeout(() => setToast(null), 2500)
@@ -274,10 +272,10 @@ export function InvoicesTab({
     const paymentUrl = `${baseUrl}/invoices/${invoiceId}/pay`
 
     navigator.clipboard.writeText(paymentUrl).then(() => {
-      setToast({ type: 'success', message: 'Lien de paiement copié!' })
+      setToast({ type: 'success', message: t('crm.invoicesTab.paymentLinkCopied') })
       setTimeout(() => setToast(null), 2500)
     }).catch(() => {
-      setToast({ type: 'error', message: 'Erreur lors de la copie' })
+      setToast({ type: 'error', message: t('crm.invoicesTab.copyError') })
       setTimeout(() => setToast(null), 2500)
     })
   }
@@ -325,7 +323,7 @@ export function InvoicesTab({
               : 'bg-primary/10 border-primary/20'
           }`}>
             <span className="text-sm font-medium">
-              {selectedFromThisTable.length} facture(s) sélectionnée(s)
+              {selectedFromThisTable.length} {t('crm.invoicesTab.selectedCount')}
             </span>
             <div className="ml-auto flex gap-2">
               <Button
@@ -338,7 +336,7 @@ export function InvoicesTab({
                 }}
                 className="cursor-pointer"
               >
-                Annuler
+                {t('common.cancel')}
               </Button>
               <Button
                 variant="outline"
@@ -348,7 +346,7 @@ export function InvoicesTab({
                 className="cursor-pointer"
               >
                 <Archive className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Archiver</span>
+                <span className="hidden md:inline">{t('crm.invoicesTab.archiveSelected')}</span>
               </Button>
               <Button
                 variant="outline"
@@ -358,7 +356,7 @@ export function InvoicesTab({
                 className="text-red-600 hover:text-red-700 dark:text-red-400 cursor-pointer"
               >
                 <Trash2 className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Supprimer</span>
+                <span className="hidden md:inline">{t('crm.invoicesTab.deleteSelected')}</span>
               </Button>
             </div>
           </div>
@@ -394,17 +392,17 @@ export function InvoicesTab({
                     <Checkbox
                       checked={allSelected}
                       onCheckedChange={() => toggleSelectAll(invoices)}
-                      aria-label="Tout sélectionner"
+                      aria-label={t('crm.invoicesTab.selectAll')}
                     />
                   </th>
-                  <th className="text-left p-3 font-medium">Numéro</th>
+                  <th className="text-left p-3 font-medium">{t('crm.invoicesTab.number')}</th>
                   {invoices === projectInvoices && (
-                    <th className="text-left p-3 font-medium">Projet</th>
+                    <th className="text-left p-3 font-medium">{t('crm.invoicesTab.project')}</th>
                   )}
-                  <th className="text-left p-3 font-medium">Date</th>
-                  <th className="text-left p-3 font-medium">Montant</th>
-                  <th className="text-left p-3 font-medium">Statut</th>
-                  <th className="text-right p-3 font-medium">Actions</th>
+                  <th className="text-left p-3 font-medium">{t('crm.invoicesTab.date')}</th>
+                  <th className="text-left p-3 font-medium">{t('crm.invoicesTab.amount')}</th>
+                  <th className="text-left p-3 font-medium">{t('crm.invoicesTab.status')}</th>
+                  <th className="text-right p-3 font-medium">{t('crm.invoicesTab.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -417,7 +415,7 @@ export function InvoicesTab({
                       <Checkbox
                         checked={selectedInvoiceIds.includes(invoice.id)}
                         onCheckedChange={() => toggleInvoiceSelection(invoice.id)}
-                        aria-label={`Sélectionner ${invoice.number}`}
+                        aria-label={t('crm.invoicesTab.select')}
                       />
                     </td>
                     <td className="p-3 font-medium">{invoice.number}</td>
@@ -440,15 +438,16 @@ export function InvoicesTab({
                           ] || statusColors.draft
                         }`}
                       >
-                        {statusLabels[
-                          invoice.status as keyof typeof statusLabels
-                        ] || invoice.status}
+                        {invoice.status === 'draft' && t('invoices.draft')}
+                        {invoice.status === 'sent' && t('invoices.sent')}
+                        {invoice.status === 'paid' && t('invoices.paid')}
+                        {!['draft', 'sent', 'paid'].includes(invoice.status) && invoice.status}
                       </span>
                     </td>
                     <td className="p-3">
                       <div className="flex gap-1 justify-end">
                         {/* Voir (toujours visible) */}
-                        <Tooltip content="Voir et modifier">
+                        <Tooltip content={t('crm.invoicesTab.viewAndEdit')}>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -478,7 +477,7 @@ export function InvoicesTab({
                                 disabled={busyId === invoice.id}
                               >
                                 <Archive className="h-4 w-4 mr-2" />
-                                Désarchiver
+                                {t('crm.invoicesTab.unarchive')}
                               </DropdownMenuItem>
                             )}
 
@@ -489,7 +488,7 @@ export function InvoicesTab({
                                 disabled={busyId === invoice.id}
                               >
                                 <Mail className="h-4 w-4 mr-2" />
-                                Envoyer par email
+                                {t('crm.invoicesTab.sendByEmail')}
                               </DropdownMenuItem>
                             )}
 
@@ -500,7 +499,7 @@ export function InvoicesTab({
                                 disabled={busyId === invoice.id}
                               >
                                 <RefreshCw className="h-4 w-4 mr-2" />
-                                Renvoyer la facture
+                                {t('crm.invoicesTab.resend')}
                               </DropdownMenuItem>
                             )}
 
@@ -510,7 +509,7 @@ export function InvoicesTab({
                                 onClick={() => handleCopyPaymentLink(invoice.id)}
                               >
                                 <Link2 className="h-4 w-4 mr-2" />
-                                Copier lien de paiement
+                                {t('crm.invoicesTab.copyPaymentLink')}
                               </DropdownMenuItem>
                             )}
 
@@ -521,7 +520,7 @@ export function InvoicesTab({
                                 disabled={busyId === invoice.id}
                               >
                                 <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                                Marquer comme payée
+                                {t('crm.invoicesTab.markAsPaid')}
                               </DropdownMenuItem>
                             )}
 
@@ -531,7 +530,7 @@ export function InvoicesTab({
                               className="text-red-600 focus:text-red-600"
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
-                              Supprimer
+                              {t('common.delete')}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -553,17 +552,17 @@ export function InvoicesTab({
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-card rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground mb-1">Total facturé</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('crm.invoicesTab.totalInvoiced')}</p>
             <p className="text-2xl font-bold">{totalInvoiced.toFixed(2)} $</p>
           </div>
           <div className="bg-card rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground mb-1">Total payé</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('crm.invoicesTab.totalPaid')}</p>
             <p className="text-2xl font-bold text-green-600">
               {totalPaid.toFixed(2)} $
             </p>
           </div>
           <div className="bg-card rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground mb-1">En attente</p>
+            <p className="text-sm text-muted-foreground mb-1">{t('crm.invoicesTab.pending')}</p>
             <p className="text-2xl font-bold text-amber-600">
               {totalPending.toFixed(2)} $
             </p>
@@ -572,22 +571,22 @@ export function InvoicesTab({
 
         {/* Factures de projets */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Factures de projets</h3>
+          <h3 className="text-lg font-semibold">{t('crm.invoicesTab.projectInvoices')}</h3>
           <div className="bg-card rounded-lg border overflow-hidden">
             {renderInvoiceTable(
               projectInvoices,
-              'Aucune facture de projet pour ce client'
+              t('crm.invoicesTab.noProjectInvoices')
             )}
           </div>
         </div>
 
         {/* Factures ponctuelles */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Factures ponctuelles</h3>
+          <h3 className="text-lg font-semibold">{t('crm.invoicesTab.punctualInvoices')}</h3>
           <div className="bg-card rounded-lg border overflow-hidden">
             {renderInvoiceTable(
               punctualInvoices,
-              'Aucune facture ponctuelle pour ce client'
+              t('crm.invoicesTab.noPunctualInvoices')
             )}
           </div>
         </div>
@@ -602,8 +601,8 @@ export function InvoicesTab({
             >
               <Archive className="h-4 w-4 mr-2" />
               {isArchived
-                ? 'Masquer les archives'
-                : `Voir les factures archivées (${archivedInvoices.length})`}
+                ? t('crm.invoicesTab.hideArchives')
+                : `${t('crm.invoicesTab.showArchives')} (${archivedInvoices.length})`}
             </Button>
           </div>
         )}
@@ -618,11 +617,11 @@ export function InvoicesTab({
         className="overflow-hidden"
       >
         <div className="space-y-3 pt-6">
-          <h3 className="text-lg font-semibold">Factures archivées</h3>
+          <h3 className="text-lg font-semibold">{t('crm.invoicesTab.archivedInvoices')}</h3>
           <div className="bg-card rounded-lg border overflow-hidden">
             {renderInvoiceTable(
               archivedInvoices,
-              'Aucune facture archivée',
+              t('crm.invoicesTab.noArchivedInvoices'),
               true
             )}
           </div>
@@ -643,9 +642,9 @@ export function InvoicesTab({
             doAction(deleteConfirmId, 'delete')
           }
         }}
-        title="Supprimer la facture"
-        description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
-        confirmText="Supprimer"
+        title={t('crm.invoicesTab.deleteInvoiceTitle')}
+        description={t('crm.invoicesTab.deleteInvoiceDescription')}
+        confirmText={t('common.delete')}
         isLoading={busyId === deleteConfirmId}
       />
       <ConfirmDialog
@@ -658,15 +657,15 @@ export function InvoicesTab({
         }}
         title={
           batchAction === 'delete'
-            ? `Supprimer ${selectedInvoiceIds.length} facture(s)`
-            : `Archiver ${selectedInvoiceIds.length} facture(s)`
+            ? `${t('crm.invoicesTab.deleteMultipleTitle')} ${selectedInvoiceIds.length} ${t('crm.invoicesTab.selectedCount')}`
+            : `${t('crm.invoicesTab.archiveMultipleTitle')} ${selectedInvoiceIds.length} ${t('crm.invoicesTab.selectedCount')}`
         }
         description={
           batchAction === 'delete'
-            ? `Êtes-vous sûr de vouloir supprimer ${selectedInvoiceIds.length} facture(s) ? Cette action est irréversible.`
-            : `Êtes-vous sûr de vouloir archiver ${selectedInvoiceIds.length} facture(s) ?`
+            ? `${t('crm.invoicesTab.deleteMultipleDescription')} ${selectedInvoiceIds.length} ${t('crm.invoicesTab.selectedCount')} ? ${t('crm.invoicesTab.irrevocableAction')}`
+            : `${t('crm.invoicesTab.archiveMultipleDescription')} ${selectedInvoiceIds.length} ${t('crm.invoicesTab.selectedCount')} ?`
         }
-        confirmText={batchAction === 'delete' ? 'Supprimer' : 'Archiver'}
+        confirmText={batchAction === 'delete' ? t('common.delete') : t('common.archive')}
         isLoading={busyId === 'batch'}
       />
       {toast && (
