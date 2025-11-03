@@ -8,6 +8,7 @@ import { ProjectsTab } from '@/components/crm/projects-tab'
 import { InvoicesTab } from '@/components/crm/invoices-tab'
 import { NotesTab } from '@/components/crm/notes-tab'
 import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
+import { useTranslation } from '@/lib/i18n-context'
 
 type ClientWithCRM = {
   id: string
@@ -72,6 +73,7 @@ type ClientWithCRM = {
 }
 
 export function ClientCRMView({ client, openProjectModal = false }: { client: ClientWithCRM; openProjectModal?: boolean }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
 
@@ -124,27 +126,27 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-muted-foreground">Email</p>
+            <p className="text-sm text-muted-foreground">{t('clients.email')}</p>
             <p>{client.email}</p>
           </div>
 
           {client.phone && (
             <div>
-              <p className="text-sm text-muted-foreground">Téléphone</p>
+              <p className="text-sm text-muted-foreground">{t('clients.phone')}</p>
               <p>{client.phone}</p>
             </div>
           )}
 
           {client.address && (
             <div className="md:col-span-2">
-              <p className="text-sm text-muted-foreground">Adresse</p>
+              <p className="text-sm text-muted-foreground">{t('clients.address')}</p>
               <p>{client.address}</p>
             </div>
           )}
 
           {client.website && (
             <div>
-              <p className="text-sm text-muted-foreground">Site web</p>
+              <p className="text-sm text-muted-foreground">{t('clients.website')}</p>
               <a
                 href={client.website}
                 className="text-primary hover:underline"
@@ -161,14 +163,14 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
       {/* Onglets CRM */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Aperçu</TabsTrigger>
+          <TabsTrigger value="overview">{t('crm.overview')}</TabsTrigger>
           <TabsTrigger value="projects">
-            Projets ({client.projects.length})
+            {t('crm.projects')} ({client.projects.length})
           </TabsTrigger>
           <TabsTrigger value="invoices">
-            Factures ({client.invoices.length})
+            {t('crm.invoices')} ({client.invoices.length})
           </TabsTrigger>
-          <TabsTrigger value="notes">Notes ({client.notes.length})</TabsTrigger>
+          <TabsTrigger value="notes">{t('crm.notes')} ({client.notes.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">

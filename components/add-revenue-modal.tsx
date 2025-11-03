@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function AddRevenueModal({
   isOpen,
@@ -22,6 +23,7 @@ export function AddRevenueModal({
   onClose: () => void
   onSave: (data: { description: string; amount: number; date: string; category?: string }) => Promise<void>
 }) {
+  const { t } = useTranslation()
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -57,26 +59,26 @@ export function AddRevenueModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Ajouter un revenu</DialogTitle>
+          <DialogTitle>{t('accounting.addRevenue')}</DialogTitle>
           <DialogDescription>
-            Enregistrer un revenu manuel pour votre comptabilité
+            {t('accounting.recordManualRevenue')}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t('common.description')} *</Label>
             <Input
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ex: Vente de produit, Service..."
+              placeholder={t('accounting.exSaleOfProduct')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Montant ($) *</Label>
+            <Label htmlFor="amount">{t('accounting.amountDollar')} *</Label>
             <Input
               id="amount"
               type="number"
@@ -90,7 +92,7 @@ export function AddRevenueModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="date">Date *</Label>
+            <Label htmlFor="date">{t('common.date')} *</Label>
             <Input
               id="date"
               type="date"
@@ -101,21 +103,21 @@ export function AddRevenueModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Catégorie (optionnel)</Label>
+            <Label htmlFor="category">{t('accounting.categoryOptional')}</Label>
             <Input
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              placeholder="Ex: Ventes, Services, Autre..."
+              placeholder={t('accounting.exSalesServices')}
             />
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+              {isSubmitting ? t('accounting.saving') : t('common.save')}
             </Button>
           </DialogFooter>
         </form>

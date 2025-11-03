@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Invoice = {
   id: string
@@ -56,12 +57,7 @@ const statusColors = {
     'bg-slate-100 text-slate-800 dark:bg-slate-400/10 dark:text-slate-300',
 }
 
-const statusLabels = {
-  draft: 'Brouillon',
-  sent: 'Envoyée',
-  paid: 'Payée',
-  archived: 'Archivée',
-}
+// Status labels will be translated dynamically
 
 const statusIcons = {
   draft: '📝',
@@ -95,6 +91,7 @@ export function InvoiceCard({
   onResend: () => void
   isBusy: boolean
 }) {
+  const { t } = useTranslation()
   const [longPressTriggered, setLongPressTriggered] = useState(false)
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
 
@@ -202,7 +199,7 @@ export function InvoiceCard({
                 }}
               >
                 <Eye className="h-4 w-4 mr-2" />
-                Voir et modifier
+                {t('invoices.viewInvoice')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 asChild
@@ -210,7 +207,7 @@ export function InvoiceCard({
               >
                 <Link href={`/factures/${invoice.id}/rappels`}>
                   <History className="h-4 w-4 mr-2" />
-                  Voir les rappels
+                  {t('crm.viewDetails')}
                 </Link>
               </DropdownMenuItem>
               {invoice.status === 'draft' && invoice.client?.email && (
@@ -222,7 +219,7 @@ export function InvoiceCard({
                   disabled={isBusy}
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Envoyer par email
+                  {t('invoices.sendInvoice')}
                 </DropdownMenuItem>
               )}
               {invoice.status === 'sent' && invoice.client?.email && (
@@ -234,7 +231,7 @@ export function InvoiceCard({
                   disabled={isBusy}
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Renvoyer la facture
+                  {t('invoices.sendInvoice')}
                 </DropdownMenuItem>
               )}
               {invoice.status !== 'draft' && (
@@ -245,7 +242,7 @@ export function InvoiceCard({
                   }}
                 >
                   <Link2 className="h-4 w-4 mr-2" />
-                  Copier lien de paiement
+                  Copier lien
                 </DropdownMenuItem>
               )}
               {invoice.status !== 'paid' && (
@@ -257,7 +254,7 @@ export function InvoiceCard({
                   disabled={isBusy}
                 >
                   <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                  Marquer comme payée
+                  {t('invoices.markAsPaid')}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -268,7 +265,7 @@ export function InvoiceCard({
                 className="text-red-600 focus:text-red-600"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
+                {t('common.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -292,12 +289,15 @@ export function InvoiceCard({
               <span>
                 {statusIcons[invoice.status as keyof typeof statusIcons] || '📝'}
               </span>
-              {statusLabels[invoice.status as keyof typeof statusLabels] ||
-                invoice.status}
+              {invoice.status === 'draft' && t('invoices.draft')}
+              {invoice.status === 'sent' && t('invoices.sent')}
+              {invoice.status === 'paid' && t('invoices.paid')}
+              {invoice.status === 'archived' && t('common.archive')}
+              {!['draft', 'sent', 'paid', 'archived'].includes(invoice.status) && invoice.status}
             </span>
             {isOverdue && (
               <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300">
-                ⚠️ En retard
+                ⚠️ {t('invoices.overdue')}
               </span>
             )}
           </div>
@@ -307,7 +307,7 @@ export function InvoiceCard({
         <div className="mb-3">
           {isSelectionMode ? (
             <span className="text-sm font-medium text-primary">
-              {invoice.client?.name ?? 'Client'}
+              {invoice.client?.name ?? t('invoices.client')}
             </span>
           ) : (
             <Link
@@ -315,18 +315,18 @@ export function InvoiceCard({
               className="text-sm font-medium text-primary hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
-              {invoice.client?.name ?? 'Client'}
+              {invoice.client?.name ?? t('invoices.client')}
             </Link>
           )}
           {invoice.project && (
             <div className="text-xs text-muted-foreground mt-0.5">
-              Projet: {invoice.project.name}
+              {t('projects.title')}: {invoice.project.name}
             </div>
           )}
           {invoice._count?.reminders && invoice._count.reminders > 0 && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
               <Bell className="h-3 w-3" />
-              <span>{invoice._count.reminders} rappel{invoice._count.reminders > 1 ? 's' : ''} envoyé{invoice._count.reminders > 1 ? 's' : ''}</span>
+              <span>{invoice._count.reminders} {t('reminders.title').toLowerCase()}</span>
             </div>
           )}
         </div>

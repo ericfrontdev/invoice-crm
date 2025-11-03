@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Globe, ArrowRight, Archive } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Client = {
   id: string
@@ -31,6 +32,7 @@ export function ClientCard({
   onCardClick?: (client: Client) => void
   onArchive?: (client: Client) => void
 }) {
+  const { t } = useTranslation()
   const [isFlipped, setIsFlipped] = useState(false)
   const router = useRouter()
 
@@ -59,7 +61,7 @@ export function ClientCard({
         <button
           onClick={handleArchive}
           className="absolute -top-2 -right-2 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-1.5 shadow-md transition-colors"
-          aria-label="Archiver le client"
+          aria-label={t('clients.archiveClient')}
         >
           <Archive className="h-4 w-4" />
         </button>
@@ -128,7 +130,7 @@ export function ClientCard({
                       href={client.website}
                       className="text-sm text-blue-600 hover:underline"
                     >
-                      Site web
+                      {t('clients.website')}
                     </a>
                   </>
                 )}
@@ -145,7 +147,7 @@ export function ClientCard({
                   router.push(`/clients/${client.id}`)
                 }}
               >
-                Voir les sommes dues
+                {t('crm.unpaidAmounts')}
               </Button>
               <Button
                 size="sm"
@@ -155,7 +157,7 @@ export function ClientCard({
                   router.push(`/clients/${client.id}/details`)
                 }}
               >
-                Client CRM
+                {t('crm.title')}
               </Button>
             </div>
           </div>

@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Invoice = {
   id: string
@@ -39,17 +40,13 @@ const statusColors = {
   archived: 'bg-slate-100 text-slate-800 dark:bg-slate-400/10 dark:text-slate-300',
 }
 
-const statusLabels = {
-  draft: 'Brouillon',
-  sent: 'Envoyée',
-  paid: 'Payée',
-  archived: 'Archivée',
-}
+// Status labels will be translated dynamically
 
 type SortField = 'number' | 'client' | 'status' | 'total' | 'createdAt' | 'project'
 type SortDirection = 'asc' | 'desc'
 
 export function InvoicesTable({ invoices, showProject = false }: { invoices: Invoice[]; showProject?: boolean }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(
@@ -277,7 +274,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
             : 'mb-4'
         }`}>
           <span className="text-sm font-medium">
-            {selectedInvoiceIds.length} facture(s) sélectionnée(s)
+            {selectedInvoiceIds.length} {t('common.selected').toLowerCase()}
           </span>
           <div className="ml-auto flex gap-2">
             <Button
@@ -286,7 +283,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
               onClick={() => setSelectedInvoiceIds([])}
               className="cursor-pointer"
             >
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button
               variant="outline"
@@ -296,7 +293,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
               className="cursor-pointer"
             >
               <Archive className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Archiver</span>
+              <span className="hidden md:inline">{t('common.archive')}</span>
             </Button>
             <Button
               variant="outline"
@@ -306,7 +303,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
               className="text-red-600 hover:text-red-700 dark:text-red-400 cursor-pointer"
             >
               <Trash2 className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Supprimer</span>
+              <span className="hidden md:inline">{t('common.delete')}</span>
             </Button>
           </div>
         </div>
@@ -349,7 +346,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('number')}
                   className="flex items-center hover:text-foreground/80 transition-colors"
                 >
-                  Numéro
+                  {t('invoices.invoiceNumber')}
                   <SortIcon field="number" />
                 </button>
               </th>
@@ -358,7 +355,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('client')}
                   className="flex items-center hover:text-foreground/80 transition-colors"
                 >
-                  Client
+                  {t('invoices.client')}
                   <SortIcon field="client" />
                 </button>
               </th>
@@ -368,7 +365,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                     onClick={() => handleSort('project')}
                     className="flex items-center hover:text-foreground/80 transition-colors"
                   >
-                    Projet
+                    {t('projects.title')}
                     <SortIcon field="project" />
                   </button>
                 </th>
@@ -378,7 +375,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('status')}
                   className="flex items-center hover:text-foreground/80 transition-colors"
                 >
-                  Statut
+                  {t('invoices.status')}
                   <SortIcon field="status" />
                 </button>
               </th>
@@ -387,7 +384,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('total')}
                   className="flex items-center hover:text-foreground/80 transition-colors ml-auto"
                 >
-                  Total
+                  {t('invoices.total')}
                   <SortIcon field="total" />
                 </button>
               </th>
@@ -396,11 +393,11 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('createdAt')}
                   className="flex items-center hover:text-foreground/80 transition-colors"
                 >
-                  Créée
+                  {t('invoices.date')}
                   <SortIcon field="createdAt" />
                 </button>
               </th>
-              <th className="text-right py-3 px-4">Actions</th>
+              <th className="text-right py-3 px-4">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -417,7 +414,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                 </td>
                 <td className="py-3 px-4">
                   <Link href={`/clients/${inv.clientId}`} className="underline">
-                    {inv.client?.name ?? 'Client'}
+                    {inv.client?.name ?? t('invoices.client')}
                   </Link>
                 </td>
                 {showProject && (
@@ -440,7 +437,11 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                       statusColors[inv.status as keyof typeof statusColors] || statusColors.draft
                     }`}
                   >
-                    {statusLabels[inv.status as keyof typeof statusLabels] || inv.status}
+                    {inv.status === 'draft' && t('invoices.draft')}
+                    {inv.status === 'sent' && t('invoices.sent')}
+                    {inv.status === 'paid' && t('invoices.paid')}
+                    {inv.status === 'archived' && t('common.archive')}
+                    {!['draft', 'sent', 'paid', 'archived'].includes(inv.status) && inv.status}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right font-semibold">{Number(inv.total).toFixed(2)} $</td>
@@ -448,7 +449,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                 <td className="py-3 px-4">
                   <div className="flex justify-end gap-1">
                     {/* Voir - toujours visible */}
-                    <Tooltip content="Voir et modifier">
+                    <Tooltip content={t('invoices.viewInvoice')}>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -474,7 +475,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
 
                     {/* Action contextuelle selon le statut */}
                     {inv.status === 'draft' && inv.client?.email && (
-                      <Tooltip content="Envoyer par email">
+                      <Tooltip content={t('invoices.sendInvoice')}>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -488,7 +489,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                     )}
 
                     {inv.status === 'sent' && (
-                      <Tooltip content="Marquer comme payée">
+                      <Tooltip content={t('invoices.markAsPaid')}>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -520,7 +521,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                             disabled={busyId === inv.id}
                           >
                             <RefreshCw className="h-4 w-4 mr-2" />
-                            Renvoyer la facture
+                            {t('invoices.sendInvoice')}
                           </DropdownMenuItem>
                         )}
 
@@ -528,7 +529,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                         <DropdownMenuItem asChild>
                           <Link href={`/factures/${inv.id}/rappels`}>
                             <History className="h-4 w-4 mr-2" />
-                            Voir les rappels
+                            {t('crm.viewDetails')}
                           </Link>
                         </DropdownMenuItem>
 
@@ -538,7 +539,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                             onClick={() => handleCopyPaymentLink(inv.id)}
                           >
                             <Link2 className="h-4 w-4 mr-2" />
-                            Copier lien de paiement
+                            Copier lien
                           </DropdownMenuItem>
                         )}
 
@@ -549,7 +550,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                             disabled={busyId === inv.id}
                           >
                             <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                            Marquer comme payée
+                            {t('invoices.markAsPaid')}
                           </DropdownMenuItem>
                         )}
 
@@ -559,7 +560,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                           className="text-red-600 focus:text-red-600"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Supprimer
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -585,27 +586,27 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
             doAction(deleteConfirmId, 'delete')
           }
         }}
-        title="Supprimer la facture"
-        description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
-        confirmText="Supprimer"
+        title={t('invoices.deleteInvoice')}
+        description={t('invoices.deleteConfirm')}
+        confirmText={t('common.delete')}
         isLoading={busyId === deleteConfirmId}
       />
       <ConfirmDialog
         isOpen={batchAction === 'delete'}
         onClose={() => setBatchAction(null)}
         onConfirm={() => doBatchAction('delete')}
-        title="Supprimer les factures"
-        description={`Êtes-vous sûr de vouloir supprimer ${selectedInvoiceIds.length} facture(s) ? Cette action est irréversible.`}
-        confirmText="Supprimer"
+        title={t('invoices.deleteInvoice')}
+        description={t('invoices.deleteConfirm')}
+        confirmText={t('common.delete')}
         isLoading={busyId === 'batch'}
       />
       <ConfirmDialog
         isOpen={batchAction === 'archive'}
         onClose={() => setBatchAction(null)}
         onConfirm={() => doBatchAction('archive')}
-        title="Archiver les factures"
-        description={`Êtes-vous sûr de vouloir archiver ${selectedInvoiceIds.length} facture(s) ?`}
-        confirmText="Archiver"
+        title={t('common.archive')}
+        description={`${t('invoices.deleteConfirm')}`}
+        confirmText={t('common.archive')}
         isLoading={busyId === 'batch'}
       />
       {toast && (

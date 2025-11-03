@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   Select,
   SelectContent,
@@ -66,6 +67,7 @@ export function RevenueTab({
   invoices: Invoice[]
   manualRevenues: ManualRevenue[]
 }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFilter, setDateFilter] = useState('all')
@@ -168,15 +170,15 @@ export function RevenueTab({
       {/* En-tête avec bouton */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h3 className="font-semibold text-lg">Tous les revenus</h3>
+          <h3 className="font-semibold text-lg">{t('accounting.allRevenues')}</h3>
           <p className="text-sm text-muted-foreground">
-            {filteredRevenues.length} transaction{filteredRevenues.length > 1 ? 's' : ''} • Total{': '}
+            {filteredRevenues.length} {filteredRevenues.length > 1 ? t('accounting.transactions') : t('accounting.transaction')} • {t('common.total')}{': '}
             {totalRevenue.toFixed(2)} $
           </p>
         </div>
         <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Ajouter un revenu
+          {t('accounting.addRevenue')}
         </Button>
       </div>
 
@@ -185,7 +187,7 @@ export function RevenueTab({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher..."
+            placeholder={t('common.search') + '...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -194,12 +196,12 @@ export function RevenueTab({
         <div className="w-full md:w-48">
           <Select value={dateFilter} onValueChange={setDateFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="Période" />
+              <SelectValue placeholder={t('accounting.period')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes les périodes</SelectItem>
-              <SelectItem value="month">Ce mois</SelectItem>
-              <SelectItem value="year">Cette année</SelectItem>
+              <SelectItem value="all">{t('accounting.allPeriods')}</SelectItem>
+              <SelectItem value="month">{t('accounting.thisMonth')}</SelectItem>
+              <SelectItem value="year">{t('accounting.thisYear')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -209,7 +211,7 @@ export function RevenueTab({
       <div className="bg-card rounded-lg border">
         {filteredRevenues.length === 0 ? (
           <div className="p-8 text-center text-sm text-muted-foreground">
-            {searchTerm || dateFilter !== 'all' ? 'Aucun revenu trouvé' : 'Aucun revenu'}
+            {searchTerm || dateFilter !== 'all' ? t('accounting.noRevenueFound') : t('accounting.noRevenues')}
           </div>
         ) : isMobile ? (
           /* Mobile: Card view */
@@ -228,11 +230,11 @@ export function RevenueTab({
             <table className="w-full">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-left py-3 px-4">Description</th>
-                  <th className="text-left py-3 px-4">Type</th>
-                  <th className="text-left py-3 px-4">Client / Catégorie</th>
-                  <th className="text-right py-3 px-4">Montant</th>
+                  <th className="text-left py-3 px-4">{t('common.date')}</th>
+                  <th className="text-left py-3 px-4">{t('common.description')}</th>
+                  <th className="text-left py-3 px-4">{t('common.type')}</th>
+                  <th className="text-left py-3 px-4">{t('accounting.client')} / {t('common.category')}</th>
+                  <th className="text-right py-3 px-4">{t('common.amount')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -246,12 +248,12 @@ export function RevenueTab({
                       {revenue.type === 'invoice' ? (
                         <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-400/10 dark:text-blue-300 dark:border-blue-300/20">
                           <FileText className="h-3 w-3 mr-1" />
-                          Facture
+                          {t('accounting.invoice')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border-green-200 dark:bg-green-400/10 dark:text-green-300 dark:border-green-300/20">
                           <DollarSign className="h-3 w-3 mr-1" />
-                          Manuel
+                          {t('accounting.manual')}
                         </span>
                       )}
                     </td>
@@ -290,9 +292,9 @@ export function RevenueTab({
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Supprimer le revenu</DialogTitle>
+            <DialogTitle>{t('accounting.deleteRevenue')}</DialogTitle>
             <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer le revenu &quot;{revenueToDelete?.description}&quot; ? Cette action est irréversible.
+              {t('accounting.areYouSureDeleteRevenue')} &quot;{revenueToDelete?.description}&quot; ? {t('accounting.thisActionIsIrreversible')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -304,14 +306,14 @@ export function RevenueTab({
                 setRevenueToDelete(null)
               }}
             >
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
               variant="destructive"
               onClick={handleDeleteRevenue}
             >
-              Supprimer
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { FileText, DollarSign, Calendar, MoreVertical, Trash2, ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,7 @@ export function RevenueCard({
   revenue: CombinedRevenue
   onDelete: (id: string, description: string) => void
 }) {
+  const { t } = useTranslation()
   const formatDate = (d: Date) =>
     new Intl.DateTimeFormat('fr-FR', {
       day: 'numeric',
@@ -60,7 +62,7 @@ export function RevenueCard({
                 className="text-red-600 focus:text-red-600"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
+                {t('common.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -75,12 +77,12 @@ export function RevenueCard({
             {revenue.type === 'invoice' ? (
               <>
                 <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span className="text-sm font-medium">Facture</span>
+                <span className="text-sm font-medium">{t('accounting.invoice')}</span>
               </>
             ) : (
               <>
                 <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm font-medium">Manuel</span>
+                <span className="text-sm font-medium">{t('accounting.manual')}</span>
               </>
             )}
           </div>
@@ -108,11 +110,11 @@ export function RevenueCard({
           ) : revenue.category ? (
             <span className="text-sm text-muted-foreground">{revenue.category}</span>
           ) : (
-            <span className="text-sm text-muted-foreground italic">Non catégorisé</span>
+            <span className="text-sm text-muted-foreground italic">{t('accounting.uncategorized')}</span>
           )}
           {revenue.projectName && (
             <div className="text-xs text-muted-foreground mt-0.5">
-              Projet: {revenue.projectName}
+              {t('accounting.project')}: {revenue.projectName}
             </div>
           )}
         </div>

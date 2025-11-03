@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { ExpenseModal } from '@/components/expense-modal'
 import { ExpenseCard } from '@/components/accounting/expense-card'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Expense = {
   id: string
@@ -16,6 +17,7 @@ type Expense = {
 }
 
 export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
@@ -43,18 +45,18 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')) return
+    if (!confirm(t('accounting.areYouSureDeleteExpense'))) return
 
     try {
       const res = await fetch(`/api/expenses/${id}`, {
         method: 'DELETE',
       })
 
-      if (!res.ok) throw new Error('Erreur lors de la suppression')
+      if (!res.ok) throw new Error(t('accounting.deleteErrorExpense'))
 
       router.refresh()
     } catch (_error) {
-      alert('Erreur lors de la suppression de la dépense')
+      alert(t('accounting.deleteExpenseError'))
     }
   }
 
@@ -73,7 +75,7 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
           body: JSON.stringify(data),
         })
 
-        if (!res.ok) throw new Error('Erreur lors de la mise à jour')
+        if (!res.ok) throw new Error(t('accounting.updateError'))
       } else {
         // Create
         const res = await fetch('/api/expenses', {
@@ -82,13 +84,13 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
           body: JSON.stringify(data),
         })
 
-        if (!res.ok) throw new Error('Erreur lors de la création')
+        if (!res.ok) throw new Error(t('accounting.createError'))
       }
 
       setIsModalOpen(false)
       router.refresh()
     } catch (_error) {
-      alert('Erreur lors de l\'enregistrement de la dépense')
+      alert(t('accounting.saveExpenseError'))
     }
   }
 
@@ -100,12 +102,12 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
       <div className="bg-card rounded-lg border p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-lg">Dépenses totales</h3>
+            <h3 className="font-semibold text-lg">{t('accounting.totalExpensesAmount')}</h3>
             <p className="text-3xl font-bold mt-2">{totalExpenses.toFixed(2)} $</p>
           </div>
           <Button onClick={handleCreate}>
             <Plus className="h-4 w-4 mr-2" />
-            Nouvelle dépense
+            {t('accounting.newExpense')}
           </Button>
         </div>
       </div>
@@ -114,10 +116,10 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
       <div className="bg-card rounded-lg border">
         {expenses.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-muted-foreground">Aucune dépense enregistrée</p>
+            <p className="text-muted-foreground">{t('accounting.noExpensesRecorded')}</p>
             <Button onClick={handleCreate} variant="outline" className="mt-4">
               <Plus className="h-4 w-4 mr-2" />
-              Ajouter une dépense
+              {t('accounting.addAnExpense')}
             </Button>
           </div>
         ) : isMobile ? (
@@ -138,11 +140,11 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
             <table className="w-full">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-left py-3 px-4">Description</th>
-                  <th className="text-left py-3 px-4">Catégorie</th>
-                  <th className="text-right py-3 px-4">Montant</th>
-                  <th className="text-right py-3 px-4">Actions</th>
+                  <th className="text-left py-3 px-4">{t('common.date')}</th>
+                  <th className="text-left py-3 px-4">{t('common.description')}</th>
+                  <th className="text-left py-3 px-4">{t('common.category')}</th>
+                  <th className="text-right py-3 px-4">{t('common.amount')}</th>
+                  <th className="text-right py-3 px-4">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>

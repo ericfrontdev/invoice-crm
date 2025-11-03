@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { AddAmountModal, type NewAmountData } from '@/components/add-amount-modal'
 import { EditAmountModal, type EditAmountData } from '@/components/edit-amount-modal'
 import { InvoicePreviewModal } from '@/components/invoice-preview-modal'
+import { useTranslation } from '@/lib/i18n-context'
 
 type ClientWithAmounts = {
   id: string
@@ -33,6 +34,7 @@ type ClientWithAmounts = {
 }
 
 export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
+  const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [selectedAmounts, setSelectedAmounts] = useState<Set<string>>(new Set())
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -62,16 +64,16 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
         body: JSON.stringify(amountData),
       })
       if (!res.ok) {
-        setToast({ type: 'error', message: "Erreur lors de la modification du montant" })
+        setToast({ type: 'error', message: t('errors.generic') })
         setTimeout(() => setToast(null), 3000)
         return
       }
       router.refresh()
-      setToast({ type: 'success', message: 'Montant modifié avec succès' })
+      setToast({ type: 'success', message: t('success.updated') })
       setTimeout(() => setToast(null), 2500)
       setEditingAmount(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('errors.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -100,27 +102,27 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-sm text-muted-foreground">{t('clients.email')}</p>
               <p>{client.email}</p>
             </div>
 
             {client.phone && (
               <div>
-                <p className="text-sm text-muted-foreground">Téléphone</p>
+                <p className="text-sm text-muted-foreground">{t('clients.phone')}</p>
                 <p>{client.phone}</p>
               </div>
             )}
 
             {client.address && (
               <div className="md:col-span-2">
-                <p className="text-sm text-muted-foreground">Adresse</p>
+                <p className="text-sm text-muted-foreground">{t('clients.address')}</p>
                 <p>{client.address}</p>
               </div>
             )}
 
             {client.website && (
               <div>
-                <p className="text-sm text-muted-foreground">Site web</p>
+                <p className="text-sm text-muted-foreground">{t('clients.website')}</p>
                 <a
                   href={client.website}
                   className="text-blue-600 hover:underline"
@@ -150,8 +152,8 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
 
             <span className="font-medium">
               {isExpanded
-                ? `Masquer les sommes dues`
-                : `Voir les sommes dues (${client.unpaidAmounts.length})`}
+                ? `Masquer les ${t('crm.unpaidAmounts').toLowerCase()}`
+                : `Voir les ${t('crm.unpaidAmounts').toLowerCase()} (${client.unpaidAmounts.length})`}
             </span>
 
             {isExpanded ? (
@@ -195,7 +197,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
               </div>
             )}
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold">Sommes dues</h3>
+              <h3 className="text-xl font-semibold">{t('crm.unpaidAmounts')}</h3>
               <div className="flex gap-2">
                 <Button
                   variant={isEditMode ? 'default' : 'outline'}
@@ -205,7 +207,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                   disabled={client.unpaidAmounts.length === 0}
                 >
                   <Pencil className="h-4 w-4 mr-2" />
-                  {isEditMode ? 'Mode édition' : 'Éditer'}
+                  {isEditMode ? 'Mode édition' : t('common.edit')}
                 </Button>
                 <Button size="sm" className="cursor-pointer" onClick={() => setIsAddOpen(true)}>
                   + Ajouter un montant
@@ -221,7 +223,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                     <thead className="bg-gray-50 dark:bg-slate-600">
                       <tr>
                         <th className="text-left py-3 px-4 font-medium">
-                          Description
+                          {t('common.description')}
                         </th>
                         <th className="text-left py-3 px-4 font-medium">
                           Date création
@@ -230,7 +232,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           Date échéance
                         </th>
                         <th className="text-right py-3 px-4 font-medium">
-                          Montant
+                          {t('common.amount')}
                         </th>
                         {!isEditMode && (
                           <th className="text-center py-3 px-4 font-medium">
@@ -356,14 +358,14 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           body: JSON.stringify({ clientId: client.id, unpaidAmountIds: ids }),
                         })
                         if (!res.ok) {
-                          setToast({ type: 'error', message: 'Erreur lors de la création de la facture' })
+                          setToast({ type: 'error', message: t('errors.generic') })
                         } else {
-                          setToast({ type: 'success', message: 'Facture générée (brouillon)' })
+                          setToast({ type: 'success', message: t('invoices.invoiceCreated') })
                           setSelectedAmounts(new Set())
                           router.refresh()
                         }
                       } catch {
-                        setToast({ type: 'error', message: 'Erreur réseau' })
+                        setToast({ type: 'error', message: t('errors.networkError') })
                       } finally {
                         setIsGenerating(false)
                         setTimeout(() => setToast(null), 2500)
@@ -371,7 +373,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                     })()
                   }}
                 >
-                  {isGenerating ? 'Génération…' : 'Générer facture pour les éléments sélectionnés'}
+                  {isGenerating ? t('common.loading') : 'Générer facture pour les éléments sélectionnés'}
                 </Button>
                 <Button
                   variant="outline"
@@ -402,13 +404,13 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                 body: JSON.stringify({ ...data, clientId: client.id }),
               })
               if (!res.ok) {
-                setToast({ type: 'error', message: "Erreur lors de l'ajout du montant" })
+                setToast({ type: 'error', message: t('errors.generic') })
               } else {
                 router.refresh()
-                setToast({ type: 'success', message: 'Montant ajouté' })
+                setToast({ type: 'success', message: t('success.created') })
               }
             } catch {
-              setToast({ type: 'error', message: 'Erreur réseau' })
+              setToast({ type: 'error', message: t('errors.networkError') })
             } finally {
               setIsAddOpen(false)
               setTimeout(() => setToast(null), 2500)
@@ -437,7 +439,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
         onCreated={() => {
           setSelectedAmounts(new Set())
           router.refresh()
-          setToast({ type: 'success', message: 'Facture créée' })
+          setToast({ type: 'success', message: t('invoices.invoiceCreated') })
           setTimeout(() => setToast(null), 2500)
         }}
       />

@@ -2,6 +2,7 @@
 
 import { Calendar, MoreVertical, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ export function ExpenseCard({
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
 }) {
+  const { t } = useTranslation()
   const formatDate = (d: Date) =>
     new Intl.DateTimeFormat('fr-FR').format(new Date(d))
 
@@ -51,7 +53,7 @@ export function ExpenseCard({
               }}
             >
               <Pencil className="h-4 w-4 mr-2" />
-              Modifier
+              {t('common.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
@@ -61,7 +63,7 @@ export function ExpenseCard({
               className="text-red-600 focus:text-red-600"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Supprimer
+              {t('common.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

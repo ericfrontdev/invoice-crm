@@ -7,6 +7,7 @@ import { Edit2, Save, X, Plus, Trash2, FileDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { InvoicePDFTemplate } from '@/components/invoice-pdf-template'
 import { useReactToPrint } from 'react-to-print'
+import { useTranslation } from '@/lib/i18n-context'
 
 type InvoiceClient = {
   id: string
@@ -60,6 +61,7 @@ export function InvoiceViewModal({
   onClose: () => void
   invoice: InvoiceForView | null
 }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -184,21 +186,21 @@ export function InvoiceViewModal({
 
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 className="text-sm md:text-base font-semibold truncate">Facture {invoice.number}</h2>
+          <h2 className="text-sm md:text-base font-semibold truncate">{t('invoices.title')} {invoice.number}</h2>
           <div className="flex items-center gap-1 md:gap-2">
             {!isEditing ? (
               <>
                 <Button variant="ghost" size="sm" onClick={handlePrint} className="px-2 md:px-3">
                   <FileDown className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Télécharger PDF</span>
+                  <span className="hidden md:inline">{t('invoices.downloadPDF')}</span>
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="px-2 md:px-3">
                   <Edit2 className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Modifier</span>
+                  <span className="hidden md:inline">{t('common.edit')}</span>
                 </Button>
                 <Button variant="ghost" size="sm" onClick={onClose} className="px-2 md:px-3">
                   <X className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Fermer</span>
+                  <span className="hidden md:inline">{t('common.close')}</span>
                 </Button>
               </>
             ) : (
@@ -217,11 +219,11 @@ export function InvoiceViewModal({
                   className="px-2 md:px-3"
                 >
                   <X className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Annuler</span>
+                  <span className="hidden md:inline">{t('common.cancel')}</span>
                 </Button>
                 <Button size="sm" onClick={handleSave} disabled={saving} className="px-2 md:px-3">
                   <Save className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
+                  <span className="hidden md:inline">{saving ? t('common.loading') : t('common.save')}</span>
                 </Button>
               </>
             )}
@@ -256,9 +258,9 @@ export function InvoiceViewModal({
         <div className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold">Facture</h3>
+              <h3 className="text-xl font-semibold">{t('invoices.title')}</h3>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-muted-foreground">Statut:</p>
+                <p className="text-sm text-muted-foreground">{t('invoices.status')}:</p>
                 {isEditing ? (
                   <select
                     value={editedStatus}
@@ -276,7 +278,7 @@ export function InvoiceViewModal({
 
               {/* Créée le - éditable */}
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-muted-foreground">Créée le:</p>
+                <p className="text-sm text-muted-foreground">{t('invoices.date')}:</p>
                 {isEditing ? (
                   <input
                     type="date"
@@ -291,7 +293,7 @@ export function InvoiceViewModal({
 
               {/* Échéance - éditable */}
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-muted-foreground">Échéance:</p>
+                <p className="text-sm text-muted-foreground">{t('invoices.dueDate')}:</p>
                 {isEditing ? (
                   <input
                     type="date"
@@ -306,11 +308,11 @@ export function InvoiceViewModal({
                 )}
               </div>
 
-              <p className="text-sm text-muted-foreground mt-1">Numéro: {invoice.number}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t('invoices.invoiceNumber')}: {invoice.number}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Destinataire</p>
-              <p className="font-medium">{invoice.client?.name ?? 'Client'}</p>
+              <p className="text-sm text-muted-foreground">{t('invoices.billTo')}</p>
+              <p className="font-medium">{invoice.client?.name ?? t('invoices.client')}</p>
               {invoice.client?.company && <p className="text-sm">{invoice.client.company}</p>}
               {invoice.client?.address && <p className="text-sm">{invoice.client.address}</p>}
               {invoice.client?.email && <p className="text-sm">{invoice.client.email}</p>}
@@ -321,9 +323,9 @@ export function InvoiceViewModal({
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left py-3 px-4">Description</th>
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-right py-3 px-4">Montant</th>
+                  <th className="text-left py-3 px-4">{t('common.description')}</th>
+                  <th className="text-left py-3 px-4">{t('invoices.date')}</th>
+                  <th className="text-right py-3 px-4">{t('common.amount')}</th>
                   {isEditing && <th className="text-right py-3 px-4"></th>}
                 </tr>
               </thead>
@@ -376,7 +378,7 @@ export function InvoiceViewModal({
                 ) : (
                   <tr className="border-t">
                     <td className="py-3 px-4 text-center text-muted-foreground" colSpan={isEditing ? 4 : 3}>
-                      Aucun élément détaillé
+                      {t('invoices.noInvoices')}
                     </td>
                   </tr>
                 )}
@@ -387,7 +389,7 @@ export function InvoiceViewModal({
                     <td colSpan={4} className="py-2 px-4">
                       <Button variant="outline" size="sm" onClick={addItem}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Ajouter un élément
+                        {t('invoices.addItem')}
                       </Button>
                     </td>
                   </tr>
@@ -396,7 +398,7 @@ export function InvoiceViewModal({
                 {hasTaxes && (
                   <tr>
                     <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
-                      <span className="text-sm text-muted-foreground">Sous-total</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.subtotal')}</span>
                     </td>
                     <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
                       {Number(
@@ -412,7 +414,7 @@ export function InvoiceViewModal({
                 {hasTaxes && (
                   <tr>
                     <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
-                      <span className="text-sm text-muted-foreground">TPS (5%)</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.tps')} (5%)</span>
                     </td>
                     <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
                       {Number(
@@ -428,7 +430,7 @@ export function InvoiceViewModal({
                 {hasTaxes && (
                   <tr>
                     <td className="py-2 px-4" colSpan={isEditing ? 3 : 2}>
-                      <span className="text-sm text-muted-foreground">TVQ (9,975%)</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.tvq')} (9,975%)</span>
                     </td>
                     <td className="py-2 px-4 text-right" colSpan={isEditing ? 2 : 1}>
                       {Number(
@@ -443,7 +445,7 @@ export function InvoiceViewModal({
                 {/* Total */}
                 <tr className="border-t-2">
                   <td className="py-3 px-4" colSpan={isEditing ? 3 : 2}>
-                    <span className="text-sm font-semibold">Total</span>
+                    <span className="text-sm font-semibold">{t('invoices.total')}</span>
                   </td>
                   <td className="py-3 px-4 text-right text-base font-semibold" colSpan={isEditing ? 2 : 1}>
                     {Number(
@@ -467,7 +469,7 @@ export function InvoiceViewModal({
 
           <div className="text-sm text-muted-foreground">
             <p className="mb-1">Conditions de paiement</p>
-            <p>Payable à réception. Merci de votre confiance.</p>
+            <p>{t('invoices.thankYou')}</p>
           </div>
         </div>
         )}

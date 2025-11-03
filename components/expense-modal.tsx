@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Expense = {
   id: string
@@ -25,6 +26,7 @@ export function ExpenseModal({
   onSave: (data: { description: string; amount: number; date: string; category: string | null }) => Promise<void>
   expense: Expense | null
 }) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     description: '',
     amount: '',
@@ -65,13 +67,13 @@ export function ExpenseModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {expense ? 'Modifier la dépense' : 'Nouvelle dépense'}
+            {expense ? t('accounting.editExpenseTitle') : t('accounting.newExpenseTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="description" className="mb-2 block">Description *</Label>
+            <Label htmlFor="description" className="mb-2 block">{t('common.description')} *</Label>
             <Input
               id="description"
               value={formData.description}
@@ -83,7 +85,7 @@ export function ExpenseModal({
           </div>
 
           <div>
-            <Label htmlFor="amount" className="mb-2 block">Montant *</Label>
+            <Label htmlFor="amount" className="mb-2 block">{t('common.amount')} *</Label>
             <Input
               id="amount"
               type="number"
@@ -97,7 +99,7 @@ export function ExpenseModal({
           </div>
 
           <div>
-            <Label htmlFor="date" className="mb-2 block">Date *</Label>
+            <Label htmlFor="date" className="mb-2 block">{t('common.date')} *</Label>
             <Input
               id="date"
               type="date"
@@ -110,23 +112,23 @@ export function ExpenseModal({
           </div>
 
           <div>
-            <Label htmlFor="category" className="mb-2 block">Catégorie</Label>
+            <Label htmlFor="category" className="mb-2 block">{t('common.category')}</Label>
             <Input
               id="category"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
               }
-              placeholder="Ex: Bureau, Transport, Marketing..."
+              placeholder={t('accounting.exOfficeTravelMarketing')}
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {expense ? 'Mettre à jour' : 'Créer'}
+              {expense ? t('common.update') : t('common.create')}
             </Button>
           </div>
         </form>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { TrendingUp, Calendar, ArrowUpRight } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type OverviewData = {
   recentTransactions: Array<{
@@ -24,6 +25,7 @@ type OverviewData = {
 }
 
 export function OverviewAccountingTab({ data }: { data: OverviewData }) {
+  const { t } = useTranslation()
   const maxMonthRevenue = Math.max(...data.revenueByMonth.map((m) => m.amount), 1)
 
   return (
@@ -32,7 +34,7 @@ export function OverviewAccountingTab({ data }: { data: OverviewData }) {
       <div className="bg-card rounded-lg border p-6">
         <h3 className="font-semibold mb-4 flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          Revenus des 6 derniers mois
+          {t('accounting.revenuesLast6Months')}
         </h3>
         <div className="space-y-4">
           {data.revenueByMonth.map((item, index) => {
@@ -59,11 +61,11 @@ export function OverviewAccountingTab({ data }: { data: OverviewData }) {
       <div className="bg-card rounded-lg border p-6">
         <h3 className="font-semibold mb-4 flex items-center gap-2">
           <Calendar className="h-5 w-5" />
-          Transactions récentes
+          {t('accounting.recentTransactions')}
         </h3>
         {data.recentTransactions.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
-            Aucune transaction
+            {t('accounting.noTransactions')}
           </p>
         ) : (
           <div className="space-y-3">

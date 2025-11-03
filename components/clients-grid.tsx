@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { LayoutGrid, List, Building2, Mail } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Client = {
   id: string
@@ -13,12 +14,13 @@ type Client = {
 }
 
 export function ClientsGrid({ clients }: { clients: Client[] }) {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   if (clients.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Aucun client pour le moment</p>
+        <p className="text-muted-foreground">{t('clients.noClients')}</p>
       </div>
     )
   }
@@ -59,7 +61,7 @@ export function ClientsGrid({ clients }: { clients: Client[] }) {
                   {/* Client Name */}
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-1">
-                      {client.name || 'Sans nom'}
+                      {client.name || t('clients.name')}
                     </h3>
                   </div>
 
@@ -91,9 +93,9 @@ export function ClientsGrid({ clients }: { clients: Client[] }) {
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>
-                <th className="text-left py-3 px-4 font-medium">Nom</th>
-                <th className="text-left py-3 px-4 font-medium">Compagnie</th>
-                <th className="text-left py-3 px-4 font-medium">Email</th>
+                <th className="text-left py-3 px-4 font-medium">{t('clients.name')}</th>
+                <th className="text-left py-3 px-4 font-medium">{t('clients.company')}</th>
+                <th className="text-left py-3 px-4 font-medium">{t('clients.email')}</th>
               </tr>
             </thead>
             <tbody>
@@ -107,7 +109,7 @@ export function ClientsGrid({ clients }: { clients: Client[] }) {
                       href={`/clients/${client.id}/details`}
                       className="font-medium hover:text-primary hover:underline"
                     >
-                      {client.name || 'Sans nom'}
+                      {client.name || t('clients.name')}
                     </Link>
                   </td>
                   <td className="py-3 px-4 text-muted-foreground">

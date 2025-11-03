@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/lib/i18n-context'
 
 export type EditClientData = {
   name: string
@@ -36,6 +37,7 @@ export function EditClientModal({
   onSubmit: (data: EditClientData) => void
   client: Client | null
 }) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<EditClientData>({
     name: '',
     company: '',
@@ -84,16 +86,16 @@ export function EditClientModal({
 
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 className="text-lg font-semibold">Modifier le client</h2>
+          <h2 className="text-lg font-semibold">{t('clients.editClient')}</h2>
           <button className="text-sm underline" onClick={onClose}>
-            Fermer
+            {t('common.close')}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Nom *</Label>
+              <Label htmlFor="name">{t('clients.name')} *</Label>
               <Input
                 id="name"
                 type="text"
@@ -106,7 +108,7 @@ export function EditClientModal({
             </div>
 
             <div>
-              <Label htmlFor="company">Entreprise</Label>
+              <Label htmlFor="company">{t('clients.company')}</Label>
               <Input
                 id="company"
                 type="text"
@@ -120,7 +122,7 @@ export function EditClientModal({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">{t('clients.email')} *</Label>
               <Input
                 id="email"
                 type="email"
@@ -133,7 +135,7 @@ export function EditClientModal({
             </div>
 
             <div>
-              <Label htmlFor="phone">Téléphone</Label>
+              <Label htmlFor="phone">{t('clients.phone')}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -146,7 +148,7 @@ export function EditClientModal({
           </div>
 
           <div>
-            <Label htmlFor="address">Adresse</Label>
+            <Label htmlFor="address">{t('clients.address')}</Label>
             <Input
               id="address"
               type="text"
@@ -158,7 +160,7 @@ export function EditClientModal({
           </div>
 
           <div>
-            <Label htmlFor="website">Site web</Label>
+            <Label htmlFor="website">{t('clients.website')}</Label>
             <Input
               id="website"
               type="url"
@@ -177,10 +179,10 @@ export function EditClientModal({
               onClick={onClose}
               className="cursor-pointer"
             >
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="cursor-pointer">
-              Enregistrer
+              {t('common.save')}
             </Button>
           </div>
         </form>

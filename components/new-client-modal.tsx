@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { X, Building2, Mail, Phone, MapPin, Globe, User, Loader2 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 export interface NewClientData {
   name: string
@@ -27,6 +28,7 @@ export function NewClientModal({
   onClose,
   onSubmit,
 }: NewClientModalProps) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -76,7 +78,7 @@ export function NewClientModal({
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 id="new-client-title" className="text-base font-semibold">Nouveau client</h2>
+          <h2 id="new-client-title" className="text-base font-semibold">{t('clients.newClient')}</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -93,7 +95,7 @@ export function NewClientModal({
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name" className="flex items-center gap-2">
-                  <User className="h-3.5 w-3.5 text-muted-foreground" /> Nom <span className="text-red-500">*</span>
+                  <User className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.name')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="name"
@@ -107,7 +109,7 @@ export function NewClientModal({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="company" className="flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> Entreprise
+                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.company')}
                 </Label>
                 <Input
                   id="company"
@@ -126,7 +128,7 @@ export function NewClientModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email <span className="text-red-500">*</span>
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.email')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -140,7 +142,7 @@ export function NewClientModal({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="phone" className="flex items-center gap-2">
-                  <Phone className="h-3.5 w-3.5 text-muted-foreground" /> Téléphone
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.phone')}
                 </Label>
                 <Input
                   id="phone"
@@ -159,7 +161,7 @@ export function NewClientModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5 md:col-span-2">
                 <Label htmlFor="address" className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" /> Adresse
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.address')}
                 </Label>
                 <Input
                   id="address"
@@ -171,7 +173,7 @@ export function NewClientModal({
               </div>
               <div className="space-y-1.5 md:col-span-2">
                 <Label htmlFor="website" className="flex items-center gap-2">
-                  <Globe className="h-3.5 w-3.5 text-muted-foreground" /> Site web
+                  <Globe className="h-3.5 w-3.5 text-muted-foreground" /> {t('clients.website')}
                 </Label>
                 <Input
                   id="website"
@@ -193,15 +195,15 @@ export function NewClientModal({
               className="flex-1"
               disabled={isSubmitting}
             >
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> En cours…
+                  <Loader2 className="h-4 w-4 animate-spin" /> {t('common.loading')}
                 </span>
               ) : (
-                'Créer client'
+                t('clients.newClient')
               )}
             </Button>
           </div>

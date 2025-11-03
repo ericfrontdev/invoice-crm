@@ -8,6 +8,7 @@ import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { CreateInvoiceButton } from '@/components/create-invoice-button'
 import { Button } from '@/components/ui/button'
 import { History } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Invoice = {
   id: string
@@ -42,6 +43,7 @@ export function InvoicesPageClient({
   projectInvoices: Invoice[]
   standaloneInvoices: Invoice[]
 }) {
+  const { t } = useTranslation()
   const searchParams = useSearchParams()
   const viewId = searchParams.get('view')
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceForView | null>(null)
@@ -70,7 +72,7 @@ export function InvoicesPageClient({
     <>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Factures</h1>
+          <h1 className="text-3xl font-bold">{t('invoices.title')}</h1>
           <p className="text-muted-foreground">
             Gérez toutes vos factures clients
           </p>
@@ -79,7 +81,7 @@ export function InvoicesPageClient({
           <Button variant="outline" asChild>
             <Link href="/factures/rappels">
               <History className="h-4 w-4 mr-2" />
-              Historique des rappels
+              {t('reminders.timeline')}
             </Link>
           </Button>
           <CreateInvoiceButton />
@@ -88,7 +90,7 @@ export function InvoicesPageClient({
 
       {totalInvoices === 0 ? (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
-          Aucune facture pour l&apos;instant.
+          {t('invoices.noInvoices')}
         </div>
       ) : (
         <div className="space-y-8">

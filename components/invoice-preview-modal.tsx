@@ -3,6 +3,7 @@
 import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { useMemo, useState, useEffect } from 'react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Item = {
   id: string
@@ -40,6 +41,7 @@ export function InvoicePreviewModal({
   items: Item[]
   onCreated?: () => void
 }) {
+  const { t } = useTranslation()
   const subtotal = useMemo(
     () => items.reduce((s, it) => s + (Number(it.amount) || 0), 0),
     [items],
@@ -100,7 +102,7 @@ export function InvoicePreviewModal({
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 className="text-base font-semibold">Prévisualisation de la facture</h2>
+          <h2 className="text-base font-semibold">{t('invoices.viewInvoice')}</h2>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -109,7 +111,7 @@ export function InvoicePreviewModal({
               disabled={isLoading !== null}
               onClick={() => createInvoice(false)}
             >
-              {isLoading === 'create' ? 'Création…' : 'Créer brouillon'}
+              {isLoading === 'create' ? t('common.loading') : t('invoices.draft')}
             </Button>
             <Button
               size="sm"
@@ -117,7 +119,7 @@ export function InvoicePreviewModal({
               disabled={isLoading !== null}
               onClick={() => createInvoice(true)}
             >
-              {isLoading === 'send' ? 'Envoi…' : 'Envoyer (mock)'}
+              {isLoading === 'send' ? t('common.loading') : t('invoices.sendInvoice')}
             </Button>
           </div>
         </div>
@@ -127,12 +129,12 @@ export function InvoicePreviewModal({
           {/* Header facture */}
           <div className="flex items-start justify-between mb-6">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">De</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('invoices.from')}</p>
               {user.company && <p className="font-semibold text-base">{user.company}</p>}
               <p className="text-sm">{user.name}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground mb-1">À</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('invoices.billTo')}</p>
               <p className="font-medium">{client.name}</p>
               {client.company && <p className="text-sm">{client.company}</p>}
               {client.address && <p className="text-sm">{client.address}</p>}
@@ -141,8 +143,8 @@ export function InvoicePreviewModal({
           </div>
 
           <div className="mb-6">
-            <h3 className="text-xl font-semibold">Facture</h3>
-            <p className="text-sm text-muted-foreground">Brouillon (prévisualisation)</p>
+            <h3 className="text-xl font-semibold">{t('invoices.title')}</h3>
+            <p className="text-sm text-muted-foreground">{t('invoices.draft')}</p>
           </div>
 
           {/* Items */}
@@ -150,9 +152,9 @@ export function InvoicePreviewModal({
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left py-3 px-4">Description</th>
-                  <th className="text-left py-3 px-4">Date</th>
-                  <th className="text-right py-3 px-4">Montant</th>
+                  <th className="text-left py-3 px-4">{t('common.description')}</th>
+                  <th className="text-left py-3 px-4">{t('invoices.date')}</th>
+                  <th className="text-right py-3 px-4">{t('common.amount')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -176,7 +178,7 @@ export function InvoicePreviewModal({
                 {hasTaxes && (
                   <tr className="border-t">
                     <td className="py-3 px-4" colSpan={2}>
-                      <span className="text-sm text-muted-foreground">Sous-total</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.subtotal')}</span>
                     </td>
                     <td className="py-3 px-4 text-right">
                       {subtotal.toFixed(2)} $
@@ -186,7 +188,7 @@ export function InvoicePreviewModal({
                 {hasTaxes && tps > 0 && (
                   <tr>
                     <td className="py-3 px-4" colSpan={2}>
-                      <span className="text-sm text-muted-foreground">TPS (5%)</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.tps')} (5%)</span>
                     </td>
                     <td className="py-3 px-4 text-right">
                       {tps.toFixed(2)} $
@@ -196,7 +198,7 @@ export function InvoicePreviewModal({
                 {hasTaxes && tvq > 0 && (
                   <tr>
                     <td className="py-3 px-4" colSpan={2}>
-                      <span className="text-sm text-muted-foreground">TVQ (9,975%)</span>
+                      <span className="text-sm text-muted-foreground">{t('invoices.tvq')} (9,975%)</span>
                     </td>
                     <td className="py-3 px-4 text-right">
                       {tvq.toFixed(2)} $
@@ -205,7 +207,7 @@ export function InvoicePreviewModal({
                 )}
                 <tr className="border-t">
                   <td className="py-3 px-4" colSpan={2}>
-                    <span className="text-sm text-muted-foreground">Total</span>
+                    <span className="text-sm text-muted-foreground">{t('invoices.total')}</span>
                   </td>
                   <td className="py-3 px-4 text-right text-base font-semibold">
                     {total.toFixed(2)} $
@@ -218,7 +220,7 @@ export function InvoicePreviewModal({
           {/* Conditions */}
           <div className="text-sm text-muted-foreground">
             <p className="mb-1">Conditions de paiement</p>
-            <p>Payable à réception. Merci de votre confiance.</p>
+            <p>{t('invoices.thankYou')}</p>
           </div>
         </div>
       </div>
