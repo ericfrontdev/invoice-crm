@@ -15,11 +15,11 @@ import { redirect } from 'next/navigation'
 async function getDashboardData(userId: string) {
   const now = new Date()
 
-  const [unpaidAggRes, overdueRes, draftsRes, sentRes, paidRes] =
+  const [totalDueRes, overdueRes, draftsRes, sentRes, paidRes] =
     await Promise.allSettled([
-      prisma.unpaidAmount.aggregate({
-        _sum: { amount: true },
-        where: { status: 'unpaid', client: { userId } },
+      prisma.invoice.aggregate({
+        _sum: { total: true },
+        where: { status: 'sent', client: { userId } },
       }),
       prisma.invoice.findMany({
         where: {
@@ -42,10 +42,10 @@ async function getDashboardData(userId: string) {
       prisma.invoice.count({ where: { status: 'paid', client: { userId } } }),
     ])
 
-  const unpaidAgg =
-    unpaidAggRes.status === 'fulfilled'
-      ? unpaidAggRes.value
-      : { _sum: { amount: 0 } }
+  const totalDueAgg =
+    totalDueRes.status === 'fulfilled'
+      ? totalDueRes.value
+      : { _sum: { total: 0 } }
   const overdue = overdueRes.status === 'fulfilled' ? overdueRes.value : []
   const drafts = draftsRes.status === 'fulfilled' ? draftsRes.value : 0
   const sent = sentRes.status === 'fulfilled' ? sentRes.value : 0
@@ -71,7 +71,7 @@ async function getDashboardData(userId: string) {
   ) as Record<string, string>
 
   return {
-    totalDue: unpaidAgg._sum.amount ?? 0,
+    totalDue: totalDueAgg._sum.total ?? 0,
     overdue,
     counts: { drafts, sent, paid },
     topClients: topClientsGroup.map((c) => ({
