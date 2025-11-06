@@ -86,25 +86,37 @@ async function processWebhook(body: HelcimWebhookData) {
 }
 
 async function handlePaymentSuccess(data: HelcimWebhookData) {
+  console.log('[handlePaymentSuccess] Full payload:', JSON.stringify(data, null, 2))
+
   const customerCode = data.customer?.customerCode || data.customerCode
 
   if (!customerCode) {
-    console.error('Pas de customerCode dans le webhook')
+    console.error('[handlePaymentSuccess] ERREUR: Pas de customerCode dans le webhook')
+    console.error('[handlePaymentSuccess] data.customer:', data.customer)
+    console.error('[handlePaymentSuccess] data.customerCode:', data.customerCode)
+    console.error('[handlePaymentSuccess] Full data keys:', Object.keys(data))
     return
   }
 
-  // Mettre à jour l'utilisateur
-  await prisma.user.update({
-    where: { id: customerCode },
-    data: {
-      plan: 'pro',
-      subscriptionStatus: 'active',
-      helcimCustomerId: data.customer?.id || data.customerId,
-      subscriptionEndsAt: null, // L'abonnement est actif
-    },
-  })
+  console.log(`[handlePaymentSuccess] customerCode trouvé: ${customerCode}`)
 
-  console.log(`Abonnement activé pour l'utilisateur ${customerCode}`)
+  // Mettre à jour l'utilisateur
+  try {
+    await prisma.user.update({
+      where: { id: customerCode },
+      data: {
+        plan: 'pro',
+        subscriptionStatus: 'active',
+        helcimCustomerId: data.customer?.id || data.customerId,
+        subscriptionEndsAt: null, // L'abonnement est actif
+      },
+    })
+
+    console.log(`[handlePaymentSuccess] ✅ Abonnement activé pour l'utilisateur ${customerCode}`)
+  } catch (error) {
+    console.error(`[handlePaymentSuccess] ❌ Erreur lors de la mise à jour de l'utilisateur:`, error)
+    throw error
+  }
 }
 
 async function handlePaymentFailed(data: HelcimWebhookData) {
