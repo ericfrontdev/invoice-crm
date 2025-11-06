@@ -5,12 +5,25 @@ import crypto from 'crypto'
 interface HelcimWebhookData {
   type?: string
   eventType?: string
+  id?: string // transactionId pour cardTransaction
   customer?: {
     customerCode?: string
     id?: string
   }
   customerCode?: string
   customerId?: string
+}
+
+interface HelcimTransactionResponse {
+  cardTransactionId: number
+  dateCreated: string
+  status: string
+  type: string
+  amount: number
+  currency: string
+  customerCode?: string
+  customerId?: number
+  // ... autres champs
 }
 
 export async function POST(request: Request) {
@@ -112,11 +125,15 @@ export async function POST(request: Request) {
 
 async function processWebhook(body: HelcimWebhookData) {
   try {
-
     // Vérifier le type d'événement
     const eventType = body.type || body.eventType
 
     switch (eventType) {
+      case 'cardTransaction':
+        // Pour les transactions d'abonnement, on doit récupérer les détails complets
+        await handleCardTransaction(body)
+        break
+
       case 'payment.success':
       case 'recurring.success':
         await handlePaymentSuccess(body)
@@ -143,6 +160,77 @@ async function processWebhook(body: HelcimWebhookData) {
       { error: 'Erreur lors du traitement du webhook' },
       { status: 500 }
     )
+  }
+}
+
+async function handleCardTransaction(data: HelcimWebhookData) {
+  console.log('[handleCardTransaction] Webhook reçu:', JSON.stringify(data, null, 2))
+
+  const transactionId = data.id
+
+  if (!transactionId) {
+    console.error('[handleCardTransaction] Pas de transactionId dans le webhook')
+    return
+  }
+
+  console.log(`[handleCardTransaction] Récupération des détails de la transaction ${transactionId}`)
+
+  // Appeler l'API Helcim pour obtenir les détails complets
+  try {
+    const helcimApiToken = process.env.HELCIM_API_TOKEN
+
+    if (!helcimApiToken) {
+      console.error('[handleCardTransaction] HELCIM_API_TOKEN non configuré')
+      return
+    }
+
+    const response = await fetch(
+      `https://api.helcim.com/v2/card-transactions/${transactionId}`,
+      {
+        method: 'GET',
+        headers: {
+          'api-token': helcimApiToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    if (!response.ok) {
+      console.error(
+        `[handleCardTransaction] Erreur API Helcim: ${response.status} ${response.statusText}`
+      )
+      const errorText = await response.text()
+      console.error('[handleCardTransaction] Response:', errorText)
+      return
+    }
+
+    const transaction: HelcimTransactionResponse = await response.json()
+    console.log('[handleCardTransaction] Transaction récupérée:', JSON.stringify(transaction, null, 2))
+
+    const customerCode = transaction.customerCode
+
+    if (!customerCode) {
+      console.error('[handleCardTransaction] Pas de customerCode dans la transaction')
+      return
+    }
+
+    console.log(`[handleCardTransaction] customerCode trouvé: ${customerCode}`)
+
+    // Mettre à jour l'utilisateur
+    await prisma.user.update({
+      where: { id: customerCode },
+      data: {
+        plan: 'pro',
+        subscriptionStatus: 'active',
+        helcimCustomerId: transaction.customerId?.toString(),
+        subscriptionEndsAt: null,
+      },
+    })
+
+    console.log(`[handleCardTransaction] ✅ Abonnement activé pour l'utilisateur ${customerCode}`)
+  } catch (error) {
+    console.error('[handleCardTransaction] Erreur:', error)
+    throw error
   }
 }
 
