@@ -50,25 +50,81 @@ export async function POST() {
       )
     }
 
-    // Construire l'URL d'abonnement Helcim avec les paramètres du client
-    const subscriptionUrl = new URL(`https://subscriptions.helcim.com/subscribe/${planId}`)
+    const helcimApiToken = process.env.HELCIM_API_TOKEN
 
-    // Ajouter les informations du client en query params (si supporté par Helcim)
-    subscriptionUrl.searchParams.set('customerCode', user.id)
-    subscriptionUrl.searchParams.set('email', user.email)
-    if (user.name) {
-      subscriptionUrl.searchParams.set('name', user.name)
+    if (!helcimApiToken) {
+      console.error('HELCIM_API_TOKEN manquant')
+      return NextResponse.json(
+        { error: 'Configuration de paiement manquante' },
+        { status: 500 }
+      )
     }
 
-    // URL de redirection après paiement réussi
-    const successUrl = `${process.env.NEXTAUTH_URL}/pricing/success`
-    subscriptionUrl.searchParams.set('returnUrl', successUrl)
-    subscriptionUrl.searchParams.set('successUrl', successUrl)
+    // Créer ou récupérer le customer Helcim
+    try {
+      // D'abord, essayer de créer le customer avec notre customerCode
+      const createCustomerResponse = await fetch('https://api.helcim.com/v2/customers/', {
+        method: 'POST',
+        headers: {
+          'api-token': helcimApiToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contactName: user.name,
+          email: user.email,
+          customerCode: user.id, // Utiliser notre user.id comme customerCode
+        }),
+      })
 
-    return NextResponse.json({
-      url: subscriptionUrl.toString(),
-      planId,
-    })
+      const customerData = await createCustomerResponse.json()
+
+      let helcimCustomerCode = user.id
+
+      if (createCustomerResponse.ok) {
+        // Customer créé avec succès
+        console.log('[create-checkout] Customer Helcim créé:', customerData)
+
+        // Stocker le customerCode dans notre BD
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            helcimCustomerCode: customerData.customerCode || user.id,
+            helcimCustomerId: customerData.customerId?.toString(),
+          },
+        })
+
+        helcimCustomerCode = customerData.customerCode || user.id
+      } else {
+        // Le customer existe peut-être déjà, continuer quand même
+        console.log('[create-checkout] Erreur création customer (peut-être existe déjà):', customerData)
+      }
+
+      // Construire l'URL d'abonnement Helcim
+      const subscriptionUrl = new URL(`https://subscriptions.helcim.com/subscribe/${planId}`)
+
+      // Ajouter les informations du client
+      subscriptionUrl.searchParams.set('customerCode', helcimCustomerCode)
+      subscriptionUrl.searchParams.set('email', user.email)
+      if (user.name) {
+        subscriptionUrl.searchParams.set('name', user.name)
+      }
+
+      // URL de redirection après paiement réussi
+      const successUrl = `${process.env.NEXTAUTH_URL}/pricing/success`
+      subscriptionUrl.searchParams.set('returnUrl', successUrl)
+      subscriptionUrl.searchParams.set('successUrl', successUrl)
+
+      return NextResponse.json({
+        url: subscriptionUrl.toString(),
+        planId,
+      })
+    } catch (error) {
+      console.error('[create-checkout] Erreur lors de la création du customer:', error)
+      return NextResponse.json(
+        { error: 'Erreur lors de la préparation du paiement' },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error('Erreur lors de la création de la session Helcim:', error)
     return NextResponse.json(
