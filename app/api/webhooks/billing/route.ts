@@ -14,13 +14,23 @@ interface HelcimWebhookData {
 }
 
 export async function POST(request: Request) {
-  try {
-    // Vérifier la signature Helcim pour la sécurité
-    const signature = request.headers.get('helcim-signature')
-    const webhookSecret = process.env.HELCIM_WEBHOOK_SECRET
+  const signature = request.headers.get('helcim-signature')
+  const webhookSecret = process.env.HELCIM_WEBHOOK_SECRET
+  let body = ''
+  let parsedBody: HelcimWebhookData
+  let statusCode = 200
+  let errorMessage: string | null = null
 
+  try {
+    // Collecter tous les headers
+    const headers: Record<string, string> = {}
+    request.headers.forEach((value, key) => {
+      headers[key] = value
+    })
+
+    // Vérifier la signature Helcim pour la sécurité
     if (webhookSecret && signature) {
-      const body = await request.text()
+      body = await request.text()
       const expectedSignature = crypto
         .createHmac('sha256', webhookSecret)
         .update(body)
@@ -28,23 +38,74 @@ export async function POST(request: Request) {
 
       if (signature !== expectedSignature) {
         console.error('Signature webhook invalide')
-        return NextResponse.json({ error: 'Signature invalide' }, { status: 401 })
+        statusCode = 401
+        errorMessage = 'Signature invalide'
+
+        // Logger en BD avant de retourner
+        await prisma.webhookLog.create({
+          data: {
+            endpoint: '/api/webhooks/billing',
+            method: 'POST',
+            headers: JSON.stringify(headers),
+            body,
+            signature,
+            status: statusCode,
+            error: errorMessage,
+          },
+        })
+
+        return NextResponse.json({ error: errorMessage }, { status: statusCode })
       }
 
-      const parsedBody = JSON.parse(body)
+      parsedBody = JSON.parse(body)
       console.log('Webhook Helcim reçu (vérifié):', parsedBody)
-      return await processWebhook(parsedBody)
+    } else {
+      // Si pas de secret configuré, traiter quand même (pour dev)
+      parsedBody = await request.json()
+      body = JSON.stringify(parsedBody)
+      console.log('Webhook Helcim reçu (non vérifié):', parsedBody)
     }
 
-    // Si pas de secret configuré, traiter quand même (pour dev)
-    const body = await request.json()
-    console.log('Webhook Helcim reçu (non vérifié):', body)
-    return await processWebhook(body)
+    // Logger en BD AVANT le traitement
+    await prisma.webhookLog.create({
+      data: {
+        endpoint: '/api/webhooks/billing',
+        method: 'POST',
+        headers: JSON.stringify(headers),
+        body,
+        signature,
+        status: statusCode,
+        error: null,
+      },
+    })
+
+    // Traiter le webhook
+    return await processWebhook(parsedBody)
   } catch (error) {
     console.error('Erreur webhook Helcim:', error)
+    statusCode = 500
+    errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    // Logger l'erreur en BD
+    try {
+      await prisma.webhookLog.create({
+        data: {
+          endpoint: '/api/webhooks/billing',
+          method: 'POST',
+          headers: JSON.stringify({}),
+          body: body || '',
+          signature,
+          status: statusCode,
+          error: errorMessage,
+        },
+      })
+    } catch (logError) {
+      console.error('Erreur lors du logging:', logError)
+    }
+
     return NextResponse.json(
       { error: 'Erreur lors du traitement du webhook' },
-      { status: 500 }
+      { status: statusCode }
     )
   }
 }
