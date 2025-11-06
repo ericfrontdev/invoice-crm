@@ -227,7 +227,7 @@ async function handleCardTransaction(data: HelcimWebhookData) {
     // Chercher l'utilisateur par helcimCustomerCode
     debugLogs.push('[9] Recherche de l\'utilisateur par helcimCustomerCode...')
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { helcimCustomerCode: customerCode },
     })
 
