@@ -31,6 +31,9 @@ export default async function ProfilPage() {
       logo: true,
       autoRemindersEnabled: true,
       reminderMiseEnDemeureTemplate: true,
+      plan: true,
+      subscriptionStatus: true,
+      subscriptionEndsAt: true,
     },
   })
 

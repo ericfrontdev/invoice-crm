@@ -8,6 +8,17 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/lib/i18n-context'
+import { AlertTriangle, Trash2 } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 type User = {
   id: string
@@ -26,6 +37,9 @@ type User = {
   logo: string | null
   autoRemindersEnabled: boolean
   reminderMiseEnDemeureTemplate: string | null
+  plan: string | null
+  subscriptionStatus: string | null
+  subscriptionEndsAt: Date | null
 }
 
 export function ProfileForm({ user }: { user: User }) {
@@ -52,6 +66,10 @@ export function ProfileForm({ user }: { user: User }) {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [showCancelSubscriptionDialog, setShowCancelSubscriptionDialog] = useState(false)
+  const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false)
+  const [isCancelingSubscription, setIsCancelingSubscription] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   const uploadFile = async (file: File) => {
     setIsUploadingLogo(true)
@@ -161,6 +179,64 @@ export function ProfileForm({ user }: { user: User }) {
       setMessage({ type: 'error', text: t('errors.updateFailed') })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleCancelSubscription = async () => {
+    setIsCancelingSubscription(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/subscription/cancel', {
+        method: 'POST',
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur lors de l\'annulation')
+      }
+
+      setMessage({
+        type: 'success',
+        text: 'Votre abonnement a été annulé. Vous conservez l\'accès jusqu\'au ' + new Date(data.endsAt).toLocaleDateString('fr-FR'),
+      })
+
+      setShowCancelSubscriptionDialog(false)
+      router.refresh()
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erreur lors de l\'annulation de l\'abonnement',
+      })
+    } finally {
+      setIsCancelingSubscription(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/account/delete', {
+        method: 'POST',
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur lors de la suppression')
+      }
+
+      // Rediriger vers la page d'accueil après suppression
+      window.location.href = '/'
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Erreur lors de la suppression du compte',
+      })
+      setIsDeletingAccount(false)
     }
   }
 
@@ -504,6 +580,57 @@ export function ProfileForm({ user }: { user: User }) {
           </div>
         )}
 
+        {/* Danger Zone */}
+        {(user.plan === 'pro' || user.subscriptionStatus) && (
+          <div className="pt-8 mt-8 border-t border-destructive/20">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <h3 className="text-lg font-semibold text-destructive">Zone de danger</h3>
+            </div>
+
+            <div className="space-y-3 bg-destructive/5 rounded-lg p-4 border border-destructive/20">
+              {/* Annuler l'abonnement */}
+              {user.plan === 'pro' && user.subscriptionStatus === 'active' && (
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="font-medium">Annuler l&apos;abonnement</p>
+                    <p className="text-sm text-muted-foreground">
+                      Vous conserverez l&apos;accès jusqu&apos;à la fin de la période payée
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setShowCancelSubscriptionDialog(true)}
+                    disabled={isCancelingSubscription}
+                  >
+                    Annuler l&apos;abonnement
+                  </Button>
+                </div>
+              )}
+
+              {/* Supprimer le compte */}
+              <div className="flex items-center justify-between pt-3 border-t border-destructive/20">
+                <div className="flex-1">
+                  <p className="font-medium">Supprimer mon compte</p>
+                  <p className="text-sm text-muted-foreground">
+                    Action irréversible. Toutes vos données seront supprimées définitivement.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setShowDeleteAccountDialog(true)}
+                  disabled={isDeletingAccount}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Supprimer le compte
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-end gap-2 pt-4">
           <Button
             type="button"
@@ -518,6 +645,65 @@ export function ProfileForm({ user }: { user: User }) {
           </Button>
         </div>
       </form>
+
+      {/* Dialog - Annuler abonnement */}
+      <AlertDialog open={showCancelSubscriptionDialog} onOpenChange={setShowCancelSubscriptionDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Annuler votre abonnement ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Votre abonnement sera annulé mais vous conserverez l&apos;accès à SoloPack Pro jusqu&apos;à la fin de votre période de facturation actuelle (environ 30 jours).
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isCancelingSubscription}>
+              Retour
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSubscription}
+              disabled={isCancelingSubscription}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isCancelingSubscription ? 'Annulation...' : 'Oui, annuler l\'abonnement'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Dialog - Supprimer compte */}
+      <AlertDialog open={showDeleteAccountDialog} onOpenChange={setShowDeleteAccountDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Supprimer définitivement votre compte ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong className="text-destructive">Cette action est irréversible.</strong>
+              <br /><br />
+              Toutes vos données seront supprimées définitivement :
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>Tous vos clients</li>
+                <li>Toutes vos factures</li>
+                <li>Tous vos projets et documents</li>
+                <li>Votre historique comptable</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingAccount}>
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={isDeletingAccount}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeletingAccount ? 'Suppression...' : 'Oui, supprimer mon compte'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
