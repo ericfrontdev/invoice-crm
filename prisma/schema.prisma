@@ -37,6 +37,7 @@ model User {
   stripeSubscriptionId String?   // ID de l'abonnement actif Stripe
   helcimCustomerId     String?   // ID du client Helcim pour les abonnements SoloPack
   helcimCustomerCode   String?   @unique // Code client Helcim (ex: CST1004)
+  helcimSubscriptionId String?   // ID de l'abonnement récurrent Helcim
   helcimSessionId      String?   // ID de la session checkout Helcim
   subscriptionStatus   String?   // "active", "past_due", "canceled", "incomplete"
   subscriptionEndsAt   DateTime? // Date de fin de l'abonnement
