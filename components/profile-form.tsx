@@ -662,7 +662,7 @@ export function ProfileForm({ user }: { user: User }) {
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={isCancelingSubscription}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {isCancelingSubscription ? 'Annulation...' : 'Oui, annuler l\'abonnement'}
             </AlertDialogAction>
@@ -697,7 +697,7 @@ export function ProfileForm({ user }: { user: User }) {
             <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {isDeletingAccount ? 'Suppression...' : 'Oui, supprimer mon compte'}
             </AlertDialogAction>
