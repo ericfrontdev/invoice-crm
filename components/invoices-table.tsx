@@ -27,6 +27,7 @@ type Invoice = {
   tvq: number
   total: number
   createdAt: string | Date
+  dueDate?: string | Date | null
   clientId: string
   client: { id: string; name: string | null; email?: string } | null
   project?: { id: string; name: string } | null
@@ -432,17 +433,24 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   </td>
                 )}
                 <td className="py-3 px-4">
-                  <span
-                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
-                      statusColors[inv.status as keyof typeof statusColors] || statusColors.draft
-                    }`}
-                  >
-                    {inv.status === 'draft' && t('invoices.draft')}
-                    {inv.status === 'sent' && t('invoices.sent')}
-                    {inv.status === 'paid' && t('invoices.paid')}
-                    {inv.status === 'archived' && t('common.archive')}
-                    {!['draft', 'sent', 'paid', 'archived'].includes(inv.status) && inv.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
+                        statusColors[inv.status as keyof typeof statusColors] || statusColors.draft
+                      }`}
+                    >
+                      {inv.status === 'draft' && t('invoices.draft')}
+                      {inv.status === 'sent' && t('invoices.sent')}
+                      {inv.status === 'paid' && t('invoices.paid')}
+                      {inv.status === 'archived' && t('common.archive')}
+                      {!['draft', 'sent', 'paid', 'archived'].includes(inv.status) && inv.status}
+                    </span>
+                    {inv.status === 'sent' && inv.dueDate && new Date(inv.dueDate) < new Date() && (
+                      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300">
+                        ⚠️ {t('invoices.overdue')}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="py-3 px-4 text-right font-semibold">{Number(inv.total).toFixed(2)} $</td>
                 <td className="py-3 px-4">{formatDate(inv.createdAt)}</td>

@@ -21,14 +21,18 @@ async function getDashboardData(userId: string) {
         _sum: { amount: true },
         where: { status: 'unpaid', client: { userId } },
       }),
-      prisma.unpaidAmount.findMany({
-        where: { status: 'unpaid', dueDate: { lt: now }, client: { userId } },
+      prisma.invoice.findMany({
+        where: {
+          status: 'sent',
+          dueDate: { lt: now },
+          client: { userId }
+        },
         take: 5,
         orderBy: { dueDate: 'asc' },
         select: {
           id: true,
-          description: true,
-          amount: true,
+          number: true,
+          total: true,
           dueDate: true,
           client: { select: { id: true, name: true } },
         },
@@ -223,7 +227,7 @@ export default async function Home() {
                     className="flex items-start justify-between gap-4"
                   >
                     <div className="min-w-0">
-                      <p className="font-medium truncate">{item.description}</p>
+                      <p className="font-medium truncate">{item.number}</p>
                       <p className="text-xs text-muted-foreground">
                         Client{' '}
                         <Link
@@ -242,7 +246,7 @@ export default async function Home() {
                     </div>
                     <div className="text-right shrink-0">
                       <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-red-50 text-red-700 border-red-200 dark:bg-red-400/10 dark:text-red-300 dark:border-red-300/20">
-                        {item.amount.toFixed(2)} $
+                        {item.total.toFixed(2)} $
                       </span>
                     </div>
                   </li>
