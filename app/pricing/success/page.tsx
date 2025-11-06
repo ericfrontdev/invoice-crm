@@ -22,21 +22,27 @@ export default async function PricingSuccessPage() {
 
         <h1 className="text-3xl font-bold mb-4">Bienvenue dans SoloPack Pro !</h1>
 
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground mb-6">
           Votre abonnement a été activé avec succès. Vous avez maintenant accès à toutes les
           fonctionnalités de SoloPack Pro.
         </p>
 
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8 text-left">
+          <p className="text-sm text-blue-900 dark:text-blue-100">
+            <strong>Prochaine étape :</strong> Pour tirer le maximum de SoloPack, nous vous recommandons de compléter votre profil avec vos informations d'entreprise (nom, adresse, numéros de taxes, logo, etc.). Cela vous permettra de générer des factures professionnelles dès maintenant.
+          </p>
+        </div>
+
         <div className="space-y-3">
-          <Link href="/">
+          <Link href="/profil">
             <Button size="lg" className="w-full">
-              Accéder au tableau de bord
+              Compléter mon profil
             </Button>
           </Link>
 
-          <Link href="/profil">
+          <Link href="/">
             <Button size="lg" variant="outline" className="w-full">
-              Voir mon profil
+              Accéder au tableau de bord
             </Button>
           </Link>
         </div>
