@@ -76,27 +76,45 @@ export async function POST() {
           debugLogs.push(`[6] Active subscription: ${activeSubscription ? activeSubscription.id : 'null'}`)
 
           if (activeSubscription?.id) {
-            // 3. Annuler la subscription chez Helcim
-            debugLogs.push(`[7] Appel DELETE subscription ${activeSubscription.id}`)
-            const cancelRes = await fetch(
+            // 3. Essayer d'abord de mettre le status à "cancelled" avec PATCH
+            debugLogs.push(`[7] Appel PATCH subscription ${activeSubscription.id} status=cancelled`)
+            let cancelRes = await fetch(
               `https://api.helcim.com/v2/subscriptions/${activeSubscription.id}`,
               {
-                method: 'DELETE',
+                method: 'PATCH',
                 headers: {
                   'api-token': helcimApiToken,
                   'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ status: 'cancelled' }),
               }
             )
 
-            debugLogs.push(`[8] Réponse DELETE: ${cancelRes.status} ${cancelRes.statusText}`)
+            debugLogs.push(`[8] Réponse PATCH: ${cancelRes.status} ${cancelRes.statusText}`)
+
+            // Si PATCH ne marche pas, essayer avec "canceled" (sans double L)
+            if (!cancelRes.ok) {
+              debugLogs.push(`[9] Tentative avec status=canceled (sans double L)`)
+              cancelRes = await fetch(
+                `https://api.helcim.com/v2/subscriptions/${activeSubscription.id}`,
+                {
+                  method: 'PATCH',
+                  headers: {
+                    'api-token': helcimApiToken,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ status: 'canceled' }),
+                }
+              )
+              debugLogs.push(`[10] Réponse PATCH #2: ${cancelRes.status} ${cancelRes.statusText}`)
+            }
 
             if (cancelRes.ok) {
               helcimCanceled = true
-              debugLogs.push(`[9] ✅ Subscription annulée avec succès`)
+              debugLogs.push(`[11] ✅ Subscription annulée avec succès`)
             } else {
               const errorText = await cancelRes.text()
-              debugLogs.push(`[9] ❌ Erreur: ${errorText}`)
+              debugLogs.push(`[11] ❌ Erreur: ${errorText}`)
             }
           } else {
             debugLogs.push('[6] ❌ Aucune subscription active trouvée')
