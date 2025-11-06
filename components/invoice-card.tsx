@@ -323,10 +323,10 @@ export function InvoiceCard({
               {t('projects.title')}: {invoice.project.name}
             </div>
           )}
-          {invoice._count?.reminders > 0 && (
+          {(invoice._count?.reminders ?? 0) > 0 && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
               <Bell className="h-3 w-3" />
-              <span>{invoice._count.reminders} {t('reminders.title').toLowerCase()}</span>
+              <span>{invoice._count?.reminders ?? 0} {t('reminders.title').toLowerCase()}</span>
             </div>
           )}
         </div>
