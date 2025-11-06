@@ -63,10 +63,12 @@ export async function POST() {
         debugLogs.push(`[4] Réponse: ${subscriptionsRes.status} ${subscriptionsRes.statusText}`)
 
         if (subscriptionsRes.ok) {
-          const subscriptions = await subscriptionsRes.json()
-          debugLogs.push(`[5] Subscriptions reçues: ${JSON.stringify(subscriptions)}`)
+          const response = await subscriptionsRes.json()
+          debugLogs.push(`[5] Subscriptions reçues: ${JSON.stringify(response)}`)
 
           // 2. Trouver la première subscription active
+          // L'API Helcim retourne { status: "ok", data: [...] }
+          const subscriptions = response.data || response
           const activeSubscription = Array.isArray(subscriptions)
             ? subscriptions.find((sub: { status: string }) => sub.status === 'active')
             : null
