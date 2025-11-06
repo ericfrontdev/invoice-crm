@@ -13,6 +13,7 @@ import {
 import { ProjectModal } from '@/components/crm/project-modal'
 import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
 import { UploadDocumentsModal } from '@/components/crm/upload-documents-modal'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -39,6 +40,7 @@ type Project = {
 }
 
 export function ProjectActions({ project, clientId }: { project: Project; clientId: string }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
@@ -105,15 +107,15 @@ export function ProjectActions({ project, clientId }: { project: Project; client
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
             <Edit className="h-4 w-4 mr-2" />
-            Modifier
+            {t('common.edit')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsInvoiceModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Créer facture
+            {t('crm.projectCard.createInvoice')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsUploadModalOpen(true)}>
             <Upload className="h-4 w-4 mr-2" />
-            Téléverser fichier
+            {t('projects.uploadFile')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

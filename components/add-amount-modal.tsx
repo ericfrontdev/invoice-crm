@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { X, Loader2 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 export interface NewAmountData {
   amount: number
@@ -21,6 +22,7 @@ interface AddAmountModalProps {
 }
 
 export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProps) {
+  const { t } = useTranslation()
   const today = useMemo(() => new Date().toISOString().slice(0, 10), [])
   const defaultDue = useMemo(() => {
     const d = new Date()
@@ -48,10 +50,10 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
   const validate = () => {
     const e: typeof errors = {}
     if (form.amount === '' || isNaN(Number(form.amount)) || Number(form.amount) <= 0) {
-      e.amount = 'Le montant doit être supérieur à 0'
+      e.amount = t('errors.amountRequired')
     }
     if (!form.description.trim()) {
-      e.description = 'La description est requise'
+      e.description = t('errors.descriptionRequired')
     }
     setErrors(e)
     return Object.keys(e).length === 0
@@ -90,7 +92,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
           <h2 id="add-amount-title" className="text-base font-semibold">
-            Ajouter un montant dû
+            {t('accounting.addAmount')}
           </h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="cursor-pointer">
             <X className="h-4 w-4" />
@@ -100,7 +102,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="amount">Montant *</Label>
+              <Label htmlFor="amount">{t('common.amount')} *</Label>
               <Input
                 id="amount"
                 inputMode="decimal"
@@ -127,7 +129,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
               )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="date">{t('common.date')}</Label>
               <Input
                 id="date"
                 type="date"
@@ -139,13 +141,13 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t('common.description')} *</Label>
             <Input
               id="description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               disabled={isSubmitting}
-              placeholder="Ex: Consultation développement web"
+              placeholder={t('accounting.descriptionPlaceholder')}
             />
             {errors.description && (
               <p className="text-xs text-red-600">{errors.description}</p>
@@ -153,7 +155,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="dueDate">Date d&apos;échéance (optionnelle)</Label>
+            <Label htmlFor="dueDate">{t('invoices.dueDate')} ({t('common.optional')})</Label>
             <Input
               id="dueDate"
               type="date"
@@ -165,15 +167,15 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
 
           <div className="flex flex-col-reverse sm:flex-row gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1" disabled={isSubmitting}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1 cursor-pointer" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" /> En cours…
+                  <Loader2 className="h-4 w-4 animate-spin" /> {t('common.processing')}
                 </span>
               ) : (
-                'Ajouter'
+                t('common.add')
               )}
             </Button>
           </div>
