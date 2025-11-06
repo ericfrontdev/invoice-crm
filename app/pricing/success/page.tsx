@@ -42,7 +42,7 @@ export default async function PricingSuccessPage() {
         </div>
 
         <p className="text-xs text-muted-foreground mt-6">
-          Vous recevrez un email de confirmation de Stripe avec les détails de votre abonnement.
+          Vous recevrez un email de confirmation avec les détails de votre abonnement.
         </p>
       </div>
     </div>

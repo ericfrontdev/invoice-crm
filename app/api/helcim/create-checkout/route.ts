@@ -61,7 +61,7 @@ export async function POST() {
     }
 
     // URL de redirection après paiement réussi
-    const successUrl = `${process.env.NEXTAUTH_URL}/dashboard?subscribed=true`
+    const successUrl = `${process.env.NEXTAUTH_URL}/pricing/success`
     subscriptionUrl.searchParams.set('returnUrl', successUrl)
     subscriptionUrl.searchParams.set('successUrl', successUrl)
 
