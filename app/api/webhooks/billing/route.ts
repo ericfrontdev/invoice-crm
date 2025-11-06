@@ -164,25 +164,32 @@ async function processWebhook(body: HelcimWebhookData) {
 }
 
 async function handleCardTransaction(data: HelcimWebhookData) {
-  console.log('[handleCardTransaction] Webhook reçu:', JSON.stringify(data, null, 2))
+  const debugLogs: string[] = []
+  debugLogs.push('[1] Webhook cardTransaction reçu')
+  debugLogs.push(`[2] Payload: ${JSON.stringify(data)}`)
 
   const transactionId = data.id
 
   if (!transactionId) {
-    console.error('[handleCardTransaction] Pas de transactionId dans le webhook')
+    debugLogs.push('[3] ERREUR: Pas de transactionId dans le webhook')
+    await logDebugInfo(transactionId || 'unknown', debugLogs.join('\n'))
     return
   }
 
-  console.log(`[handleCardTransaction] Récupération des détails de la transaction ${transactionId}`)
+  debugLogs.push(`[3] TransactionId trouvé: ${transactionId}`)
 
   // Appeler l'API Helcim pour obtenir les détails complets
   try {
     const helcimApiToken = process.env.HELCIM_API_TOKEN
 
     if (!helcimApiToken) {
-      console.error('[handleCardTransaction] HELCIM_API_TOKEN non configuré')
+      debugLogs.push('[4] ERREUR: HELCIM_API_TOKEN non configuré dans les variables d\'environnement')
+      await logDebugInfo(transactionId, debugLogs.join('\n'))
       return
     }
+
+    debugLogs.push('[4] HELCIM_API_TOKEN trouvé')
+    debugLogs.push(`[5] Appel API: GET https://api.helcim.com/v2/card-transactions/${transactionId}`)
 
     const response = await fetch(
       `https://api.helcim.com/v2/card-transactions/${transactionId}`,
@@ -195,28 +202,31 @@ async function handleCardTransaction(data: HelcimWebhookData) {
       }
     )
 
+    debugLogs.push(`[6] Réponse API: ${response.status} ${response.statusText}`)
+
     if (!response.ok) {
-      console.error(
-        `[handleCardTransaction] Erreur API Helcim: ${response.status} ${response.statusText}`
-      )
       const errorText = await response.text()
-      console.error('[handleCardTransaction] Response:', errorText)
+      debugLogs.push(`[7] ERREUR API: ${errorText}`)
+      await logDebugInfo(transactionId, debugLogs.join('\n'))
       return
     }
 
     const transaction: HelcimTransactionResponse = await response.json()
-    console.log('[handleCardTransaction] Transaction récupérée:', JSON.stringify(transaction, null, 2))
+    debugLogs.push(`[7] Transaction récupérée: ${JSON.stringify(transaction)}`)
 
     const customerCode = transaction.customerCode
 
     if (!customerCode) {
-      console.error('[handleCardTransaction] Pas de customerCode dans la transaction')
+      debugLogs.push('[8] ERREUR: Pas de customerCode dans la transaction')
+      await logDebugInfo(transactionId, debugLogs.join('\n'))
       return
     }
 
-    console.log(`[handleCardTransaction] customerCode trouvé: ${customerCode}`)
+    debugLogs.push(`[8] CustomerCode trouvé: ${customerCode}`)
 
     // Mettre à jour l'utilisateur
+    debugLogs.push('[9] Mise à jour de l\'utilisateur en base de données...')
+
     await prisma.user.update({
       where: { id: customerCode },
       data: {
@@ -227,10 +237,40 @@ async function handleCardTransaction(data: HelcimWebhookData) {
       },
     })
 
-    console.log(`[handleCardTransaction] ✅ Abonnement activé pour l'utilisateur ${customerCode}`)
+    debugLogs.push(`[10] ✅ Succès! Utilisateur ${customerCode} mis à jour en plan Pro`)
+    await logDebugInfo(transactionId, debugLogs.join('\n'))
   } catch (error) {
-    console.error('[handleCardTransaction] Erreur:', error)
+    debugLogs.push(`[ERROR] Exception: ${error instanceof Error ? error.message : String(error)}`)
+    if (error instanceof Error && error.stack) {
+      debugLogs.push(`Stack: ${error.stack}`)
+    }
+    await logDebugInfo(transactionId || 'unknown', debugLogs.join('\n'))
     throw error
+  }
+}
+
+async function logDebugInfo(transactionId: string, debugInfo: string) {
+  try {
+    // Trouver le dernier webhook log pour cette transaction
+    const lastLog = await prisma.webhookLog.findFirst({
+      where: {
+        body: {
+          contains: transactionId,
+        },
+      },
+      orderBy: {
+        processedAt: 'desc',
+      },
+    })
+
+    if (lastLog) {
+      await prisma.webhookLog.update({
+        where: { id: lastLog.id },
+        data: { debugInfo },
+      })
+    }
+  } catch (error) {
+    console.error('[logDebugInfo] Erreur:', error)
   }
 }
 

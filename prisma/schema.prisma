@@ -360,6 +360,7 @@ model WebhookLog {
   signature   String?  // Signature Helcim si présente
   status      Int      // Status code de la réponse (200, 401, 500, etc.)
   error       String?  // Message d'erreur s'il y en a eu une
+  debugInfo   String?  // Informations de debug détaillées (logs du traitement)
   processedAt DateTime @default(now())
 
   @@index([endpoint])
