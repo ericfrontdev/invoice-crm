@@ -23,6 +23,8 @@ interface HelcimTransactionResponse {
   currency: string
   customerCode?: string
   customerId?: number
+  cardHolderName?: string
+  email?: string
   // ... autres champs
 }
 
@@ -227,24 +229,49 @@ async function handleCardTransaction(data: HelcimWebhookData) {
     // Chercher l'utilisateur par helcimCustomerCode
     debugLogs.push('[9] Recherche de l\'utilisateur par helcimCustomerCode...')
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { helcimCustomerCode: customerCode },
     })
 
     if (!user) {
-      debugLogs.push('[10] Utilisateur non trouvé par helcimCustomerCode, recherche par email...')
+      debugLogs.push('[10] Utilisateur non trouvé par helcimCustomerCode')
 
-      // Fallback: chercher par email dans la transaction si disponible
-      // Pour l'instant on ne peut pas faire ça, donc on arrête
-      debugLogs.push('[11] ERREUR: Impossible de trouver l\'utilisateur. Il faut d\'abord associer le helcimCustomerCode.')
-      await logDebugInfo(transactionId, debugLogs.join('\n'))
-      return
+      // Fallback: chercher par nom (cardHolderName)
+      if (transaction.cardHolderName) {
+        debugLogs.push(`[11] Tentative de recherche par nom: ${transaction.cardHolderName}`)
+
+        user = await prisma.user.findFirst({
+          where: { name: transaction.cardHolderName },
+        })
+
+        if (user) {
+          debugLogs.push(`[12] ✅ Utilisateur trouvé par nom: ${user.id}`)
+
+          // Stocker le helcimCustomerCode pour la prochaine fois
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              helcimCustomerCode: customerCode,
+            },
+          })
+
+          debugLogs.push('[13] helcimCustomerCode stocké pour les prochaines fois')
+        } else {
+          debugLogs.push('[12] ERREUR: Utilisateur non trouvé par nom non plus')
+          await logDebugInfo(transactionId, debugLogs.join('\n'))
+          return
+        }
+      } else {
+        debugLogs.push('[11] ERREUR: Pas de cardHolderName dans la transaction')
+        await logDebugInfo(transactionId, debugLogs.join('\n'))
+        return
+      }
     }
 
-    debugLogs.push(`[10] Utilisateur trouvé: ${user.id}`)
+    debugLogs.push(`[14] Utilisateur finalement trouvé: ${user.id}`)
 
     // Mettre à jour l'utilisateur
-    debugLogs.push('[11] Mise à jour de l\'utilisateur en base de données...')
+    debugLogs.push('[15] Mise à jour de l\'utilisateur en base de données...')
 
     await prisma.user.update({
       where: { id: user.id },
@@ -257,7 +284,7 @@ async function handleCardTransaction(data: HelcimWebhookData) {
       },
     })
 
-    debugLogs.push(`[12] ✅ Succès! Utilisateur ${user.id} mis à jour en plan Pro`)
+    debugLogs.push(`[16] ✅ Succès! Utilisateur ${user.id} mis à jour en plan Pro`)
     await logDebugInfo(transactionId, debugLogs.join('\n'))
   } catch (error) {
     debugLogs.push(`[ERROR] Exception: ${error instanceof Error ? error.message : String(error)}`)
