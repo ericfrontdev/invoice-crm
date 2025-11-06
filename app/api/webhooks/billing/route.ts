@@ -224,20 +224,40 @@ async function handleCardTransaction(data: HelcimWebhookData) {
 
     debugLogs.push(`[8] CustomerCode trouvé: ${customerCode}`)
 
+    // Chercher l'utilisateur par helcimCustomerCode
+    debugLogs.push('[9] Recherche de l\'utilisateur par helcimCustomerCode...')
+
+    let user = await prisma.user.findUnique({
+      where: { helcimCustomerCode: customerCode },
+    })
+
+    if (!user) {
+      debugLogs.push('[10] Utilisateur non trouvé par helcimCustomerCode, recherche par email...')
+
+      // Fallback: chercher par email dans la transaction si disponible
+      // Pour l'instant on ne peut pas faire ça, donc on arrête
+      debugLogs.push('[11] ERREUR: Impossible de trouver l\'utilisateur. Il faut d\'abord associer le helcimCustomerCode.')
+      await logDebugInfo(transactionId, debugLogs.join('\n'))
+      return
+    }
+
+    debugLogs.push(`[10] Utilisateur trouvé: ${user.id}`)
+
     // Mettre à jour l'utilisateur
-    debugLogs.push('[9] Mise à jour de l\'utilisateur en base de données...')
+    debugLogs.push('[11] Mise à jour de l\'utilisateur en base de données...')
 
     await prisma.user.update({
-      where: { id: customerCode },
+      where: { id: user.id },
       data: {
         plan: 'pro',
         subscriptionStatus: 'active',
         helcimCustomerId: transaction.customerId?.toString(),
+        helcimCustomerCode: customerCode,
         subscriptionEndsAt: null,
       },
     })
 
-    debugLogs.push(`[10] ✅ Succès! Utilisateur ${customerCode} mis à jour en plan Pro`)
+    debugLogs.push(`[12] ✅ Succès! Utilisateur ${user.id} mis à jour en plan Pro`)
     await logDebugInfo(transactionId, debugLogs.join('\n'))
   } catch (error) {
     debugLogs.push(`[ERROR] Exception: ${error instanceof Error ? error.message : String(error)}`)
