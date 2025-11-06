@@ -60,6 +60,11 @@ export async function POST() {
       subscriptionUrl.searchParams.set('name', user.name)
     }
 
+    // URL de redirection après paiement réussi
+    const successUrl = `${process.env.NEXTAUTH_URL}/dashboard?subscribed=true`
+    subscriptionUrl.searchParams.set('returnUrl', successUrl)
+    subscriptionUrl.searchParams.set('successUrl', successUrl)
+
     return NextResponse.json({
       url: subscriptionUrl.toString(),
       planId,
