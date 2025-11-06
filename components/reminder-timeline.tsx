@@ -1,6 +1,7 @@
 'use client'
 
 import { CheckCircle, Clock, XCircle } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Reminder = {
   id: string
@@ -17,29 +18,6 @@ type Invoice = {
   dueDate: Date | null
 }
 
-const reminderSteps = [
-  {
-    type: 'reminder1',
-    label: 'Rappel 1 - Amical',
-    dayOffset: -3,
-  },
-  {
-    type: 'reminder2',
-    label: 'Rappel 2 - Neutre',
-    dayOffset: 1,
-  },
-  {
-    type: 'reminder3',
-    label: 'Rappel 3 - Ferme',
-    dayOffset: 7,
-  },
-  {
-    type: 'mise_en_demeure',
-    label: 'Mise en demeure',
-    dayOffset: 14,
-  },
-]
-
 export function ReminderTimeline({
   invoice,
   reminders,
@@ -47,6 +25,30 @@ export function ReminderTimeline({
   invoice: Invoice
   reminders: Reminder[]
 }) {
+  const { t } = useTranslation()
+
+  const reminderSteps = [
+    {
+      type: 'reminder1',
+      label: t('reminders.reminder1'),
+      dayOffset: -3,
+    },
+    {
+      type: 'reminder2',
+      label: t('reminders.reminder2'),
+      dayOffset: 1,
+    },
+    {
+      type: 'reminder3',
+      label: t('reminders.reminder3'),
+      dayOffset: 7,
+    },
+    {
+      type: 'mise_en_demeure',
+      label: t('reminders.miseDemeure'),
+      dayOffset: 14,
+    },
+  ]
   // Calculer les dates programmées
   const scheduledDates: Record<string, Date> = {}
   if (invoice.dueDate) {
@@ -111,7 +113,7 @@ export function ReminderTimeline({
                     <div className="text-sm space-y-1">
                       <p className="text-green-700 dark:text-green-400 flex items-center gap-2">
                         <CheckCircle className="h-4 w-4" />
-                        Envoyé le{' '}
+                        {t('reminders.sentOn')}{' '}
                         {new Date(reminder.sentAt).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'long',
@@ -123,7 +125,7 @@ export function ReminderTimeline({
                           minute: '2-digit',
                         })}
                       </p>
-                      <p className="text-muted-foreground">À: {reminder.sentTo}</p>
+                      <p className="text-muted-foreground">{t('reminders.sentTo')}: {reminder.sentTo}</p>
                     </div>
                   )}
 
@@ -131,7 +133,7 @@ export function ReminderTimeline({
                     <div className="text-sm space-y-1">
                       <p className="text-red-700 dark:text-red-400 flex items-center gap-2">
                         <XCircle className="h-4 w-4" />
-                        Erreur lors de l&apos;envoi
+                        {t('reminders.sendError')}
                       </p>
                       {reminder.errorMessage && (
                         <p className="text-muted-foreground text-xs">
@@ -139,7 +141,7 @@ export function ReminderTimeline({
                         </p>
                       )}
                       <p className="text-muted-foreground">
-                        Tenté le{' '}
+                        {t('reminders.attemptedOn')}{' '}
                         {new Date(reminder.sentAt).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'long',
@@ -153,7 +155,7 @@ export function ReminderTimeline({
                     <div className="text-sm space-y-1">
                       <p className="text-muted-foreground flex items-center gap-2">
                         <Clock className="h-4 w-4" />
-                        Prévu le{' '}
+                        {t('reminders.scheduled')}{' '}
                         {scheduledDate.toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'long',
@@ -166,7 +168,7 @@ export function ReminderTimeline({
                   {status === 'pending' && !scheduledDate && (
                     <div className="text-sm">
                       <p className="text-muted-foreground">
-                        Non programmé (date d&apos;échéance manquante)
+                        {t('reminders.notScheduled')}
                       </p>
                     </div>
                   )}

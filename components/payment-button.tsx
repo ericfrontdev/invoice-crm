@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n-context'
 
 type PaymentButtonProps = {
   invoiceId: string
@@ -20,12 +21,13 @@ export function PaymentButton({
   paypalEmail,
   isPaid = false,
 }: PaymentButtonProps) {
+  const { t } = useTranslation()
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handlePayPalPayment = async () => {
     if (!paypalEmail) {
-      setError('Email PayPal non configuré')
+      setError(t('invoices.paypal.emailNotConfigured'))
       return
     }
 
@@ -37,7 +39,7 @@ export function PaymentButton({
       const params = new URLSearchParams({
         cmd: '_xclick',
         business: paypalEmail,
-        item_name: `Facture ${invoiceNumber}`,
+        item_name: `${t('invoices.title')} ${invoiceNumber}`,
         amount: total.toFixed(2),
         currency_code: 'CAD',
         return: `${window.location.origin}/invoices/${invoiceId}/pay/success`,
@@ -49,7 +51,7 @@ export function PaymentButton({
       window.location.href = `https://www.paypal.com/cgi-bin/webscr?${params.toString()}`
     } catch (err) {
       console.error('PayPal payment error:', err)
-      setError('Erreur lors de l\'initialisation du paiement PayPal')
+      setError(t('invoices.paypal.initError'))
       setIsProcessing(false)
     }
   }
@@ -67,14 +69,14 @@ export function PaymentButton({
       })
 
       if (!res.ok) {
-        throw new Error('Erreur lors de la création de la session de paiement')
+        throw new Error(t('invoices.stripe.sessionError'))
       }
 
       const { url } = await res.json()
       window.location.href = url
     } catch (err) {
       console.error('Stripe payment error:', err)
-      setError('Erreur lors de l\'initialisation du paiement Stripe')
+      setError(t('invoices.stripe.initError'))
       setIsProcessing(false)
     }
   }
@@ -118,7 +120,7 @@ export function PaymentButton({
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Facture payée
+            {t('invoices.paid')}
           </span>
         ) : isProcessing ? (
           <span className="flex items-center gap-2">
@@ -138,12 +140,12 @@ export function PaymentButton({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            Redirection en cours...
+            {t('invoices.redirecting')}
           </span>
         ) : (
           <>
-            {paymentProvider === 'paypal' && 'Payer avec PayPal'}
-            {paymentProvider === 'stripe' && 'Payer avec Stripe'}
+            {paymentProvider === 'paypal' && t('invoices.payWithPayPal')}
+            {paymentProvider === 'stripe' && t('invoices.payWithStripe')}
           </>
         )}
       </Button>
@@ -157,7 +159,7 @@ export function PaymentButton({
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
           />
         </svg>
-        <span>Paiement sécurisé</span>
+        <span>{t('pricing.securePayment')}</span>
       </div>
     </div>
   )

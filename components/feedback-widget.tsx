@@ -133,7 +133,7 @@ export function FeedbackWidget() {
       })
 
       if (!res.ok) {
-        throw new Error("Erreur lors de l'envoi")
+        throw new Error(t('feedback.sendError'))
       }
 
       // Success!
