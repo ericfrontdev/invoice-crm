@@ -80,12 +80,14 @@ export async function POST() {
             // Cela met le statut à "cancelled" et arrête les futures facturations
             // L'utilisateur garde l'accès jusqu'à dateBilling (fin de période payée)
             debugLogs.push(`[7] dateBilling: ${activeSubscription.dateBilling || 'non défini'}`)
+            debugLogs.push(`[7b] dateActivated brut: ${activeSubscription.dateActivated}`)
 
             const patchBody = {
               subscriptions: [
                 {
                   id: activeSubscription.id,
                   status: 'cancelled',
+                  dateActivated: activeSubscription.dateActivated,
                   recurringAmount: activeSubscription.recurringAmount
                 }
               ]
