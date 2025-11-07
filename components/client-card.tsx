@@ -88,7 +88,7 @@ export function ClientCard({
             </div>
             <div className="mt-auto flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
-                Cliquer pour plus d&apos;infos
+                {t('clients.clickForMore')}
               </p>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>

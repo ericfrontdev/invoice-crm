@@ -595,6 +595,7 @@
   },
   "crm": {
     "title": "CRM",
+    "unpaidAmounts": "Unpaid Amounts",
     "overview": {
       "title": "Overview",
       "active": "active",
