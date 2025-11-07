@@ -611,7 +611,7 @@ export function ProfileForm({ user }: { user: User }) {
 
               {/* Supprimer le compte */}
               <div className="flex items-center justify-between pt-3 border-t border-destructive/20">
-                <div className="flex-1">
+                <div className="flex-1 pr-4">
                   <p className="font-medium">Supprimer mon compte</p>
                   <p className="text-sm text-muted-foreground">
                     Action irréversible. Toutes vos données seront supprimées définitivement.
