@@ -182,8 +182,8 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                 <div className="flex items-center gap-3">
                   <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   <div>
-                    <p className="font-semibold text-blue-900 dark:text-blue-100">Mode édition activé</p>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">Cliquez sur un montant pour le modifier</p>
+                    <p className="font-semibold text-blue-900 dark:text-blue-100">{t('crm.editModeEnabled')}</p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">{t('crm.clickAmountToEdit')}</p>
                   </div>
                 </div>
                 <Button
@@ -192,7 +192,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                   onClick={() => setIsEditMode(false)}
                   className="cursor-pointer border-blue-500 text-blue-700 hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-900/40"
                 >
-                  Quitter le mode édition
+                  {t('crm.exitEditMode')}
                 </Button>
               </div>
             )}
@@ -207,10 +207,10 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                   disabled={client.unpaidAmounts.length === 0}
                 >
                   <Pencil className="h-4 w-4 mr-2" />
-                  {isEditMode ? 'Mode édition' : t('common.edit')}
+                  {isEditMode ? t('crm.editMode') : t('common.edit')}
                 </Button>
                 <Button size="sm" className="cursor-pointer" onClick={() => setIsAddOpen(true)}>
-                  + Ajouter un montant
+                  {t('crm.addAmount')}
                 </Button>
               </div>
             </div>
@@ -226,17 +226,17 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           {t('common.description')}
                         </th>
                         <th className="text-left py-3 px-4 font-medium">
-                          Date création
+                          {t('crm.creationDate')}
                         </th>
                         <th className="text-left py-3 px-4 font-medium">
-                          Date échéance
+                          {t('invoices.dueDate')}
                         </th>
                         <th className="text-right py-3 px-4 font-medium">
                           {t('common.amount')}
                         </th>
                         {!isEditMode && (
                           <th className="text-center py-3 px-4 font-medium">
-                            Sélection
+                            {t('crm.selection')}
                           </th>
                         )}
                       </tr>
@@ -291,10 +291,10 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           </h4>
                           <div className="space-y-1 text-sm text-muted-foreground">
                             <p>
-                              Créé: {new Date(amount.date).toLocaleDateString()}
+                              {t('crm.created')}: {new Date(amount.date).toLocaleDateString()}
                             </p>
                             <p>
-                              Échéance:{' '}
+                              {t('crm.due')}:{' '}
                               {amount.dueDate
                                 ? new Date(amount.dueDate).toLocaleDateString()
                                 : '-'}
@@ -318,7 +318,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                               className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded"
                             />
                             <span className="text-sm">
-                              Sélectionner pour facturation
+                              {t('crm.selectForInvoicing')}
                             </span>
                           </label>
                         </div>
@@ -329,7 +329,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
               </>
             ) : (
               <p className="text-center text-muted-foreground">
-                Aucun montant dû
+                {t('crm.noUnpaidAmounts')}
               </p>
             )}
 
@@ -337,7 +337,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
               <div className="mt-6 flex flex-col items-center gap-4">
                 {hasSelectedAmounts && (
                   <p className="text-sm text-muted-foreground">
-                    Total sélectionné:{' '}
+                    {t('crm.selectedTotal')}:{' '}
                     <span className="font-semibold">
                       {totalSelected.toFixed(2)} $
                     </span>
@@ -373,7 +373,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                     })()
                   }}
                 >
-                  {isGenerating ? t('common.loading') : 'Générer facture pour les éléments sélectionnés'}
+                  {isGenerating ? t('common.loading') : t('crm.generateInvoiceForSelected')}
                 </Button>
                 <Button
                   variant="outline"
@@ -381,7 +381,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                   disabled={!hasSelectedAmounts}
                   onClick={() => setIsPreviewOpen(true)}
                 >
-                  Prévisualiser
+                  {t('crm.preview')}
                 </Button>
               </div>
             )}
