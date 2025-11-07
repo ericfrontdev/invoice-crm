@@ -596,6 +596,8 @@
   "crm": {
     "title": "CRM",
     "unpaidAmounts": "Unpaid Amounts",
+    "viewUnpaidAmounts": "View unpaid amounts",
+    "hideUnpaidAmounts": "Hide unpaid amounts",
     "overview": {
       "title": "Overview",
       "active": "active",

@@ -586,6 +586,8 @@
     "noteDeleted": "Note supprimée avec succès",
     "deleteNoteConfirm": "Êtes-vous sûr de vouloir supprimer cette note ?",
     "unpaidAmounts": "Montants dus",
+    "viewUnpaidAmounts": "Voir les montants dus",
+    "hideUnpaidAmounts": "Masquer les montants dus",
     "viewDetails": "Voir les détails",
     "createInvoiceFromAmount": "Créer une facture"
   },

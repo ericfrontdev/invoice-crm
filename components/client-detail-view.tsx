@@ -152,8 +152,8 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
 
             <span className="font-medium">
               {isExpanded
-                ? `Masquer les ${t('crm.unpaidAmounts').toLowerCase()}`
-                : `Voir les ${t('crm.unpaidAmounts').toLowerCase()} (${client.unpaidAmounts.length})`}
+                ? t('crm.hideUnpaidAmounts')
+                : `${t('crm.viewUnpaidAmounts')} (${client.unpaidAmounts.length})`}
             </span>
 
             {isExpanded ? (
