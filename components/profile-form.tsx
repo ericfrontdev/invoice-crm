@@ -652,7 +652,7 @@ export function ProfileForm({ user }: { user: User }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Annuler votre abonnement ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Votre abonnement sera annulé mais vous conserverez l&apos;accès à SoloPack Pro jusqu&apos;à la fin de votre période de facturation actuelle (environ 30 jours).
+              Votre abonnement sera annulé mais vous conserverez l&apos;accès à SoloPack Pro jusqu&apos;à la fin de votre période de facturation actuelle.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
