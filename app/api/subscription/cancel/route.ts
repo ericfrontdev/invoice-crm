@@ -86,7 +86,6 @@ export async function POST() {
                 {
                   id: activeSubscription.id,
                   status: 'cancelled',
-                  dateActivated: activeSubscription.dateActivated,
                   recurringAmount: activeSubscription.recurringAmount
                 }
               ]
