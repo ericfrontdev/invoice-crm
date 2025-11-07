@@ -194,12 +194,12 @@ export function ProfileForm({ user }: { user: User }) {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'annulation')
+        throw new Error(data.error || t('profile.cancelError'))
       }
 
       setMessage({
         type: 'success',
-        text: 'Votre abonnement a été annulé. Vous conservez l\'accès jusqu\'au ' + new Date(data.endsAt).toLocaleDateString('fr-FR'),
+        text: t('profile.subscriptionCanceled') + ' ' + new Date(data.endsAt).toLocaleDateString('fr-FR'),
       })
 
       setShowCancelSubscriptionDialog(false)
@@ -207,7 +207,7 @@ export function ProfileForm({ user }: { user: User }) {
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Erreur lors de l\'annulation de l\'abonnement',
+        text: error instanceof Error ? error.message : t('profile.cancelError'),
       })
     } finally {
       setIsCancelingSubscription(false)
@@ -226,7 +226,7 @@ export function ProfileForm({ user }: { user: User }) {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors de la suppression')
+        throw new Error(data.error || t('profile.deleteAccountError'))
       }
 
       // Rediriger vers la page d'accueil après suppression
@@ -234,7 +234,7 @@ export function ProfileForm({ user }: { user: User }) {
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Erreur lors de la suppression du compte',
+        text: error instanceof Error ? error.message : t('profile.deleteAccountError'),
       })
       setIsDeletingAccount(false)
     }
@@ -585,7 +585,7 @@ export function ProfileForm({ user }: { user: User }) {
           <div className="pt-8 mt-8 border-t border-destructive/20">
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              <h3 className="text-lg font-semibold text-destructive">Zone de danger</h3>
+              <h3 className="text-lg font-semibold text-destructive">{t('profile.dangerZone')}</h3>
             </div>
 
             <div className="space-y-3 bg-destructive/5 rounded-lg p-4 border border-destructive/20">
@@ -593,9 +593,9 @@ export function ProfileForm({ user }: { user: User }) {
               {user.plan === 'pro' && user.subscriptionStatus === 'active' && (
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="font-medium">Annuler l&apos;abonnement</p>
+                    <p className="font-medium">{t('profile.cancelSubscription')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Vous conserverez l&apos;accès jusqu&apos;à la fin de la période payée
+                      {t('profile.keepAccessUntilEnd')}
                     </p>
                   </div>
                   <Button
@@ -604,7 +604,7 @@ export function ProfileForm({ user }: { user: User }) {
                     onClick={() => setShowCancelSubscriptionDialog(true)}
                     disabled={isCancelingSubscription}
                   >
-                    Annuler l&apos;abonnement
+                    {t('profile.cancelSubscription')}
                   </Button>
                 </div>
               )}
@@ -612,9 +612,9 @@ export function ProfileForm({ user }: { user: User }) {
               {/* Supprimer le compte */}
               <div className="flex items-center justify-between pt-3 border-t border-destructive/20">
                 <div className="flex-1 pr-4">
-                  <p className="font-medium">Supprimer mon compte</p>
+                  <p className="font-medium">{t('profile.deleteMyAccount')}</p>
                   <p className="text-sm text-muted-foreground">
-                    Action irréversible. Toutes vos données seront supprimées définitivement.
+                    {t('profile.deleteAccountWarning')}
                   </p>
                 </div>
                 <Button
@@ -624,7 +624,7 @@ export function ProfileForm({ user }: { user: User }) {
                   disabled={isDeletingAccount}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Supprimer le compte
+                  {t('profile.deleteAccount')}
                 </Button>
               </div>
             </div>
@@ -650,21 +650,21 @@ export function ProfileForm({ user }: { user: User }) {
       <AlertDialog open={showCancelSubscriptionDialog} onOpenChange={setShowCancelSubscriptionDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Annuler votre abonnement ?</AlertDialogTitle>
+            <AlertDialogTitle>{t('profile.cancelSubscriptionTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Votre abonnement sera annulé mais vous conserverez l&apos;accès à SoloPack Pro jusqu&apos;à la fin de votre période de facturation actuelle.
+              {t('profile.cancelSubscriptionDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isCancelingSubscription}>
-              Retour
+              {t('common.back')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelSubscription}
               disabled={isCancelingSubscription}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {isCancelingSubscription ? 'Annulation...' : 'Oui, annuler l\'abonnement'}
+              {isCancelingSubscription ? t('profile.canceling') : t('profile.confirmCancel')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -676,30 +676,30 @@ export function ProfileForm({ user }: { user: User }) {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              Supprimer définitivement votre compte ?
+              {t('profile.deleteAccountTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              <strong className="text-destructive">Cette action est irréversible.</strong>
+              <strong className="text-destructive">{t('profile.irreversibleAction')}</strong>
               <br /><br />
-              Toutes vos données seront supprimées définitivement :
+              {t('profile.deleteAccountDetails')}
               <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>Tous vos clients</li>
-                <li>Toutes vos factures</li>
-                <li>Tous vos projets et documents</li>
-                <li>Votre historique comptable</li>
+                <li>{t('profile.allClients')}</li>
+                <li>{t('profile.allInvoices')}</li>
+                <li>{t('profile.allProjects')}</li>
+                <li>{t('profile.accountingHistory')}</li>
               </ul>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeletingAccount}>
-              Annuler
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {isDeletingAccount ? 'Suppression...' : 'Oui, supprimer mon compte'}
+              {isDeletingAccount ? t('profile.deleting') : t('profile.confirmDelete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
