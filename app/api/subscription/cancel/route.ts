@@ -33,9 +33,9 @@ export async function POST() {
       )
     }
 
-    // Calculer la date de fin (30 jours à partir d'aujourd'hui)
-    const subscriptionEndsAt = new Date()
-    subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30)
+    // Calculer la date de fin (sera mise à jour avec dateBilling si disponible)
+    let subscriptionEndsAt = new Date()
+    subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30) // Fallback: 30 jours
 
     // Annuler l'abonnement chez Helcim
     const helcimApiToken = process.env.HELCIM_API_TOKEN
@@ -76,45 +76,52 @@ export async function POST() {
           debugLogs.push(`[6] Active subscription: ${activeSubscription ? activeSubscription.id : 'null'}`)
 
           if (activeSubscription?.id) {
-            // 3. Essayer d'abord de mettre le status à "cancelled" avec PATCH
-            debugLogs.push(`[7] Appel PATCH subscription ${activeSubscription.id} status=cancelled`)
-            let cancelRes = await fetch(
-              `https://api.helcim.com/v2/subscriptions/${activeSubscription.id}`,
+            // 3. Annuler via PATCH avec status="cancelled"
+            // Cela met le statut à "cancelled" et arrête les futures facturations
+            // L'utilisateur garde l'accès jusqu'à dateBilling (fin de période payée)
+            debugLogs.push(`[7] dateBilling: ${activeSubscription.dateBilling || 'non défini'}`)
+
+            const patchBody = {
+              subscriptions: [
+                {
+                  id: activeSubscription.id,
+                  status: 'cancelled',
+                  dateActivated: activeSubscription.dateActivated,
+                  recurringAmount: activeSubscription.recurringAmount
+                }
+              ]
+            }
+            debugLogs.push(`[8] Body PATCH: ${JSON.stringify(patchBody)}`)
+
+            const cancelRes = await fetch(
+              `https://api.helcim.com/v2/subscriptions`,
               {
                 method: 'PATCH',
                 headers: {
                   'api-token': helcimApiToken,
-                  'Content-Type': 'application/json',
+                  'accept': 'application/json',
+                  'content-type': 'application/json',
                 },
-                body: JSON.stringify({ status: 'cancelled' }),
+                body: JSON.stringify(patchBody),
               }
             )
 
-            debugLogs.push(`[8] Réponse PATCH: ${cancelRes.status} ${cancelRes.statusText}`)
-
-            // Si PATCH ne marche pas, essayer avec "canceled" (sans double L)
-            if (!cancelRes.ok) {
-              debugLogs.push(`[9] Tentative avec status=canceled (sans double L)`)
-              cancelRes = await fetch(
-                `https://api.helcim.com/v2/subscriptions/${activeSubscription.id}`,
-                {
-                  method: 'PATCH',
-                  headers: {
-                    'api-token': helcimApiToken,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ status: 'canceled' }),
-                }
-              )
-              debugLogs.push(`[10] Réponse PATCH #2: ${cancelRes.status} ${cancelRes.statusText}`)
-            }
+            debugLogs.push(`[9] Réponse PATCH: ${cancelRes.status} ${cancelRes.statusText}`)
 
             if (cancelRes.ok) {
               helcimCanceled = true
-              debugLogs.push(`[11] ✅ Subscription annulée avec succès`)
+              debugLogs.push(`[10] ✅ Subscription annulée dans Helcim avec succès`)
+
+              // Utiliser dateBilling comme date de fin si disponible
+              if (activeSubscription.dateBilling) {
+                subscriptionEndsAt = new Date(activeSubscription.dateBilling)
+                debugLogs.push(`[11] subscriptionEndsAt défini à dateBilling: ${subscriptionEndsAt.toISOString()}`)
+              } else {
+                debugLogs.push(`[11] dateBilling non disponible, utilisation du fallback (30 jours)`)
+              }
             } else {
               const errorText = await cancelRes.text()
-              debugLogs.push(`[11] ❌ Erreur: ${errorText}`)
+              debugLogs.push(`[10] ❌ Erreur: ${errorText}`)
             }
           } else {
             debugLogs.push('[6] ❌ Aucune subscription active trouvée')
