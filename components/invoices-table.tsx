@@ -356,7 +356,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                   onClick={() => handleSort('client')}
                   className="flex items-center hover:text-foreground/80 transition-colors"
                 >
-                  {t('invoices.client')}
+                  Client
                   <SortIcon field="client" />
                 </button>
               </th>
