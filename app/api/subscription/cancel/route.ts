@@ -82,12 +82,13 @@ export async function POST() {
             debugLogs.push(`[7] dateBilling: ${activeSubscription.dateBilling || 'non défini'}`)
             debugLogs.push(`[7b] dateActivated brut: ${activeSubscription.dateActivated}`)
 
+            // Note: Ne pas inclure dateActivated - Helcim refuse de modifier ce champ
+            // pour une subscription déjà active (erreur: "cannot activate before the current date")
             const patchBody = {
               subscriptions: [
                 {
                   id: activeSubscription.id,
                   status: 'cancelled',
-                  dateActivated: activeSubscription.dateActivated,
                   recurringAmount: activeSubscription.recurringAmount
                 }
               ]
