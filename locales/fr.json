@@ -85,7 +85,8 @@
     "addTag": "Ajouter une étiquette",
     "modifiedOn": "Modifié le",
     "createdOn": "Créé le",
-    "important": "Important"
+    "important": "Important",
+    "deleting": "Suppression..."
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -208,6 +209,11 @@
     "addItem": "Ajouter un article",
     "itemDescription": "Description de l'article",
     "itemAmount": "Montant",
+    "amount": "Montant",
+    "billingItems": "Items de facturation",
+    "workDescriptionPlaceholder": "Description du travail effectué",
+    "defaultDueDate": "Par défaut: 30 jours après la date de création",
+    "createInvoice": "Créer la facture",
     "noInvoices": "Aucune facture",
     "createFirstInvoice": "Créez votre première facture",
     "invoiceCreated": "Facture créée avec succès",
@@ -262,16 +268,24 @@
     "noFiles": "Aucun fichier",
     "downloadFile": "Télécharger le fichier",
     "deleteFile": "Supprimer le fichier",
+    "deleteFileConfirm": "Êtes-vous sûr de vouloir supprimer ce fichier ? Cette action est irréversible.",
     "invoices": "Factures",
     "createInvoice": "Créer une facture",
     "noProjects": "Aucun projet",
+    "noProjectsFound": "Aucun projet trouvé",
     "createFirstProject": "Créez votre premier projet",
     "projectCreated": "Projet créé avec succès",
     "projectUpdated": "Projet mis à jour avec succès",
     "projectDeleted": "Projet supprimé avec succès",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce projet ?",
     "fileUploaded": "Fichier téléversé avec succès",
-    "fileDeleted": "Fichier supprimé avec succès"
+    "fileDeleted": "Fichier supprimé avec succès",
+    "searchPlaceholder": "Rechercher un projet ou client...",
+    "allStatuses": "Tous les statuts",
+    "selectClient": "Sélectionner un client",
+    "noClientsAvailable": "Aucun client disponible",
+    "createdOn": "Créé le",
+    "uploadFile": "Téléverser un fichier"
   },
   "accounting": {
     "title": "Comptabilité",

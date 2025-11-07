@@ -22,6 +22,7 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
 import { ProjectModal } from '@/components/crm/project-modal'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -56,19 +57,20 @@ const statusColors = {
   cancelled: 'bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300',
 }
 
-const statusLabels = {
-  active: 'Actif',
-  completed: 'Terminé',
-  onhold: 'En pause',
-  cancelled: 'Annulé',
-}
-
 export function ProjectsGlobalView({ projects, clients }: { projects: Project[]; clients: Client[] }) {
+  const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const router = useRouter()
+
+  const statusLabels = {
+    active: t('projects.active'),
+    completed: t('projects.completed'),
+    onhold: t('projects.onHold'),
+    cancelled: t('projects.cancelled'),
+  }
 
   // Filtrer par statut
   const statusFiltered = projects.filter((project) => {
@@ -113,7 +115,7 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Rechercher un projet ou client..."
+            placeholder={t('projects.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -122,14 +124,14 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
         <div className="w-full md:w-48">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="Statut" />
+              <SelectValue placeholder={t('common.status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="active">Actif</SelectItem>
-              <SelectItem value="completed">Terminé</SelectItem>
-              <SelectItem value="onhold">En pause</SelectItem>
-              <SelectItem value="cancelled">Annulé</SelectItem>
+              <SelectItem value="all">{t('projects.allStatuses')}</SelectItem>
+              <SelectItem value="active">{t('projects.active')}</SelectItem>
+              <SelectItem value="completed">{t('projects.completed')}</SelectItem>
+              <SelectItem value="onhold">{t('projects.onHold')}</SelectItem>
+              <SelectItem value="cancelled">{t('projects.cancelled')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -139,15 +141,15 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
           <DropdownMenuTrigger asChild>
             <Button className="cursor-pointer">
               <Plus className="h-4 w-4 mr-2" />
-              Nouveau projet
+              {t('projects.newProject')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>Sélectionner un client</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('projects.selectClient')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {clients.length === 0 ? (
               <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                Aucun client disponible
+                {t('projects.noClientsAvailable')}
               </div>
             ) : (
               clients.map((client) => (
@@ -178,8 +180,8 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
           <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p className="text-sm">
             {searchTerm || statusFilter !== 'all'
-              ? 'Aucun projet trouvé'
-              : 'Aucun projet'}
+              ? t('projects.noProjectsFound')
+              : t('projects.noProjects')}
           </p>
         </div>
       ) : (
@@ -221,7 +223,7 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
                 {/* Budget */}
                 {project.budget && (
                   <p className="text-sm font-medium mb-4">
-                    Budget: {project.budget.toFixed(2)} $
+                    {t('projects.budget')}: {project.budget.toFixed(2)} $
                   </p>
                 )}
 
@@ -239,7 +241,7 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
 
                 {/* Dates */}
                 <div className="mt-2 text-xs text-muted-foreground">
-                  Créé le{' '}
+                  {t('projects.createdOn')}{' '}
                   {new Date(project.createdAt).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'short',

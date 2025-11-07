@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslation } from '@/lib/i18n-context'
 
 type ProjectFile = {
   id: string
@@ -24,6 +25,7 @@ type ProjectFile = {
 }
 
 export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -41,11 +43,11 @@ export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
         setDeleteId(null)
         router.refresh()
       } else {
-        alert('Erreur lors de la suppression du fichier')
+        alert(t('errors.deleteFailed'))
       }
     } catch (error) {
       console.error('Error deleting file:', error)
-      alert('Erreur lors de la suppression du fichier')
+      alert(t('errors.deleteFailed'))
     } finally {
       setIsDeleting(false)
     }
@@ -58,7 +60,7 @@ export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
   return (
     <>
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Fichiers</h2>
+        <h2 className="text-xl font-semibold">{t('crm.projectCard.files')}</h2>
         <div className="grid grid-cols-1 gap-3">
           {files.map((file) => (
             <div
@@ -82,7 +84,7 @@ export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
                   className="shrink-0"
                 >
                   <Button variant="ghost" size="sm">
-                    Télécharger
+                    {t('common.download')}
                   </Button>
                 </a>
                 <Button
@@ -102,19 +104,19 @@ export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer le fichier</AlertDialogTitle>
+            <AlertDialogTitle>{t('projects.deleteFile')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Êtes-vous sûr de vouloir supprimer ce fichier ? Cette action est irréversible.
+              {t('projects.deleteFileConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {isDeleting ? 'Suppression...' : 'Supprimer'}
+              {isDeleting ? t('common.deleting') : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

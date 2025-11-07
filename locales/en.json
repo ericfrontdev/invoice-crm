@@ -73,7 +73,8 @@
     "addTag": "Add a tag",
     "modifiedOn": "Modified on",
     "createdOn": "Created on",
-    "important": "Important"
+    "important": "Important",
+    "deleting": "Deleting..."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -190,6 +191,11 @@
     "removeItem": "Remove Item",
     "itemName": "Item Name",
     "itemDescription": "Description",
+    "amount": "Amount",
+    "billingItems": "Billing items",
+    "workDescriptionPlaceholder": "Description of the work performed",
+    "defaultDueDate": "Default: 30 days after creation date",
+    "createInvoice": "Create invoice",
     "quantity": "Quantity",
     "unitPrice": "Unit Price",
     "lineTotal": "Line Total",
@@ -299,8 +305,16 @@
     "projectUpdated": "Project updated successfully",
     "projectDeleted": "Project deleted successfully",
     "deleteConfirm": "Are you sure you want to delete this project?",
+    "deleteFileConfirm": "Are you sure you want to delete this file? This action is irreversible.",
     "noProjects": "No projects yet",
-    "createFirstProject": "Create your first project to get started"
+    "noProjectsFound": "No projects found",
+    "createFirstProject": "Create your first project to get started",
+    "searchPlaceholder": "Search project or client...",
+    "allStatuses": "All statuses",
+    "selectClient": "Select a client",
+    "noClientsAvailable": "No clients available",
+    "createdOn": "Created on",
+    "uploadFiles": "Upload files"
   },
   "accounting": {
     "title": "Accounting",

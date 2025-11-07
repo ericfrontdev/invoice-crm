@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Project = {
   id: string
@@ -36,6 +37,7 @@ export function CreateInvoiceForProjectModal({
   project?: Project | null
   client?: Client | null
 }) {
+  const { t } = useTranslation()
   const [items, setItems] = useState<InvoiceItem[]>([
     { description: '', amount: '' },
   ])
@@ -103,10 +105,10 @@ export function CreateInvoiceForProjectModal({
   }, 0)
 
   const modalTitle = project
-    ? `Créer une facture - ${project.name}`
+    ? `${t('invoices.createInvoice')} - ${project.name}`
     : client
-    ? `Créer une facture - ${client.name}`
-    : 'Créer une facture'
+    ? `${t('invoices.createInvoice')} - ${client.name}`
+    : t('invoices.createInvoice')
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -118,7 +120,7 @@ export function CreateInvoiceForProjectModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Items de facturation</Label>
+              <Label>{t('invoices.billingItems')}</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -127,7 +129,7 @@ export function CreateInvoiceForProjectModal({
                 className="cursor-pointer"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                Ajouter un item
+                {t('invoices.addItem')}
               </Button>
             </div>
 
@@ -138,10 +140,10 @@ export function CreateInvoiceForProjectModal({
               >
                 <div className="w-full">
                   <Label className="text-xs text-muted-foreground mb-1 block md:hidden">
-                    Description
+                    {t('common.description')}
                   </Label>
                   <Textarea
-                    placeholder="Description du travail effectué"
+                    placeholder={t('invoices.workDescriptionPlaceholder')}
                     value={item.description}
                     onChange={(e) => updateItem(index, 'description', e.target.value)}
                     rows={2}
@@ -150,13 +152,13 @@ export function CreateInvoiceForProjectModal({
                 </div>
                 <div className="w-full md:w-auto">
                   <Label className="text-xs text-muted-foreground mb-1 block md:hidden">
-                    Montant
+                    {t('invoices.amount')}
                   </Label>
                   <div className="flex gap-2 items-center">
                     <Input
                       type="number"
                       step="0.01"
-                      placeholder="Montant"
+                      placeholder={t('invoices.amount')}
                       value={item.amount}
                       onChange={(e) => updateItem(index, 'amount', e.target.value)}
                       required
@@ -189,7 +191,7 @@ export function CreateInvoiceForProjectModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dueDate">Date d&apos;échéance</Label>
+            <Label htmlFor="dueDate">{t('invoices.dueDate')}</Label>
             <Input
               id="dueDate"
               type="date"
@@ -198,14 +200,14 @@ export function CreateInvoiceForProjectModal({
               required
             />
             <p className="text-xs text-muted-foreground">
-              Par défaut: 30 jours après la date de création
+              {t('invoices.defaultDueDate')}
             </p>
           </div>
 
           {items.length > 0 && (
             <div className="flex justify-end pt-2 border-t">
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-sm text-muted-foreground">{t('invoices.total')}</p>
                 <p className="text-2xl font-bold">{total.toFixed(2)} $</p>
               </div>
             </div>
@@ -213,10 +215,10 @@ export function CreateInvoiceForProjectModal({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={handleClose}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              Créer la facture
+              {t('invoices.createInvoice')}
             </Button>
           </div>
         </form>
