@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+  // Active le mode standalone pour Docker
+  output: 'standalone',
+}
 
-export default nextConfig;
+export default nextConfig

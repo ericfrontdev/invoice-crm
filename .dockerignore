@@ -1,0 +1,54 @@
+# Dépendances (réinstallées dans Docker)
+  node_modules
+  npm-debug.log
+  yarn-error.log
+
+  # Next.js
+  .next
+  out
+  dist
+
+  # Environnement (on les passera via docker-compose)
+  .env
+  .env.local
+  .env*.local
+
+  # Git
+  .git
+  .gitignore
+  .gitattributes
+
+  # IDE
+  .vscode
+  .idea
+  *.swp
+  *.swo
+
+  # Tests
+  coverage
+  *.test.ts
+  *.test.tsx
+  *.spec.ts
+  *.spec.tsx
+
+  # CI/CD
+  .github
+  .gitlab-ci.yml
+
+  # Documentation
+  README.md
+  docs/
+
+  # Fichiers système
+  .DS_Store
+  Thumbs.db
+  desktop.ini
+
+  # Logs
+  logs
+  *.log
+
+  # Docker lui-même
+  Dockerfile
+  docker-compose.yml
+  .dockerignore
