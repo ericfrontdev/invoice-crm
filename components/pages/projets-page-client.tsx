@@ -19,7 +19,6 @@ type Project = {
   budget: number | null
   clientId: string
   createdAt: Date
-  updatedAt: Date
   client: Client
   _count: {
     invoices: number
