@@ -48,7 +48,6 @@ type AccountingData = {
     date: Date
     userId: string
     createdAt: Date
-    updatedAt: Date
   }>
   expenses: Array<{
     id: string
@@ -58,7 +57,6 @@ type AccountingData = {
     date: Date
     userId: string
     createdAt: Date
-    updatedAt: Date
   }>
 }
 
