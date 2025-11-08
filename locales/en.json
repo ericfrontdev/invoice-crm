@@ -705,7 +705,7 @@
       "createInvoice": "Create invoice",
       "upload": "Upload"
     },
-    "invoicesTab": {
+    "invoices": {
       "selectedCount": "invoice(s) selected",
       "totalInvoiced": "Total Invoiced",
       "totalPaid": "Total Paid",

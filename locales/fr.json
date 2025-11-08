@@ -585,7 +585,7 @@
       "createInvoice": "Créer facture",
       "upload": "Téléverser"
     },
-    "invoicesTab": {
+    "invoices": {
       "selectedCount": "facture(s) sélectionnée(s)",
       "totalInvoiced": "Total facturé",
       "totalPaid": "Total payé",
