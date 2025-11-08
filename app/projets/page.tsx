@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { ProjectsGlobalView } from '@/components/projects-global-view'
+import { ProjetsPageClient } from '@/components/pages/projets-page-client'
 
 async function getProjects(userId: string) {
   const projects = await prisma.project.findMany({
@@ -61,18 +61,5 @@ export default async function ProjectsPage() {
   const projects = await getProjects(session.user.id)
   const clients = await getClients(session.user.id)
 
-  return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Projets</h1>
-          <p className="text-muted-foreground">
-            Gérez tous vos projets clients
-          </p>
-        </div>
-      </div>
-
-      <ProjectsGlobalView projects={projects} clients={clients} />
-    </div>
-  )
+  return <ProjetsPageClient projects={projects} clients={clients} />
 }

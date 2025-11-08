@@ -163,14 +163,14 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
       {/* Onglets CRM */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">{t('crm.overview')}</TabsTrigger>
+          <TabsTrigger value="overview">{t('crm.overviewTab')}</TabsTrigger>
           <TabsTrigger value="projects">
-            {t('crm.projects')} ({client.projects.length})
+            {t('crm.projectsTab')} ({client.projects.length})
           </TabsTrigger>
           <TabsTrigger value="invoices">
-            {t('crm.invoices')} ({client.invoices.length})
+            {t('crm.invoicesTab')} ({client.invoices.length})
           </TabsTrigger>
-          <TabsTrigger value="notes">{t('crm.notes')} ({client.notes.length})</TabsTrigger>
+          <TabsTrigger value="notes">{t('crm.notesTab')} ({client.notes.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">

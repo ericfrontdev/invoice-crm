@@ -74,7 +74,7 @@ export function InvoicesPageClient({
         <div>
           <h1 className="text-3xl font-bold">{t('invoices.title')}</h1>
           <p className="text-muted-foreground">
-            Gérez toutes vos factures clients
+            {t('invoices.manageAllInvoices')}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">

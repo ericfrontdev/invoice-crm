@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ThemeLogo } from '@/components/theme-logo'
+import { useTranslation } from '@/lib/i18n-context'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -27,13 +29,13 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Email ou mot de passe incorrect')
+        setError(t('auth.incorrectCredentials'))
       } else {
         router.push('/')
         router.refresh()
       }
     } catch {
-      setError('Une erreur est survenue')
+      setError(t('auth.errorOccurred'))
     } finally {
       setLoading(false)
     }
@@ -50,9 +52,9 @@ export default function LoginPage() {
         <div className="flex flex-col bg-background rounded-xl border shadow-lg p-8 ">
           <ThemeLogo className="mb-6 w-auto" />
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Connexion</h1>
+            <h1 className="text-3xl font-bold">{t('auth.login')}</h1>
             <p className="text-muted-foreground mt-2">
-              Connectez-vous à votre compte
+              {t('auth.signInToAccount')}
             </p>
           </div>
 
@@ -71,7 +73,7 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="block text-sm font-medium mb-2"
               >
-                Email
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -88,7 +90,7 @@ export default function LoginPage() {
                 htmlFor="password"
                 className="block text-sm font-medium mb-2"
               >
-                Mot de passe
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -105,7 +107,7 @@ export default function LoginPage() {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? t('auth.signInLoading') : t('auth.signIn')}
             </Button>
           </form>
 
@@ -115,7 +117,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-background text-muted-foreground">
-                Ou continuer avec
+                {t('auth.orContinueWith')}
               </span>
             </div>
           </div>
@@ -152,12 +154,12 @@ export default function LoginPage() {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Pas encore de compte ?{' '}
+            {t('auth.noAccount')}{' '}
             <Link
               href="/auth/register"
               className="text-blue-600 hover:underline dark:text-blue-400"
             >
-              S&apos;inscrire
+              {t('auth.signUp')}
             </Link>
           </p>
         </div>

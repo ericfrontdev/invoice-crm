@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { AccountingView } from '@/components/accounting-view'
+import { AccountingPageClient } from '@/components/pages/accounting-page-client'
 
 async function getAccountingData(userId: string) {
   const now = new Date()
@@ -163,19 +163,8 @@ export default async function AccountingPage() {
   const { revenue, recentTransactions, revenueByMonth, allInvoices, manualRevenues, expenses } = await getAccountingData(session.user.id)
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* En-tête */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Comptabilité</h1>
-          <p className="text-muted-foreground">
-            Vue d&apos;ensemble de vos revenus et transactions
-          </p>
-        </div>
-      </div>
-
-      {/* Vue avec onglets */}
-      <AccountingView data={{ revenue, recentTransactions, revenueByMonth, allInvoices, manualRevenues, expenses }} />
-    </div>
+    <AccountingPageClient
+      data={{ revenue, recentTransactions, revenueByMonth, allInvoices, manualRevenues, expenses }}
+    />
   )
 }

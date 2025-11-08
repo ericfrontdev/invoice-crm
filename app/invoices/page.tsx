@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { InvoicesPageClient } from '@/components/invoices-page-client'
 import { Suspense } from 'react'
+import LoadingSpinner from '@/components/loading-spinner'
 
 async function getInvoices(userId: string) {
   try {
@@ -65,7 +66,7 @@ export default async function InvoicesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
-      <Suspense fallback={<div>Chargement...</div>}>
+      <Suspense fallback={<LoadingSpinner />}>
         <InvoicesPageClient
           projectInvoices={projectInvoices}
           standaloneInvoices={standaloneInvoices}
