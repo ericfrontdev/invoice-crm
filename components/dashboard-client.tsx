@@ -196,7 +196,7 @@ export function DashboardClient({
                         • {t('dashboard.dueDate')}:{' '}
                         <span className="text-red-600 dark:text-red-400">
                           {item.dueDate
-                            ? new Date(item.dueDate).toLocaleDateString()
+                            ? new Date(item.dueDate).toLocaleDateString('fr-FR')
                             : '-'}
                         </span>
                       </p>
