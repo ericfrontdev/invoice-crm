@@ -46,6 +46,7 @@ type AccountingData = {
     description: string
     amount: number
     date: Date
+    category: string | null
     userId: string
     createdAt: Date
   }>

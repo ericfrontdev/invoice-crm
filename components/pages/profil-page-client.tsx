@@ -7,8 +7,8 @@ import { useTranslation } from '@/lib/i18n-context'
 
 type User = {
   id: string
-  name: string | null
-  email: string | null
+  name: string
+  email: string
   company: string | null
   phone: string | null
   address: string | null

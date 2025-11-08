@@ -148,6 +148,7 @@
     "allTime": "Tout le temps",
     "totalDue": "Total dû",
     "overdueItemsCount": "{{count}} éléments en retard à surveiller",
+    "overdueItems": "éléments en retard à surveiller",
     "noOverdue": "Aucun retard — continuez sur cette lancée !",
     "newClient": "Nouveau client",
     "createInvoice": "Créer une facture",

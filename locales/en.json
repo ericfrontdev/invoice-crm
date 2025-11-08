@@ -143,6 +143,7 @@
     "viewAll": "View All",
     "totalDue": "Total Due",
     "overdueItemsCount": "{{count}} overdue items to watch",
+    "overdueItems": "overdue items to watch",
     "noOverdue": "No overdue — keep up the good work!",
     "newClient": "New client",
     "drafts": "Drafts",

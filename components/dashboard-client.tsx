@@ -67,7 +67,7 @@ export function DashboardClient({
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               {overdue.length > 0
-                ? t('dashboard.overdueItemsCount', { count: overdue.length })
+                ? `${overdue.length} ${t('dashboard.overdueItems')}`
                 : t('dashboard.noOverdue')}
             </p>
           </div>
