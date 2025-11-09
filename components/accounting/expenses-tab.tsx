@@ -17,7 +17,7 @@ type Expense = {
 }
 
 export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
@@ -151,7 +151,7 @@ export function ExpensesTab({ expenses }: { expenses: Expense[] }) {
                 {expenses.map((expense) => (
                   <tr key={expense.id} className="border-t hover:bg-muted/50">
                     <td className="py-3 px-4">
-                      {new Date(expense.date).toLocaleDateString('fr-FR')}
+                      {new Date(expense.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                     </td>
                     <td className="py-3 px-4 font-medium">{expense.description}</td>
                     <td className="py-3 px-4">

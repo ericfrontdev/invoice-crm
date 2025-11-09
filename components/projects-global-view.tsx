@@ -58,7 +58,7 @@ const statusColors = {
 }
 
 export function ProjectsGlobalView({ projects, clients }: { projects: Project[]; clients: Client[] }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
@@ -242,7 +242,7 @@ export function ProjectsGlobalView({ projects, clients }: { projects: Project[];
                 {/* Dates */}
                 <div className="mt-2 text-xs text-muted-foreground">
                   {t('projects.createdOn')}{' '}
-                  {new Date(project.createdAt).toLocaleDateString('fr-FR', {
+                  {new Date(project.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',

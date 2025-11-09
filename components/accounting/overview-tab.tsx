@@ -25,7 +25,7 @@ type OverviewData = {
 }
 
 export function OverviewAccountingTab({ data }: { data: OverviewData }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const maxMonthRevenue = Math.max(...data.revenueByMonth.map((m) => m.amount), 1)
 
   return (
@@ -89,7 +89,7 @@ export function OverviewAccountingTab({ data }: { data: OverviewData }) {
                     {transaction.project && ` • ${transaction.project.name}`}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(transaction.createdAt).toLocaleDateString('fr-FR', {
+                    {new Date(transaction.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',

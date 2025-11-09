@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   Select,
   SelectContent,
@@ -82,6 +83,7 @@ export function FeedbackList({
   feedbackSystemEnabled: boolean
 }) {
   const router = useRouter()
+  const { locale } = useTranslation()
   const [systemEnabled, setSystemEnabled] = useState(initialEnabled)
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -307,7 +309,7 @@ export function FeedbackList({
                       </td>
                       <td className="p-3">
                         <span className="text-sm text-muted-foreground">
-                          {new Date(feedback.createdAt).toLocaleDateString('fr-FR', {
+                          {new Date(feedback.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                             day: 'numeric',
                             month: 'short',
                             hour: '2-digit',
@@ -459,7 +461,7 @@ export function FeedbackList({
                       </div>
 
                       <div className="text-xs text-muted-foreground">
-                        {new Date(feedback.createdAt).toLocaleDateString('fr-FR', {
+                        {new Date(feedback.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',

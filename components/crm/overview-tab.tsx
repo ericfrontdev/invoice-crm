@@ -68,7 +68,7 @@ export function OverviewTab({
   onCreateInvoiceForProject: (projectId: string) => void
   onAddNote: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   // Calculs des métriques
   const activeProjects = client.projects.filter((p) => p.status === 'active').length
@@ -298,7 +298,7 @@ export function OverviewTab({
                     <div className="min-w-0">
                       <div className="font-medium truncate">{invoice.number}</div>
                       <div className="text-xs text-muted-foreground">
-                        {new Date(invoice.createdAt).toLocaleDateString('fr-FR', {
+                        {new Date(invoice.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'

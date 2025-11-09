@@ -67,7 +67,7 @@ export function RevenueTab({
   invoices: Invoice[]
   manualRevenues: ManualRevenue[]
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFilter, setDateFilter] = useState('all')
@@ -241,7 +241,7 @@ export function RevenueTab({
                 {filteredRevenues.map((revenue) => (
                   <tr key={`${revenue.type}-${revenue.id}`} className="border-t hover:bg-muted/50">
                     <td className="py-3 px-4">
-                      {new Date(revenue.date).toLocaleDateString('fr-FR')}
+                      {new Date(revenue.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                     </td>
                     <td className="py-3 px-4 font-medium">{revenue.description}</td>
                     <td className="py-3 px-4">

@@ -46,7 +46,7 @@ export function DashboardClient({
   counts,
   topClients,
 }: DashboardClientProps) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const maxTop = topClients.length
     ? Math.max(...topClients.map((c) => c.total))
@@ -196,7 +196,7 @@ export function DashboardClient({
                         • {t('dashboard.dueDate')}:{' '}
                         <span className="text-red-600 dark:text-red-400">
                           {item.dueDate
-                            ? new Date(item.dueDate).toLocaleDateString('fr-FR')
+                            ? new Date(item.dueDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                             : '-'}
                         </span>
                       </p>

@@ -30,7 +30,7 @@ type ReportsData = {
 }
 
 export function ReportsTab({ data }: { data: ReportsData }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const totalExpenses = data.expenses.reduce((sum, expense) => sum + expense.amount, 0)
   const profitYear = data.revenue.year - totalExpenses
   const profitMargin = data.revenue.year > 0 ? (profitYear / data.revenue.year) * 100 : 0
@@ -73,14 +73,14 @@ export function ReportsTab({ data }: { data: ReportsData }) {
         t('accounting.revenue'),
         `${t('accounting.invoice')} ${inv.number}`,
         inv.total.toFixed(2),
-        new Date(inv.createdAt).toLocaleDateString('fr-FR'),
+        new Date(inv.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US'),
         inv.client.name,
       ]),
       ...data.expenses.map(exp => [
         t('accounting.expenses'),
         exp.description,
         exp.amount.toFixed(2),
-        new Date(exp.date).toLocaleDateString('fr-FR'),
+        new Date(exp.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US'),
         exp.category || '-',
       ]),
     ]

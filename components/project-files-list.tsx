@@ -25,7 +25,7 @@ type ProjectFile = {
 }
 
 export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -73,7 +73,7 @@ export function ProjectFilesList({ files }: { files: ProjectFile[] }) {
                   <p className="font-medium truncate">{file.filename}</p>
                   <p className="text-xs text-muted-foreground">
                     {(file.fileSize / 1024).toFixed(1)} KB •{' '}
-                    {new Date(file.uploadedAt).toLocaleDateString('fr-FR')}
+                    {new Date(file.uploadedAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                   </p>
                 </div>
               </div>

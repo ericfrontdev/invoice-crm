@@ -43,7 +43,7 @@ type User = {
 }
 
 export function ProfileForm({ user }: { user: User }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: user.name,
@@ -199,7 +199,7 @@ export function ProfileForm({ user }: { user: User }) {
 
       setMessage({
         type: 'success',
-        text: t('profile.subscriptionCanceled') + ' ' + new Date(data.endsAt).toLocaleDateString('fr-FR'),
+        text: t('profile.subscriptionCanceled') + ' ' + new Date(data.endsAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US'),
       })
 
       setShowCancelSubscriptionDialog(false)

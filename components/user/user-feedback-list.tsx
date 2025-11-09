@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslation } from '@/lib/i18n-context'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -59,6 +60,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 }
 
 export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
+  const { locale } = useTranslation()
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -193,7 +195,7 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
                         </Badge>
                       </td>
                       <td className="p-4 text-sm text-muted-foreground">
-                        {new Date(feedback.createdAt).toLocaleDateString('fr-CA')}
+                        {new Date(feedback.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                       </td>
                       <td className="p-4">
                         <div className={`flex items-center gap-1 text-sm ${
@@ -258,7 +260,7 @@ export function UserFeedbackList({ feedbacks }: UserFeedbackListProps) {
                       </div>
 
                       <div className="text-xs text-muted-foreground">
-                        {new Date(feedback.createdAt).toLocaleDateString('fr-FR', {
+                        {new Date(feedback.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',

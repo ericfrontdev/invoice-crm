@@ -25,7 +25,7 @@ export function ReminderTimeline({
   invoice: Invoice
   reminders: Reminder[]
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const reminderSteps = [
     {
@@ -114,13 +114,13 @@ export function ReminderTimeline({
                       <p className="text-green-700 dark:text-green-400 flex items-center gap-2">
                         <CheckCircle className="h-4 w-4" />
                         {t('reminders.sentOn')}{' '}
-                        {new Date(reminder.sentAt).toLocaleDateString('fr-FR', {
+                        {new Date(reminder.sentAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',
                         })}{' '}
                         à{' '}
-                        {new Date(reminder.sentAt).toLocaleTimeString('fr-FR', {
+                        {new Date(reminder.sentAt).toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
@@ -142,7 +142,7 @@ export function ReminderTimeline({
                       )}
                       <p className="text-muted-foreground">
                         {t('reminders.attemptedOn')}{' '}
-                        {new Date(reminder.sentAt).toLocaleDateString('fr-FR', {
+                        {new Date(reminder.sentAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',
@@ -156,7 +156,7 @@ export function ReminderTimeline({
                       <p className="text-muted-foreground flex items-center gap-2">
                         <Clock className="h-4 w-4" />
                         {t('reminders.scheduled')}{' '}
-                        {scheduledDate.toLocaleDateString('fr-FR', {
+                        {scheduledDate.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric',
