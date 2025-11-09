@@ -47,7 +47,7 @@ type SortField = 'number' | 'client' | 'status' | 'total' | 'createdAt' | 'proje
 type SortDirection = 'asc' | 'desc'
 
 export function InvoicesTable({ invoices, showProject = false }: { invoices: Invoice[]; showProject?: boolean }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(
@@ -83,7 +83,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
 
   // Deterministic date formatting to avoid hydration mismatches (explicit locale + timezone)
   const formatDate = (d: string | Date) =>
-    new Intl.DateTimeFormat('fr-FR', { timeZone: 'UTC' }).format(new Date(d))
+    new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-US', { timeZone: 'UTC' }).format(new Date(d))
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
