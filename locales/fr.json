@@ -800,7 +800,6 @@
     "dashboardTitle": "Dashboard Super Admin",
     "platformUsersInfo": "Informations des utilisateurs de la plateforme",
     "users": "Utilisateurs",
-    "usersCount": "Utilisateurs ({{count}})",
     "noUsers": "Aucun utilisateur pour l'instant",
     "plan": "Plan",
     "payment": "Paiement",

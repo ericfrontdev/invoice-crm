@@ -55,7 +55,7 @@ export function AdminDashboardPage({ users }: { users: User[] }) {
       ) : (
         <div className="rounded-xl border">
           <div className="p-4 border-b">
-            <h2 className="text-xl font-semibold">{t('admin.usersCount', { count: users.length })}</h2>
+            <h2 className="text-xl font-semibold">{`${t('admin.users')} (${users.length})`}</h2>
           </div>
           <AdminUsersTable users={users} />
         </div>

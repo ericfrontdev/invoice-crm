@@ -915,7 +915,6 @@
     "dashboardTitle": "Super Admin Dashboard",
     "platformUsersInfo": "Platform users information",
     "users": "Users",
-    "usersCount": "Users ({{count}})",
     "noUsers": "No users yet",
     "plan": "Plan",
     "payment": "Payment",
