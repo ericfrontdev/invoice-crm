@@ -38,8 +38,8 @@ type Feedback = {
   hasUnreadMessages: boolean
   user: {
     id: string
-    name: string
-    email: string
+    name: string | null
+    email: string | null
   } | null
   _count: {
     messages: number
