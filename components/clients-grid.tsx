@@ -35,7 +35,7 @@ export function ClientsGrid({ clients }: { clients: Client[] }) {
           onClick={() => setViewMode('grid')}
         >
           <LayoutGrid className="h-4 w-4 mr-2" />
-          Grille
+          {t('common.grid')}
         </Button>
         <Button
           variant={viewMode === 'list' ? 'default' : 'outline'}
@@ -43,7 +43,7 @@ export function ClientsGrid({ clients }: { clients: Client[] }) {
           onClick={() => setViewMode('list')}
         >
           <List className="h-4 w-4 mr-2" />
-          Liste
+          {t('common.list')}
         </Button>
       </div>
 

@@ -65,7 +65,7 @@ const statusColors = {
 }
 
 export function ProjectDetailClient({ project }: { project: ProjectWithRelations }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const statusLabels = {
     active: t('projects.statusActive'),
@@ -173,7 +173,7 @@ export function ProjectDetailClient({ project }: { project: ProjectWithRelations
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">{t('projects.start')}:</span>
                 <span>
-                  {new Date(project.startDate).toLocaleDateString('fr-FR', {
+                  {new Date(project.startDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
@@ -186,7 +186,7 @@ export function ProjectDetailClient({ project }: { project: ProjectWithRelations
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">{t('projects.end')}:</span>
                 <span>
-                  {new Date(project.endDate).toLocaleDateString('fr-FR', {
+                  {new Date(project.endDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',

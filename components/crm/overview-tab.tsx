@@ -111,12 +111,12 @@ export function OverviewTab({
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between mb-2">
             <FolderKanban className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-xs text-muted-foreground">{t('crm.projects')}</span>
+            <span className="text-xs text-muted-foreground">{t('crm.projectsTab')}</span>
           </div>
           <div className="space-y-1">
             <p className="text-2xl font-bold">{totalProjects}</p>
             <p className="text-xs text-muted-foreground">
-              {activeProjects} {t('projects.active')} • {completedProjects} {t('projects.completed')}
+              {activeProjects} {t('crm.overview.active')} • {completedProjects} {t('crm.overview.completed')}
             </p>
           </div>
         </div>
