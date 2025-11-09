@@ -91,7 +91,7 @@ export function NewClientModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Identité */}
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">Identité</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">{t('clients.identity')}</p>
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name" className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export function NewClientModal({
 
           {/* Contact */}
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">Contact</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">{t('clients.contact')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export function NewClientModal({
 
           {/* Coordonnées */}
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">Coordonnées</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">{t('clients.coordinates')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5 md:col-span-2">
                 <Label htmlFor="address" className="flex items-center gap-2">

@@ -96,6 +96,7 @@ export function NotesTab({
             size="sm"
             onClick={() => setViewMode('cards')}
             className="cursor-pointer"
+            title={t('common.grid')}
           >
             <LayoutGrid className="h-4 w-4" />
           </Button>
@@ -104,6 +105,7 @@ export function NotesTab({
             size="sm"
             onClick={() => setViewMode('list')}
             className="cursor-pointer"
+            title={t('common.list')}
           >
             <List className="h-4 w-4" />
           </Button>

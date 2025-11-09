@@ -90,7 +90,7 @@ export function NoteModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">{t('common.title')} *</Label>
+            <Label htmlFor="title" className="mb-2 block">{t('common.title')} *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -102,7 +102,7 @@ export function NoteModal({
           </div>
 
           <div>
-            <Label htmlFor="content">{t('crm.noteContent')} *</Label>
+            <Label htmlFor="content" className="mb-2 block">{t('crm.noteContent')} *</Label>
             <Textarea
               id="content"
               value={formData.content}
@@ -115,7 +115,7 @@ export function NoteModal({
           </div>
 
           <div>
-            <Label htmlFor="tags">{t('common.tags')}</Label>
+            <Label htmlFor="tags" className="mb-2 block">{t('common.tags')}</Label>
             <div className="flex gap-2">
               <Input
                 id="tags"

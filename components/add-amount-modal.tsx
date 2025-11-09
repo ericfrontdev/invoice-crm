@@ -92,7 +92,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
           <h2 id="add-amount-title" className="text-base font-semibold">
-            {t('accounting.addAmount')}
+            {t('crm.addAmount')}
           </h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="cursor-pointer">
             <X className="h-4 w-4" />
@@ -102,7 +102,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="amount">{t('common.amount')} *</Label>
+              <Label htmlFor="amount" className="mb-2 block">{t('common.amount')} *</Label>
               <Input
                 id="amount"
                 inputMode="decimal"
@@ -129,7 +129,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
               )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="date">{t('common.date')}</Label>
+              <Label htmlFor="date" className="mb-2 block">{t('common.date')}</Label>
               <Input
                 id="date"
                 type="date"
@@ -141,7 +141,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description">{t('common.description')} *</Label>
+            <Label htmlFor="description" className="mb-2 block">{t('common.description')} *</Label>
             <Input
               id="description"
               value={form.description}
@@ -155,7 +155,7 @@ export function AddAmountModal({ isOpen, onClose, onSubmit }: AddAmountModalProp
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="dueDate">{t('invoices.dueDate')} ({t('common.optional')})</Label>
+            <Label htmlFor="dueDate" className="mb-2 block">{t('invoices.dueDate')} ({t('common.optional')})</Label>
             <Input
               id="dueDate"
               type="date"

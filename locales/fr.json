@@ -86,7 +86,10 @@
     "modifiedOn": "Modifié le",
     "createdOn": "Créé le",
     "important": "Important",
-    "deleting": "Suppression..."
+    "deleting": "Suppression...",
+    "processing": "Traitement...",
+    "grid": "Grille",
+    "list": "Liste"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -187,6 +190,9 @@
     "postalCode": "Code postal",
     "website": "Site web",
     "notes": "Notes",
+    "identity": "Identité",
+    "contact": "Contact",
+    "coordinates": "Coordonnées",
     "totalDue": "Total dû",
     "noClients": "Aucun client",
     "addFirstClient": "Ajoutez votre premier client",
@@ -308,6 +314,10 @@
     "reminders": "Rappels",
     "sendReminder": "Envoyer un rappel",
     "automaticReminders": "Rappels automatiques",
+    "client": "Client",
+    "resendInvoice": "Renvoyer la facture",
+    "copyPaymentLink": "Copier le lien de paiement",
+    "viewReminders": "Voir les rappels",
     "paypal": {
       "emailNotConfigured": "Email PayPal non configuré",
       "initError": "Erreur lors de l'initialisation du paiement PayPal"
@@ -358,7 +368,23 @@
     "selectClient": "Sélectionner un client",
     "noClientsAvailable": "Aucun client disponible",
     "createdOn": "Créé le",
-    "uploadFile": "Téléverser un fichier"
+    "uploadFile": "Téléverser un fichier",
+    "backToProjects": "Retour aux projets",
+    "invoiced": "Facturé",
+    "start": "Début",
+    "end": "Fin",
+    "actions": "Actions",
+    "uploadDocuments": "Téléverser des documents",
+    "projectFiles": "Fichiers du projet",
+    "dragDropFiles": "Glissez-déposez vos fichiers ici",
+    "or": "ou",
+    "chooseFiles": "Choisir des fichiers",
+    "uploading": "Téléversement...",
+    "uploadCount": "Téléverser ({{count}})",
+    "statusActive": "Actif",
+    "statusCompleted": "Terminé",
+    "statusOnHold": "En pause",
+    "statusCancelled": "Annulé"
   },
   "accounting": {
     "title": "Comptabilité",
@@ -444,7 +470,9 @@
     "saving": "Enregistrement...",
     "areYouSureDeleteRevenue": "Êtes-vous sûr de vouloir supprimer le revenu",
     "thisActionIsIrreversible": "Cette action est irréversible.",
-    "exOfficeTravelMarketing": "Ex: Bureau, Transport, Marketing..."
+    "exOfficeTravelMarketing": "Ex: Bureau, Transport, Marketing...",
+    "addAmount": "Ajouter un montant",
+    "descriptionPlaceholder": "Description du montant dû..."
   },
   "profile": {
     "title": "Profil",
@@ -707,7 +735,8 @@
     "generateInvoiceForSelected": "Générer facture pour les éléments sélectionnés",
     "preview": "Prévisualiser",
     "viewDetails": "Voir les détails",
-    "createInvoiceFromAmount": "Créer une facture"
+    "createInvoiceFromAmount": "Créer une facture",
+    "addFirstNote": "Créez votre première note"
   },
   "reminders": {
     "title": "Rappels de paiement",
@@ -895,7 +924,9 @@
     "uploadFailed": "Erreur lors du téléversement",
     "deleteFailed": "Erreur lors de la suppression",
     "updateFailed": "Erreur lors de la mise à jour",
-    "fileTypeNotSupported": "Type de fichier non supporté"
+    "fileTypeNotSupported": "Type de fichier non supporté",
+    "amountRequired": "Le montant est requis",
+    "descriptionRequired": "La description est requise"
   },
   "success": {
     "saved": "Enregistré avec succès",

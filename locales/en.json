@@ -74,7 +74,11 @@
     "modifiedOn": "Modified on",
     "createdOn": "Created on",
     "important": "Important",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "processing": "Processing...",
+    "grid": "Grid",
+    "list": "List",
+    "tags": "Tags"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -246,7 +250,10 @@
     "note": "note",
     "notes": "notes",
     "irreversibleAction": "This action is irreversible.",
-    "deletePermanently": "Delete permanently"
+    "deletePermanently": "Delete permanently",
+    "identity": "Identity",
+    "contact": "Contact",
+    "coordinates": "Coordinates"
   },
   "invoices": {
     "title": "Invoices",
@@ -339,7 +346,11 @@
     "stripe": {
       "sessionError": "Error creating payment session",
       "initError": "Error initializing Stripe payment"
-    }
+    },
+    "client": "Client",
+    "resendInvoice": "Resend invoice",
+    "copyPaymentLink": "Copy payment link",
+    "viewReminders": "View reminders"
   },
   "projects": {
     "title": "Projects",
@@ -392,7 +403,23 @@
     "selectClient": "Select a client",
     "noClientsAvailable": "No clients available",
     "createdOn": "Created on",
-    "uploadFiles": "Upload files"
+    "uploadFiles": "Upload files",
+    "backToProjects": "Back to projects",
+    "invoiced": "Invoiced",
+    "start": "Start",
+    "end": "End",
+    "actions": "Actions",
+    "uploadDocuments": "Upload documents",
+    "projectFiles": "Project files",
+    "dragDropFiles": "Drag and drop your files here",
+    "or": "or",
+    "chooseFiles": "Choose files",
+    "uploading": "Uploading...",
+    "uploadCount": "Upload ({{count}})",
+    "statusActive": "Active",
+    "statusCompleted": "Completed",
+    "statusOnHold": "On Hold",
+    "statusCancelled": "Cancelled"
   },
   "accounting": {
     "title": "Accounting",
@@ -505,7 +532,9 @@
     "saving": "Saving...",
     "areYouSureDeleteRevenue": "Are you sure you want to delete the revenue",
     "thisActionIsIrreversible": "This action is irreversible.",
-    "exOfficeTravelMarketing": "Ex: Office, Travel, Marketing..."
+    "exOfficeTravelMarketing": "Ex: Office, Travel, Marketing...",
+    "addAmount": "Add amount",
+    "descriptionPlaceholder": "Description of the amount due..."
   },
   "profile": {
     "title": "Profile",
@@ -824,6 +853,7 @@
   },
   "reminders": {
     "title": "Payment Reminders",
+    "timeline": "Reminders History",
     "sendReminder": "Send Reminder",
     "automaticReminders": "Automatic Reminders",
     "enableReminders": "Enable Automatic Reminders",
@@ -977,7 +1007,9 @@
     "updateFailed": "Update failed",
     "createFailed": "Create failed",
     "loadFailed": "Failed to load data",
-    "noPermission": "You don't have permission to perform this action"
+    "noPermission": "You don't have permission to perform this action",
+    "amountRequired": "Amount is required",
+    "descriptionRequired": "Description is required"
   },
   "success": {
     "saved": "Saved successfully",

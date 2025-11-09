@@ -537,7 +537,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                         <DropdownMenuItem asChild>
                           <Link href={`/factures/${inv.id}/rappels`}>
                             <History className="h-4 w-4 mr-2" />
-                            {t('crm.viewDetails')}
+                            {t('invoices.viewReminders')}
                           </Link>
                         </DropdownMenuItem>
 
@@ -547,7 +547,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                             onClick={() => handleCopyPaymentLink(inv.id)}
                           >
                             <Link2 className="h-4 w-4 mr-2" />
-                            Copier lien
+                            {t('invoices.copyPaymentLink')}
                           </DropdownMenuItem>
                         )}
 

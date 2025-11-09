@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Upload, X, FileIcon } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function UploadDocumentsModal({
   isOpen,
@@ -16,6 +17,7 @@ export function UploadDocumentsModal({
   onClose: () => void
   projectId: string
 }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -96,12 +98,12 @@ export function UploadDocumentsModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Téléverser des documents</DialogTitle>
+          <DialogTitle>{t('projects.uploadDocuments')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label className="mb-2 block">Fichiers du projet</Label>
+            <Label className="mb-2 block">{t('projects.projectFiles')}</Label>
             <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -114,9 +116,9 @@ export function UploadDocumentsModal({
             >
               <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-2">
-                Glissez-déposez vos fichiers ici
+                {t('projects.dragDropFiles')}
               </p>
-              <p className="text-xs text-muted-foreground mb-3">ou</p>
+              <p className="text-xs text-muted-foreground mb-3">{t('projects.or')}</p>
               <label htmlFor="file-input">
                 <Button
                   type="button"
@@ -124,7 +126,7 @@ export function UploadDocumentsModal({
                   size="sm"
                   onClick={() => document.getElementById('file-input')?.click()}
                 >
-                  Choisir des fichiers
+                  {t('projects.chooseFiles')}
                 </Button>
               </label>
               <input
@@ -170,10 +172,10 @@ export function UploadDocumentsModal({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={handleClose} disabled={isUploading}>
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={selectedFiles.length === 0 || isUploading}>
-              {isUploading ? 'Téléversement...' : `Téléverser ${selectedFiles.length > 0 ? `(${selectedFiles.length})` : ''}`}
+              {isUploading ? t('projects.uploading') : selectedFiles.length > 0 ? t('projects.uploadCount').replace('{{count}}', selectedFiles.length.toString()) : t('common.upload')}
             </Button>
           </div>
         </form>

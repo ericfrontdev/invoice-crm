@@ -2,12 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Paperclip } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ProjectActions } from '@/components/project-actions'
-import { ProjectFilesList } from '@/components/project-files-list'
-import { ProjectInvoicesList } from '@/components/project-invoices-list'
+import { ProjectDetailClient } from '@/components/pages/project-detail-client'
 
 async function getProject(projectId: string, userId: string) {
   const project = await prisma.project.findFirst({
@@ -49,20 +44,6 @@ async function getProject(projectId: string, userId: string) {
   return project
 }
 
-const statusColors = {
-  active: 'bg-green-100 text-green-800 dark:bg-green-400/10 dark:text-green-300',
-  completed: 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-300',
-  onhold: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-400/10 dark:text-yellow-300',
-  cancelled: 'bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300',
-}
-
-const statusLabels = {
-  active: 'Actif',
-  completed: 'Terminé',
-  onhold: 'En pause',
-  cancelled: 'Annulé',
-}
-
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -72,140 +53,5 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const { id } = await params
   const project = await getProject(id, session.user.id)
 
-  const totalInvoiced = project.invoices.reduce((sum, inv) => sum + inv.total, 0)
-
-  return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/projets">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour aux projets
-          </Button>
-        </Link>
-      </div>
-
-      {/* Project Info */}
-      <div className="rounded-lg border p-6 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold">{project.name}</h1>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  statusColors[project.status as keyof typeof statusColors]
-                }`}
-              >
-                {statusLabels[project.status as keyof typeof statusLabels]}
-              </span>
-            </div>
-            {project.description && (
-              <p className="text-muted-foreground">{project.description}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Client Info */}
-        <div className="flex items-center gap-2 text-sm">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Client:</span>
-          <Link href={`/clients/${project.client.id}`} className="underline">
-            {project.client.company || project.client.name}
-          </Link>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="flex flex-wrap gap-4 pt-4 border-t items-end">
-          <div className="flex-1 min-w-[150px]">
-            {project.budget && (
-              <div className="space-y-1">
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <DollarSign className="h-4 w-4" />
-                  <span>Budget</span>
-                </div>
-                <p className="text-2xl font-semibold">{project.budget.toFixed(2)} $</p>
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-[150px]">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                <span>Facturé</span>
-              </div>
-              <p className="text-2xl font-semibold">{totalInvoiced.toFixed(2)} $</p>
-            </div>
-          </div>
-          <div className="flex-1 min-w-[150px]">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                <span>Factures</span>
-              </div>
-              <p className="text-2xl font-semibold">{project._count.invoices}</p>
-            </div>
-          </div>
-          <div className="flex-1 min-w-[150px]">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Paperclip className="h-4 w-4" />
-                <span>Fichiers</span>
-              </div>
-              <p className="text-2xl font-semibold">{project._count.files}</p>
-            </div>
-          </div>
-          <div className="space-y-1 ml-auto">
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span>Actions</span>
-            </div>
-            <ProjectActions project={project} clientId={project.client.id} />
-          </div>
-        </div>
-
-        {/* Dates */}
-        {(project.startDate || project.endDate) && (
-          <div className="flex items-center gap-4 pt-4 border-t text-sm">
-            {project.startDate && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Début:</span>
-                <span>
-                  {new Date(project.startDate).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
-            )}
-            {project.endDate && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Fin:</span>
-                <span>
-                  {new Date(project.endDate).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Invoices */}
-      <ProjectInvoicesList
-        invoices={project.invoices}
-        clientId={project.client.id}
-        clientName={project.client.company || project.client.name}
-        projectId={project.id}
-      />
-
-      {/* Files */}
-      <ProjectFilesList files={project.files} />
-    </div>
-  )
+  return <ProjectDetailClient project={project} />
 }
