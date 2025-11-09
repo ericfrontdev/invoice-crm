@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n-context'
 
 interface FeedbackDetailsModalProps {
   feedbackId: string
@@ -71,33 +72,19 @@ const typeIcons: Record<string, typeof Bug> = {
   other: MessageCircle,
 }
 
-const severityLabels: Record<string, { label: string; color: string }> = {
-  critical: { label: 'Critique', color: 'bg-red-500' },
-  high: { label: 'Élevé', color: 'bg-orange-500' },
-  medium: { label: 'Moyen', color: 'bg-yellow-500' },
-  low: { label: 'Faible', color: 'bg-green-500' },
+const severityColors: Record<string, string> = {
+  critical: 'bg-red-500',
+  high: 'bg-orange-500',
+  medium: 'bg-yellow-500',
+  low: 'bg-green-500',
 }
 
-const statusLabels: Record<string, { label: string; color: string }> = {
-  new: { label: 'Nouveau', color: 'bg-blue-500' },
-  in_progress: { label: 'En cours', color: 'bg-purple-500' },
-  resolved: { label: 'Résolu', color: 'bg-green-500' },
-  closed: { label: 'Fermé', color: 'bg-gray-500' },
+const statusColors: Record<string, string> = {
+  new: 'bg-blue-500',
+  in_progress: 'bg-purple-500',
+  resolved: 'bg-green-500',
+  closed: 'bg-gray-500',
 }
-
-const priorityLevels = [
-  { value: 'critical', label: 'Critique' },
-  { value: 'high', label: 'Élevée' },
-  { value: 'medium', label: 'Moyenne' },
-  { value: 'low', label: 'Faible' },
-]
-
-const statusOptions = [
-  { value: 'new', label: 'Nouveau' },
-  { value: 'in_progress', label: 'En cours' },
-  { value: 'resolved', label: 'Résolu' },
-  { value: 'closed', label: 'Fermé' },
-]
 
 export function FeedbackDetailsModal({
   feedbackId,
@@ -117,6 +104,42 @@ export function FeedbackDetailsModal({
   const [resolving, setResolving] = useState(false)
 
   const router = useRouter()
+  const { t } = useTranslation()
+
+  // Helper functions for translated labels
+  const getSeverityLabel = (severity: string) => {
+    const labels: Record<string, string> = {
+      critical: t('feedback.critical'),
+      high: t('feedback.high'),
+      medium: t('feedback.medium'),
+      low: t('feedback.low'),
+    }
+    return labels[severity] || severity
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      new: t('feedback.new'),
+      in_progress: t('feedback.inProgress'),
+      resolved: t('feedback.resolved'),
+      closed: t('feedback.closed'),
+    }
+    return labels[status] || status
+  }
+
+  const priorityLevels = [
+    { value: 'critical', label: t('feedback.critical') },
+    { value: 'high', label: t('feedback.high') },
+    { value: 'medium', label: t('feedback.medium') },
+    { value: 'low', label: t('feedback.low') },
+  ]
+
+  const statusOptions = [
+    { value: 'new', label: t('feedback.new') },
+    { value: 'in_progress', label: t('feedback.inProgress') },
+    { value: 'resolved', label: t('feedback.resolved') },
+    { value: 'closed', label: t('feedback.closed') },
+  ]
 
   const loadFeedback = useCallback(async () => {
     setLoading(true)
@@ -161,7 +184,7 @@ export function FeedbackDetailsModal({
       }
     } catch (error) {
       console.error('Error sending message:', error)
-      alert('Erreur lors de l\'envoi du message')
+      alert(t('feedback.sendError'))
     } finally {
       setSending(false)
     }
@@ -184,11 +207,11 @@ export function FeedbackDetailsModal({
       if (res.ok) {
         await loadFeedback()
         router.refresh()
-        alert('✅ Feedback mis à jour')
+        alert(t('success.updated'))
       }
     } catch (error) {
       console.error('Error updating feedback:', error)
-      alert('Erreur lors de la mise à jour')
+      alert(t('admin.updateError'))
     } finally {
       setUpdating(false)
     }
@@ -211,11 +234,11 @@ export function FeedbackDetailsModal({
       if (res.ok) {
         await loadFeedback()
         router.refresh()
-        alert('✅ Feedback marqué comme résolu')
+        alert(t('success.updated'))
       }
     } catch (error) {
       console.error('Error marking as resolved:', error)
-      alert('Erreur lors de la mise à jour')
+      alert(t('admin.updateError'))
     } finally {
       setResolving(false)
     }
@@ -242,21 +265,21 @@ export function FeedbackDetailsModal({
             })()}
             <div>
               <h2 className="text-xl font-semibold">
-                {loading ? 'Chargement...' : feedback?.title}
+                {loading ? t('common.loading') : feedback?.title}
               </h2>
               {!loading && feedback && (
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge className={severityLabels[feedback.severity]?.color}>
-                    {severityLabels[feedback.severity]?.label}
+                  <Badge className={severityColors[feedback.severity]}>
+                    {getSeverityLabel(feedback.severity)}
                   </Badge>
                   {!feedback.viewedAt && (
                     <Badge className="bg-blue-500">
-                      Nouveau
+                      {t('feedback.new')}
                     </Badge>
                   )}
                   {feedback.viewedAt && feedback.status !== 'new' && (
-                    <Badge className={statusLabels[feedback.status]?.color}>
-                      {statusLabels[feedback.status]?.label}
+                    <Badge className={statusColors[feedback.status]}>
+                      {getStatusLabel(feedback.status)}
                     </Badge>
                   )}
                 </div>
@@ -275,10 +298,10 @@ export function FeedbackDetailsModal({
                 {resolving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Marquage...
+                    {t('common.processing')}
                   </>
                 ) : (
-                  '✓ Marquer comme résolu'
+                  `✓ ${t('admin.markAsResolved')}`
                 )}
               </Button>
             )}
@@ -301,38 +324,38 @@ export function FeedbackDetailsModal({
             </div>
           ) : !feedback ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-muted-foreground">Feedback non trouvé</p>
+              <p className="text-muted-foreground">{t('admin.noFeedback')}</p>
             </div>
           ) : (
             <div className="p-6 space-y-6">
               {/* Infos générales */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase">
-                  Informations
+                  {t('common.info')}
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Auteur:</span>{' '}
+                    <span className="text-muted-foreground">{t('admin.author')}:</span>{' '}
                     <span className="font-medium">
                       {feedback.isAnonymous
-                        ? 'Anonyme'
-                        : feedback.user?.name || feedback.user?.email || 'Utilisateur supprimé'}
+                        ? t('admin.anonymous')
+                        : feedback.user?.name || feedback.user?.email || t('admin.anonymous')}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Date:</span>{' '}
+                    <span className="text-muted-foreground">{t('common.date')}:</span>{' '}
                     <span className="font-medium">
                       {new Date(feedback.createdAt).toLocaleString('fr-CA')}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Page:</span>{' '}
+                    <span className="text-muted-foreground">{t('feedback.currentPage')}:</span>{' '}
                     <span className="font-medium">{feedback.pageUrl}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Appareil:</span>{' '}
+                    <span className="text-muted-foreground">{t('feedback.browser')}:</span>{' '}
                     <span className="font-medium">
-                      {feedback.deviceType || 'Non spécifié'}
+                      {feedback.deviceType || t('common.none')}
                     </span>
                   </div>
                 </div>
@@ -341,7 +364,7 @@ export function FeedbackDetailsModal({
               {/* Message principal */}
               <div className="space-y-2">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase">
-                  Description
+                  {t('common.description')}
                 </h3>
                 <div className="bg-muted/50 rounded-lg p-4">
                   <p className="whitespace-pre-wrap">{feedback.message}</p>
@@ -352,7 +375,7 @@ export function FeedbackDetailsModal({
               {feedback.screenshot && (
                 <div className="space-y-2">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase">
-                    Capture d&apos;écran
+                    {t('feedback.screenshot')}
                   </h3>
                   <div className="relative w-full h-80">
                     <Image
@@ -369,11 +392,11 @@ export function FeedbackDetailsModal({
               {isSuperAdmin && (
                 <div className="space-y-4 border-t pt-6">
                   <h3 className="font-semibold text-sm text-muted-foreground uppercase">
-                    Gestion (Admin)
+                    {t('admin.systemSettings')}
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="status">Statut</Label>
+                      <Label htmlFor="status">{t('common.status')}</Label>
                       <Select value={status} onValueChange={setStatus}>
                         <SelectTrigger id="status">
                           <SelectValue />
@@ -388,7 +411,7 @@ export function FeedbackDetailsModal({
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="priority">Priorité (Admin)</Label>
+                      <Label htmlFor="priority">{t('feedback.severity')}</Label>
                       <Select value={priority} onValueChange={setPriority}>
                         <SelectTrigger id="priority">
                           <SelectValue />
@@ -404,7 +427,7 @@ export function FeedbackDetailsModal({
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="linkedIssue">Issue GitHub liée (optionnel)</Label>
+                    <Label htmlFor="linkedIssue">Issue GitHub ({t('common.optional')})</Label>
                     <input
                       id="linkedIssue"
                       type="text"
@@ -415,12 +438,12 @@ export function FeedbackDetailsModal({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="adminNote">Note interne (optionnel)</Label>
+                    <Label htmlFor="adminNote">{t('common.notes')} ({t('common.optional')})</Label>
                     <Textarea
                       id="adminNote"
                       value={adminNote}
                       onChange={(e) => setAdminNote(e.target.value)}
-                      placeholder="Notes pour les admins..."
+                      placeholder={t('common.notes')}
                       rows={3}
                     />
                   </div>
@@ -432,10 +455,10 @@ export function FeedbackDetailsModal({
                     {updating ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Mise à jour...
+                        {t('common.processing')}
                       </>
                     ) : (
-                      'Mettre à jour'
+                      t('common.update')
                     )}
                   </Button>
                 </div>
@@ -444,14 +467,14 @@ export function FeedbackDetailsModal({
               {/* Messages */}
               <div className="space-y-4 border-t pt-6">
                 <h3 className="font-semibold text-sm text-muted-foreground uppercase">
-                  Conversation ({feedback.messages?.length || 0})
+                  {t('feedback.messages')} ({feedback.messages?.length || 0})
                 </h3>
 
                 {/* Messages list */}
                 <div className="space-y-3 max-h-60 overflow-y-auto">
                   {feedback.messages?.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">
-                      Aucun message pour le moment
+                      {t('feedback.noMessages')}
                     </p>
                   ) : (
                     feedback.messages?.map((msg) => (
@@ -466,7 +489,7 @@ export function FeedbackDetailsModal({
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium flex items-center gap-1">
                             {msg.authorType === 'admin' && <Shield className="h-3 w-3" />}
-                            {msg.authorType === 'admin' ? 'Admin' : msg.author?.name || 'Utilisateur'}
+                            {msg.authorType === 'admin' ? t('nav.admin') : msg.author?.name || t('admin.anonymous')}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(msg.createdAt).toLocaleString('fr-CA')}
@@ -481,13 +504,13 @@ export function FeedbackDetailsModal({
                 {/* New message */}
                 {feedback.status !== 'closed' ? (
                   <div className="space-y-2">
-                    <Label htmlFor="newMessage">Nouveau message</Label>
+                    <Label htmlFor="newMessage">{t('feedback.message')}</Label>
                     <div className="flex gap-2">
                       <Textarea
                         id="newMessage"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Répondre..."
+                        placeholder={t('feedback.reply')}
                         rows={2}
                         className="flex-1"
                       />
@@ -508,8 +531,8 @@ export function FeedbackDetailsModal({
                 ) : (
                   <div className="text-sm text-muted-foreground text-center py-4 bg-muted/30 rounded-lg">
                     {isSuperAdmin
-                      ? "Ce feedback est fermé. Réouvrez-le pour continuer la conversation."
-                      : "Ce feedback a été fermé par l'équipe. Il n'est plus possible d'envoyer de messages."}
+                      ? t('feedback.cannotSendMessage')
+                      : t('feedback.cannotSendMessage')}
                   </div>
                 )}
               </div>

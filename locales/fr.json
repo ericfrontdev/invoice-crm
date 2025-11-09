@@ -911,7 +911,13 @@
     "noMessages": "Aucun message",
     "writeMessage": "Écrire un message",
     "send": "Envoyer",
-    "cannotSendMessage": "Il n'est plus possible d'envoyer de messages"
+    "cannotSendMessage": "Il n'est plus possible d'envoyer de messages",
+    "myFeedbacks": "Mes Feedbacks",
+    "viewHistory": "Consultez l'historique de vos commentaires et suggestions",
+    "backToProfile": "Retour au profil",
+    "total": "Total",
+    "bugs": "Bugs",
+    "features": "Features"
   },
   "betaEnd": {
     "title": "Période bêta terminée",

@@ -994,7 +994,14 @@
     "open": "Open",
     "inProgress": "In Progress",
     "resolved": "Resolved",
-    "closed": "Closed"
+    "closed": "Closed",
+    "myFeedbacks": "My Feedbacks",
+    "viewHistory": "View your comments and suggestions history",
+    "backToProfile": "Back to Profile",
+    "total": "Total",
+    "new": "New",
+    "bugs": "Bugs",
+    "features": "Features"
   },
   "betaEnd": {
     "title": "Beta Period Ended",
