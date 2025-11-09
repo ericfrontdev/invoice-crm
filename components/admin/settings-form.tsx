@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Loader2, Save } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Settings = {
   id: string
@@ -17,6 +18,7 @@ type Settings = {
 }
 
 export function SettingsForm({ settings }: { settings: Settings }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [feedbackEnabled, setFeedbackEnabled] = useState(settings.feedbackSystemEnabled)
   const [betaEndDate, setBetaEndDate] = useState(
@@ -39,13 +41,13 @@ export function SettingsForm({ settings }: { settings: Settings }) {
 
       if (res.ok) {
         router.refresh()
-        alert('Paramètres sauvegardés!')
+        alert(t('admin.settingsSaved'))
       } else {
-        alert('Erreur lors de la sauvegarde')
+        alert(t('admin.saveError'))
       }
     } catch (error) {
       console.error('Error saving settings:', error)
-      alert('Erreur lors de la sauvegarde')
+      alert(t('admin.saveError'))
     } finally {
       setSaving(false)
     }
@@ -56,14 +58,14 @@ export function SettingsForm({ settings }: { settings: Settings }) {
       {/* Feedback System */}
       <div className="bg-card rounded-lg border p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold mb-1">Système de feedback</h2>
+          <h2 className="text-lg font-semibold mb-1">{t('admin.feedbackSystemTitle')}</h2>
           <p className="text-sm text-muted-foreground">
-            Contrôlez la visibilité du widget de feedback pour tous les utilisateurs
+            {t('admin.feedbackSystemDescription')}
           </p>
         </div>
         <div className="flex items-center justify-between">
           <Label htmlFor="feedback-enabled" className="cursor-pointer">
-            Widget de feedback activé
+            {t('admin.feedbackWidgetEnabled')}
           </Label>
           <Switch
             id="feedback-enabled"
@@ -76,13 +78,13 @@ export function SettingsForm({ settings }: { settings: Settings }) {
       {/* Beta End Date */}
       <div className="bg-card rounded-lg border p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold mb-1">Fin de la période bêta</h2>
+          <h2 className="text-lg font-semibold mb-1">{t('admin.betaEndTitle')}</h2>
           <p className="text-sm text-muted-foreground">
-            Définissez une date après laquelle l&apos;application sera automatiquement bloquée pour tous les utilisateurs non-abonnés
+            {t('admin.betaEndDescription')}
           </p>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="beta-end-date">Date de fin de bêta</Label>
+          <Label htmlFor="beta-end-date">{t('admin.betaEndDateLabel')}</Label>
           <Input
             id="beta-end-date"
             type="date"
@@ -90,7 +92,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
             onChange={(e) => setBetaEndDate(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
-            Laissez vide pour désactiver la limitation. Une fois cette date passée, seuls les utilisateurs avec un abonnement actif pourront accéder à l&apos;application.
+            {t('admin.betaEndDateHint')}
           </p>
         </div>
       </div>
@@ -105,12 +107,12 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         {saving ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Sauvegarde...
+            {t('admin.saving')}
           </>
         ) : (
           <>
             <Save className="h-4 w-4 mr-2" />
-            Sauvegarder les paramètres
+            {t('admin.saveSettings')}
           </>
         )}
       </Button>

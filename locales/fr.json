@@ -797,7 +797,15 @@
   "admin": {
     "title": "Administration",
     "dashboard": "Tableau de bord admin",
+    "dashboardTitle": "Dashboard Super Admin",
+    "platformUsersInfo": "Informations des utilisateurs de la plateforme",
     "users": "Utilisateurs",
+    "usersCount": "Utilisateurs ({{count}})",
+    "noUsers": "Aucun utilisateur pour l'instant",
+    "plan": "Plan",
+    "payment": "Paiement",
+    "registeredOn": "Inscrit le",
+    "globalAppConfiguration": "Configuration globale de l'application",
     "feedback": "Feedback",
     "settings": "Paramètres",
     "systemSettings": "Paramètres système",
@@ -858,7 +866,13 @@
     "markAsResolved": "Marquer comme résolu",
     "close": "Fermer",
     "reopen": "Réouvrir",
-    "updateError": "Erreur lors de la mise à jour"
+    "updateError": "Erreur lors de la mise à jour",
+    "userFeedback": "Feedback des utilisateurs",
+    "manageBetaFeedback": "Gérez les retours et suggestions de vos bêta testeurs",
+    "newPlural": "Nouveaux",
+    "resolvedPlural": "Résolus",
+    "improvements": "Améliorations",
+    "criticalPlural": "Critiques"
   },
   "feedback": {
     "title": "Feedback",

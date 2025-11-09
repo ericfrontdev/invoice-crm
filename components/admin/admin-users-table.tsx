@@ -16,21 +16,21 @@ type User = {
 }
 
 export function AdminUsersTable({ users }: { users: User[] }) {
-  const { locale } = useTranslation()
+  const { t, locale } = useTranslation()
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead className="bg-muted/50">
           <tr>
-            <th className="text-left py-3 px-4">Nom</th>
-            <th className="text-left py-3 px-4">Compagnie</th>
-            <th className="text-left py-3 px-4">Email</th>
-            <th className="text-left py-3 px-4">Téléphone</th>
-            <th className="text-left py-3 px-4">Adresse</th>
-            <th className="text-left py-3 px-4">Plan</th>
-            <th className="text-left py-3 px-4">Paiement</th>
-            <th className="text-left py-3 px-4">Inscrit le</th>
+            <th className="text-left py-3 px-4">{t('clients.name')}</th>
+            <th className="text-left py-3 px-4">{t('clients.company')}</th>
+            <th className="text-left py-3 px-4">{t('clients.email')}</th>
+            <th className="text-left py-3 px-4">{t('clients.phone')}</th>
+            <th className="text-left py-3 px-4">{t('clients.address')}</th>
+            <th className="text-left py-3 px-4">{t('admin.plan')}</th>
+            <th className="text-left py-3 px-4">{t('admin.payment')}</th>
+            <th className="text-left py-3 px-4">{t('admin.registeredOn')}</th>
           </tr>
         </thead>
         <tbody>
