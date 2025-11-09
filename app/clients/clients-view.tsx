@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ClientCard } from '@/components/client-card'
+import { useTranslation } from '@/lib/i18n-context'
 import {
   Grid,
   List,
@@ -65,6 +66,7 @@ export function ClientsView({
   clients: Client[]
   showArchived: boolean
 }) {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -89,16 +91,16 @@ export function ClientsView({
       if (!res.ok) {
         setToast({
           type: 'error',
-          message: 'Erreur lors de la création du client',
+          message: t('clients.createClientError'),
         })
         setTimeout(() => setToast(null), 3000)
         return
       }
       router.refresh()
-      setToast({ type: 'success', message: 'Client créé avec succès' })
+      setToast({ type: 'success', message: t('clients.clientCreated') })
       setTimeout(() => setToast(null), 2500)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('clients.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -114,17 +116,17 @@ export function ClientsView({
       if (!res.ok) {
         setToast({
           type: 'error',
-          message: 'Erreur lors de la modification du client',
+          message: t('clients.updateClientError'),
         })
         setTimeout(() => setToast(null), 3000)
         return
       }
       router.refresh()
-      setToast({ type: 'success', message: 'Client modifié avec succès' })
+      setToast({ type: 'success', message: t('clients.clientUpdated') })
       setTimeout(() => setToast(null), 2500)
       setEditingClient(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('clients.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -158,20 +160,20 @@ export function ClientsView({
       if (!res.ok) {
         setToast({
           type: 'error',
-          message: "Erreur lors de l'archivage du client",
+          message: t('clients.archiveClientError'),
         })
         setTimeout(() => setToast(null), 3000)
         return
       }
 
       router.refresh()
-      setToast({ type: 'success', message: 'Client archivé avec succès' })
+      setToast({ type: 'success', message: t('clients.clientArchived') })
       setTimeout(() => setToast(null), 2500)
       setIsArchiveDialogOpen(false)
       setClientToArchive(null)
       setIsEditMode(false) // Désactiver le mode édition après archivage
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('clients.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -185,17 +187,17 @@ export function ClientsView({
       if (!res.ok) {
         setToast({
           type: 'error',
-          message: 'Erreur lors de la restauration du client',
+          message: t('clients.restoreClientError'),
         })
         setTimeout(() => setToast(null), 3000)
         return
       }
 
       router.refresh()
-      setToast({ type: 'success', message: 'Client restauré avec succès' })
+      setToast({ type: 'success', message: t('clients.clientRestored') })
       setTimeout(() => setToast(null), 2500)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('clients.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -214,19 +216,19 @@ export function ClientsView({
       if (!res.ok) {
         setToast({
           type: 'error',
-          message: 'Erreur lors de la suppression du client',
+          message: t('clients.deleteClientError'),
         })
         setTimeout(() => setToast(null), 3000)
         return
       }
 
       router.refresh()
-      setToast({ type: 'success', message: 'Client supprimé définitivement' })
+      setToast({ type: 'success', message: t('clients.clientDeletedPermanently') })
       setTimeout(() => setToast(null), 2500)
       setIsDeleteDialogOpen(false)
       setClientToDelete(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('clients.networkError') })
       setTimeout(() => setToast(null), 3000)
     }
   }
@@ -239,10 +241,10 @@ export function ClientsView({
             <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             <div>
               <p className="font-semibold text-blue-900 dark:text-blue-100">
-                Mode édition activé
+                {t('clients.editModeEnabled')}
               </p>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Cliquez sur un client pour modifier ses informations
+                {t('clients.clickClientToEdit')}
               </p>
             </div>
           </div>
@@ -252,14 +254,14 @@ export function ClientsView({
             onClick={() => setIsEditMode(false)}
             className="cursor-pointer border-blue-500 text-blue-700 hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-900/40"
           >
-            Quitter le mode édition
+            {t('clients.exitEditMode')}
           </Button>
         </div>
       )}
       <div className="flex justify-between flex-wrap items-center mb-8">
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">
-            {showArchived ? 'Clients archivés' : 'Clients'}
+            {showArchived ? t('clients.archivedClients') : t('clients.title')}
           </h1>
         </div>
 
@@ -279,12 +281,12 @@ export function ClientsView({
             {showArchived ? (
               <>
                 <ArchiveRestore className="h-4 w-4 mr-2" />
-                Voir les clients actifs
+                {t('clients.viewActiveClients')}
               </>
             ) : (
               <>
                 <Archive className="h-4 w-4 mr-2" />
-                Voir les archivés
+                {t('clients.viewArchived')}
               </>
             )}
           </Button>
@@ -318,14 +320,14 @@ export function ClientsView({
                 disabled={clients.length === 0}
               >
                 <Pencil className="h-4 w-4 mr-2" />
-                {isEditMode ? 'Mode édition' : 'Éditer'}
+                {isEditMode ? t('clients.editMode') : t('clients.edit')}
               </Button>
 
               <Button
                 className="cursor-pointer mt-2 md:mt-0"
                 onClick={() => setIsModalOpen(true)}
               >
-                + Nouveau client
+                {t('clients.newClient')}
               </Button>
             </>
           )}
@@ -337,18 +339,18 @@ export function ClientsView({
           {showArchived ? (
             <>
               <Archive className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">Aucun client archivé</p>
+              <p className="text-sm">{t('clients.noArchivedClients')}</p>
             </>
           ) : (
             <>
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">Aucun client</p>
+              <p className="text-sm">{t('clients.noClients')}</p>
               <Button
                 onClick={() => setIsModalOpen(true)}
                 variant="outline"
                 className="mt-4 cursor-pointer"
               >
-                Créer le premier client
+                {t('clients.createFirstClient')}
               </Button>
             </>
           )}
@@ -391,7 +393,7 @@ export function ClientsView({
 
                   {/* Colonne 3 - Date archivage */}
                   <div className="text-sm text-muted-foreground">
-                    Archivé le{' '}
+                    {t('clients.archivedOn')}{' '}
                     {client.archivedAt
                       ? new Date(client.archivedAt).toLocaleDateString('fr-FR')
                       : '-'}
@@ -407,7 +409,7 @@ export function ClientsView({
                     onClick={() => handleRestore(client)}
                   >
                     <ArchiveRestore className="h-4 w-4 mr-2" />
-                    Restaurer
+                    {t('clients.restore')}
                   </Button>
                   <Button
                     size="sm"
@@ -416,7 +418,7 @@ export function ClientsView({
                     onClick={() => handleDeleteClick(client)}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Supprimer
+                    {t('clients.delete')}
                   </Button>
                 </div>
               </div>
@@ -451,7 +453,7 @@ export function ClientsView({
                     handleArchiveClick(client)
                   }}
                   className="absolute -top-2 -right-2 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-1.5 shadow-md transition-colors"
-                  aria-label="Archiver le client"
+                  aria-label={t('clients.archiveClientLabel')}
                 >
                   <Archive className="h-4 w-4" />
                 </button>
@@ -490,7 +492,7 @@ export function ClientsView({
                           href={client.website}
                           className="text-sm text-blue-600 hover:underline"
                         >
-                          Site web
+                          {t('clients.websiteLink')}
                         </a>
                       </div>
                     )}
@@ -518,7 +520,7 @@ export function ClientsView({
                         router.push(`/clients/${client.id}`)
                       }}
                     >
-                      Gérer factures <ArrowRight className="h-4 w-4 ml-1" />
+                      {t('clients.manageInvoices')} <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
                 )}
@@ -551,24 +553,20 @@ export function ClientsView({
             </div>
             <div className="flex-1">
               <AlertDialogHeader>
-                <AlertDialogTitle>Archiver le client</AlertDialogTitle>
+                <AlertDialogTitle>{t('clients.archiveDialogTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Voulez-vous archiver le client &ldquo;{clientToArchive?.name}
-                  &rdquo; ? Le client sera masqué de la liste principale mais
-                  ses factures et projets seront conservés. Vous pourrez le
-                  restaurer à tout moment depuis la section &quot;Clients
-                  archivés&quot;.
+                  {t('clients.archiveDialogDescriptionPrefix')} &ldquo;{clientToArchive?.name}&rdquo;{t('clients.archiveDialogDescriptionSuffix')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
             </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmArchive}
               className="bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
             >
-              Archiver
+              {t('clients.archive')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -587,11 +585,11 @@ export function ClientsView({
             <div className="flex-1">
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  Supprimer définitivement le client
+                  {t('clients.deletePermanentlyTitle')}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="space-y-3">
                   <p>
-                    Êtes-vous sûr de vouloir supprimer définitivement le client
+                    {t('clients.deletePermanentlyDescription')}
                     <strong className="text-foreground"> &ldquo;{clientToDelete?.name}&rdquo;</strong> ?
                   </p>
 
@@ -603,39 +601,39 @@ export function ClientsView({
                   ) && (
                     <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
                       <p className="font-semibold text-destructive mb-2">
-                        Cela supprimera également :
+                        {t('clients.willAlsoDelete')}
                       </p>
                       <ul className="space-y-1 text-sm">
                         {clientToDelete._count.projects > 0 && (
-                          <li>• {clientToDelete._count.projects} projet{clientToDelete._count.projects > 1 ? 's' : ''}</li>
+                          <li>• {clientToDelete._count.projects} {clientToDelete._count.projects > 1 ? t('clients.projects') : t('clients.project')}</li>
                         )}
                         {clientToDelete._count.invoices > 0 && (
-                          <li>• {clientToDelete._count.invoices} facture{clientToDelete._count.invoices > 1 ? 's' : ''}</li>
+                          <li>• {clientToDelete._count.invoices} {clientToDelete._count.invoices > 1 ? t('clients.invoices') : t('clients.invoice')}</li>
                         )}
                         {clientToDelete._count.unpaidAmounts > 0 && (
-                          <li>• {clientToDelete._count.unpaidAmounts} montant{clientToDelete._count.unpaidAmounts > 1 ? 's' : ''} impayé{clientToDelete._count.unpaidAmounts > 1 ? 's' : ''}</li>
+                          <li>• {clientToDelete._count.unpaidAmounts} {clientToDelete._count.unpaidAmounts > 1 ? t('clients.unpaidAmounts') : t('clients.unpaidAmount')}</li>
                         )}
                         {clientToDelete._count.notes > 0 && (
-                          <li>• {clientToDelete._count.notes} note{clientToDelete._count.notes > 1 ? 's' : ''}</li>
+                          <li>• {clientToDelete._count.notes} {clientToDelete._count.notes > 1 ? t('clients.notes') : t('clients.note')}</li>
                         )}
                       </ul>
                     </div>
                   )}
 
                   <p className="text-destructive font-semibold">
-                    Cette action est irréversible.
+                    {t('clients.irreversibleAction')}
                   </p>
                 </AlertDialogDescription>
               </AlertDialogHeader>
             </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
             >
-              Supprimer définitivement
+              {t('clients.deletePermanently')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
