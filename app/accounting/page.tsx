@@ -134,7 +134,7 @@ async function getAccountingData(userId: string) {
     const date = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1)
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
     return {
-      month: date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
+      date: date,
       amount: monthlyRevenueMap.get(monthKey) || 0,
     }
   })

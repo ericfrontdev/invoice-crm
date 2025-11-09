@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Edit, Trash2 } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Note = {
   id: string
@@ -21,6 +22,8 @@ export function NoteList({
   onEdit: (note: Note) => void
   onDelete: (noteId: string) => void
 }) {
+  const { locale } = useTranslation()
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -60,7 +63,7 @@ export function NoteList({
                 </div>
               </td>
               <td className="p-3 text-sm text-muted-foreground">
-                {new Date(note.updatedAt).toLocaleDateString()}
+                {new Date(note.updatedAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
               </td>
               <td className="p-3">
                 <div className="flex gap-1 justify-end">

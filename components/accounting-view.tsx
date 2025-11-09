@@ -28,7 +28,7 @@ type AccountingData = {
     } | null
   }>
   revenueByMonth: Array<{
-    month: string
+    date: Date
     amount: number
   }>
   allInvoices: Array<{

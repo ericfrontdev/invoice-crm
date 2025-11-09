@@ -55,7 +55,7 @@ export function ProjectCard({
   onCreateInvoice: (project: Project) => void
   onUploadDocuments: (project: Project) => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [isFlipped, setIsFlipped] = useState(false)
 
   const statusLabels: Record<string, string> = {
@@ -165,11 +165,11 @@ export function ProjectCard({
                 <Calendar className="h-4 w-4" />
                 <span>
                   {project.startDate
-                    ? new Date(project.startDate).toLocaleDateString()
+                    ? new Date(project.startDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                     : '?'}{' '}
                   -{' '}
                   {project.endDate
-                    ? new Date(project.endDate).toLocaleDateString()
+                    ? new Date(project.endDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                     : '?'}
                 </span>
               </div>

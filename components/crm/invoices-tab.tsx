@@ -67,7 +67,7 @@ export function InvoicesTab({
   setShowArchived?: (show: boolean) => void
 }) {
   const router = useRouter()
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<{
     type: 'success' | 'error'
@@ -425,7 +425,7 @@ export function InvoicesTab({
                       </td>
                     )}
                     <td className="p-3 text-sm text-muted-foreground">
-                      {new Date(invoice.createdAt).toLocaleDateString()}
+                      {new Date(invoice.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                     </td>
                     <td className="p-3 font-medium">
                       {invoice.total.toFixed(2)} $

@@ -66,7 +66,7 @@ export function ClientsView({
   clients: Client[]
   showArchived: boolean
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -395,7 +395,7 @@ export function ClientsView({
                   <div className="text-sm text-muted-foreground">
                     {t('clients.archivedOn')}{' '}
                     {client.archivedAt
-                      ? new Date(client.archivedAt).toLocaleDateString('fr-FR')
+                      ? new Date(client.archivedAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                       : '-'}
                   </div>
                 </div>

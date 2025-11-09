@@ -22,7 +22,7 @@ export function NoteCard({
   onEdit: (note: Note) => void
   onDelete: (noteId: string) => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   return (
     <div className="bg-card rounded-lg border p-4 hover:shadow-lg transition-shadow">
@@ -72,7 +72,7 @@ export function NoteCard({
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Calendar className="h-3 w-3" />
         <span>
-          {t('common.modifiedOn')} {new Date(note.updatedAt).toLocaleDateString()}
+          {t('common.modifiedOn')} {new Date(note.updatedAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
         </span>
       </div>
     </div>

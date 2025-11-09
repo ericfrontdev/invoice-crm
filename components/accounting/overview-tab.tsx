@@ -19,7 +19,7 @@ type OverviewData = {
     } | null
   }>
   revenueByMonth: Array<{
-    month: string
+    date: Date
     amount: number
   }>
 }
@@ -39,10 +39,11 @@ export function OverviewAccountingTab({ data }: { data: OverviewData }) {
         <div className="space-y-4">
           {data.revenueByMonth.map((item, index) => {
             const percentage = (item.amount / maxMonthRevenue) * 100
+            const monthLabel = new Date(item.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', year: 'numeric' })
             return (
               <div key={index}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-muted-foreground">{item.month}</span>
+                  <span className="text-sm text-muted-foreground">{monthLabel}</span>
                   <span className="text-sm font-medium">{item.amount.toFixed(2)} $</span>
                 </div>
                 <div className="h-2 w-full rounded bg-muted overflow-hidden border">

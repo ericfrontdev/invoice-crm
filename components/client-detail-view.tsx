@@ -34,7 +34,7 @@ type ClientWithAmounts = {
 }
 
 export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [selectedAmounts, setSelectedAmounts] = useState<Set<string>>(new Set())
   const [isAddOpen, setIsAddOpen] = useState(false)
@@ -250,11 +250,11 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                         >
                           <td className="py-4 px-4">{amount.description}</td>
                           <td className="py-4 px-4 text-muted-foreground">
-                            {new Date(amount.date).toLocaleDateString()}
+                            {new Date(amount.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                           </td>
                           <td className="py-4 px-4 text-muted-foreground">
                             {amount.dueDate
-                              ? new Date(amount.dueDate).toLocaleDateString()
+                              ? new Date(amount.dueDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                               : '-'}
                           </td>
                           <td className="py-4 px-4 text-right font-semibold">
@@ -291,12 +291,12 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           </h4>
                           <div className="space-y-1 text-sm text-muted-foreground">
                             <p>
-                              {t('crm.created')}: {new Date(amount.date).toLocaleDateString()}
+                              {t('crm.created')}: {new Date(amount.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                             </p>
                             <p>
                               {t('crm.due')}:{' '}
                               {amount.dueDate
-                                ? new Date(amount.dueDate).toLocaleDateString()
+                                ? new Date(amount.dueDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                                 : '-'}
                             </p>
                           </div>

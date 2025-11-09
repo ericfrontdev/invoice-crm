@@ -28,7 +28,7 @@ export function ProjectList({
   onCreateInvoice: (project: Project) => void
   onUploadDocuments: (project: Project) => void
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   const statusLabels: Record<string, string> = {
     active: t('projects.active'),
@@ -72,11 +72,11 @@ export function ProjectList({
                 <td className="p-3">{project.files.length}</td>
                 <td className="p-3 text-sm text-muted-foreground">
                   {project.startDate
-                    ? new Date(project.startDate).toLocaleDateString()
+                    ? new Date(project.startDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                     : '?'}{' '}
                   -{' '}
                   {project.endDate
-                    ? new Date(project.endDate).toLocaleDateString()
+                    ? new Date(project.endDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
                     : '?'}
                 </td>
                 <td className="p-3 text-right">
