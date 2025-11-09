@@ -248,6 +248,24 @@
     "irreversibleAction": "Cette action est irréversible.",
     "deletePermanently": "Supprimer définitivement"
   },
+  "invoice": {
+    "title": "Facture",
+    "billedTo": "Facturé à",
+    "issueDate": "Date d'émission",
+    "status": "Statut",
+    "description": "Description",
+    "date": "Date",
+    "amount": "Montant",
+    "subtotal": "Sous-total",
+    "gst": "TPS",
+    "qst": "TVQ",
+    "total": "Total",
+    "paymentTermsLabel": "Conditions de paiement",
+    "paymentTerms": "Paiement sous 30 jours",
+    "paymentMethodLabel": "Mode de paiement",
+    "paymentMethod": "Virement bancaire",
+    "thankYou": "Merci pour votre confiance !"
+  },
   "invoices": {
     "title": "Factures",
     "manageAllInvoices": "Gérez toutes vos factures clients",
@@ -615,7 +633,14 @@
     "importantBetaTesters": "Important pour les beta testers",
     "betaTesterWarning1": "En vous abonnant maintenant, vous conservez votre réduction de",
     "betaTesterWarning2": "à vie, même si le prix augmente à",
-    "betaTesterWarning3": "pour les nouveaux utilisateurs."
+    "betaTesterWarning3": "pour les nouveaux utilisateurs.",
+    "successTitle": "Bienvenue dans SoloPack Pro !",
+    "successMessage": "Votre abonnement a été activé avec succès. Vous avez maintenant accès à toutes les fonctionnalités de SoloPack Pro.",
+    "nextStep": "Prochaine étape",
+    "nextStepMessage": "Pour tirer le maximum de SoloPack, nous vous recommandons de compléter votre profil avec vos informations d'entreprise (nom, adresse, numéros de taxes, logo, etc.). Cela vous permettra de générer des factures professionnelles dès maintenant.",
+    "completeProfile": "Compléter mon profil",
+    "goToDashboard": "Accéder au tableau de bord",
+    "confirmationEmail": "Vous recevrez un email de confirmation avec les détails de votre abonnement."
   },
   "crm": {
     "title": "CRM",

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Invoice = {
   id: string
@@ -41,6 +42,8 @@ export const InvoicePDFTemplate = React.forwardRef<
   HTMLDivElement,
   { invoice: Invoice; user: User; forPrint?: boolean }
 >(({ invoice, user, forPrint = false }, ref) => {
+  const { t, locale } = useTranslation()
+
   // Déterminer si les taxes sont chargées
   const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
 
@@ -83,7 +86,7 @@ export const InvoicePDFTemplate = React.forwardRef<
                     : 'text-2xl md:text-4xl font-bold text-gray-900'
                 }
               >
-                FACTURE
+                {t('invoice.title').toUpperCase()}
               </h1>
             )}
             <p
@@ -161,7 +164,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         }
       >
         <h2 className="text-xs md:text-sm font-semibold text-gray-500 uppercase mb-2 md:mb-3">
-          Facturé à
+          {t('invoice.billedTo')}
         </h2>
         <p className="text-base md:text-lg font-semibold">
           {invoice.client.company || invoice.client.name}
@@ -189,10 +192,10 @@ export const InvoicePDFTemplate = React.forwardRef<
       >
         <div className="mt-6">
           <p className="text-xs md:text-sm font-semibold text-gray-500">
-            Date d&apos;émission
+            {t('invoice.issueDate')}
           </p>
           <p className="text-sm md:text-base text-gray-900">
-            {new Date(invoice.createdAt).toLocaleDateString('fr-FR', {
+            {new Date(invoice.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
@@ -201,7 +204,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         </div>
         <div className="mt-6">
           <p className="text-xs md:text-sm font-semibold text-gray-500">
-            Statut
+            {t('invoice.status')}
           </p>
           <p className="text-sm md:text-base text-gray-900 capitalize">
             {invoice.status}
@@ -219,13 +222,13 @@ export const InvoicePDFTemplate = React.forwardRef<
           <thead>
             <tr className="border-b-2 border-gray-900">
               <th className="text-left py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">
-                Description
+                {t('invoice.description')}
               </th>
               <th className="text-left py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">
-                Date
+                {t('invoice.date')}
               </th>
               <th className="text-right py-2 md:py-3 text-xs md:text-sm font-semibold text-gray-500 uppercase">
-                Montant
+                {t('invoice.amount')}
               </th>
             </tr>
           </thead>
@@ -239,7 +242,7 @@ export const InvoicePDFTemplate = React.forwardRef<
                   {item.description}
                 </td>
                 <td className="py-3 md:py-4 text-gray-700 whitespace-nowrap">
-                  {new Date(item.date).toLocaleDateString('fr-FR')}
+                  {new Date(item.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
                 </td>
                 <td className="py-3 md:py-4 text-right text-gray-900 font-medium whitespace-nowrap">
                   {item.amount.toFixed(2)} $
@@ -260,25 +263,25 @@ export const InvoicePDFTemplate = React.forwardRef<
           {hasTaxes ? (
             <>
               <div className="flex justify-between py-2">
-                <span className="text-gray-600">Sous-total</span>
+                <span className="text-gray-600">{t('invoice.subtotal')}</span>
                 <span className="text-gray-900">
                   {invoice.subtotal.toFixed(2)} $
                 </span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="text-gray-600">TPS (5%)</span>
+                <span className="text-gray-600">{t('invoice.gst')} (5%)</span>
                 <span className="text-gray-900">
                   {invoice.tps.toFixed(2)} $
                 </span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="text-gray-600">TVQ (9,975%)</span>
+                <span className="text-gray-600">{t('invoice.qst')} (9,975%)</span>
                 <span className="text-gray-900">
                   {invoice.tvq.toFixed(2)} $
                 </span>
               </div>
               <div className="flex justify-between py-3 border-t-2 border-gray-900 mt-2">
-                <span className="text-lg font-bold">Total</span>
+                <span className="text-lg font-bold">{t('invoice.total')}</span>
                 <span className="text-lg font-bold">
                   {invoice.total.toFixed(2)} $
                 </span>
@@ -286,7 +289,7 @@ export const InvoicePDFTemplate = React.forwardRef<
             </>
           ) : (
             <div className="flex justify-between py-3 border-t-2 border-gray-900">
-              <span className="text-lg font-bold">Total</span>
+              <span className="text-lg font-bold">{t('invoice.total')}</span>
               <span className="text-lg font-bold">
                 {invoice.total.toFixed(2)} $
               </span>
@@ -298,10 +301,10 @@ export const InvoicePDFTemplate = React.forwardRef<
       {/* Notes */}
       <div className={forPrint ? 'border-t pt-5' : 'border-t pt-6 md:pt-8'}>
         <p className="text-xs md:text-sm text-gray-600">
-          <strong>Conditions de paiement :</strong> Paiement sous 30 jours
+          <strong>{t('invoice.paymentTermsLabel')}:</strong> {t('invoice.paymentTerms')}
         </p>
         <p className="text-xs md:text-sm text-gray-600 mt-2">
-          <strong>Mode de paiement :</strong> Virement bancaire
+          <strong>{t('invoice.paymentMethodLabel')}:</strong> {t('invoice.paymentMethod')}
         </p>
         <p
           className={
@@ -310,7 +313,7 @@ export const InvoicePDFTemplate = React.forwardRef<
               : 'text-xs md:text-sm text-gray-600 mb-6 mt-2 pb-6 border-b'
           }
         >
-          Merci pour votre confiance !
+          {t('invoice.thankYou')}
         </p>
       </div>
 

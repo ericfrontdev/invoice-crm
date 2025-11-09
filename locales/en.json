@@ -255,6 +255,24 @@
     "contact": "Contact",
     "coordinates": "Coordinates"
   },
+  "invoice": {
+    "title": "Invoice",
+    "billedTo": "Billed To",
+    "issueDate": "Issue Date",
+    "status": "Status",
+    "description": "Description",
+    "date": "Date",
+    "amount": "Amount",
+    "subtotal": "Subtotal",
+    "gst": "GST",
+    "qst": "QST",
+    "total": "Total",
+    "paymentTermsLabel": "Payment Terms",
+    "paymentTerms": "Payment due within 30 days",
+    "paymentMethodLabel": "Payment Method",
+    "paymentMethod": "Bank Transfer",
+    "thankYou": "Thank you for your business!"
+  },
   "invoices": {
     "title": "Invoices",
     "manageAllInvoices": "Manage all your client invoices",
@@ -726,7 +744,14 @@
       "yourPrice": "Your price",
       "limited": "Limited to the first 30 days after beta ends",
       "claim": "Claim Offer"
-    }
+    },
+    "successTitle": "Welcome to SoloPack Pro!",
+    "successMessage": "Your subscription has been activated successfully. You now have access to all SoloPack Pro features.",
+    "nextStep": "Next Step",
+    "nextStepMessage": "To get the most out of SoloPack, we recommend completing your profile with your business information (name, address, tax numbers, logo, etc.). This will allow you to generate professional invoices right away.",
+    "completeProfile": "Complete My Profile",
+    "goToDashboard": "Go to Dashboard",
+    "confirmationEmail": "You will receive a confirmation email with your subscription details."
   },
   "crm": {
     "title": "CRM",
