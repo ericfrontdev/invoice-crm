@@ -166,7 +166,7 @@ export function ProjectInvoicesList({
   return (
     <>
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Factures du projet</h2>
+        <h2 className="text-xl font-semibold">{t('projects.invoices')}</h2>
         <div className="grid grid-cols-1 gap-3">
           {invoicesWithClient.map((inv) => (
             <InvoiceCard
@@ -201,9 +201,9 @@ export function ProjectInvoicesList({
             doAction(deleteConfirmId, 'delete')
           }
         }}
-        title="Supprimer la facture"
-        description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
-        confirmText="Supprimer"
+        title={t('invoices.deleteInvoice')}
+        description={t('invoices.deleteConfirm')}
+        confirmText={t('common.delete')}
         isLoading={busyId === deleteConfirmId}
       />
       {toast && (
