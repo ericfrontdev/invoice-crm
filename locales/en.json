@@ -977,6 +977,7 @@
     "title": "Administration",
     "dashboard": "Admin Dashboard",
     "dashboardTitle": "Super Admin Dashboard",
+    "backToDashboard": "Back to Dashboard",
     "platformUsersInfo": "Platform users information",
     "users": "Users",
     "noUsers": "No users yet",

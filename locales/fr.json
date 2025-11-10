@@ -848,6 +848,7 @@
     "title": "Administration",
     "dashboard": "Tableau de bord admin",
     "dashboardTitle": "Dashboard Super Admin",
+    "backToDashboard": "Retour au tableau de bord",
     "platformUsersInfo": "Informations des utilisateurs de la plateforme",
     "users": "Utilisateurs",
     "noUsers": "Aucun utilisateur pour l'instant",
