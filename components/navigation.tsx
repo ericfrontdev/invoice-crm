@@ -179,6 +179,8 @@ export function Navigation({
             {user && !isSuperAdmin && <UserNotificationBadge />}
             {user && isSuperAdmin && <AdminNotificationBadge />}
 
+            <LanguageSelector />
+
             <Button
               variant="outline"
               size="sm"
