@@ -81,7 +81,11 @@
     "grid": "Grid",
     "list": "List",
     "tags": "Tags",
-    "locale": "en-US"
+    "locale": "en-US",
+    "info": "Information",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -1031,7 +1035,8 @@
     "settingsSaved": "Settings saved!",
     "saveError": "Error saving",
     "saving": "Saving...",
-    "saveSettings": "Save settings"
+    "saveSettings": "Save settings",
+    "author": "Author"
   },
   "feedback": {
     "title": "Feedback",
@@ -1113,7 +1118,12 @@
     "markAsResolved": "Mark as resolved",
     "close": "Close",
     "reopen": "Reopen",
-    "updateError": "Error updating"
+    "updateError": "Error updating",
+    "noMessages": "No messages",
+    "reply": "Reply",
+    "writeMessage": "Write a message",
+    "send": "Send",
+    "cannotSendMessage": "It is no longer possible to send messages"
   },
   "betaEnd": {
     "title": "Beta Period Ended",

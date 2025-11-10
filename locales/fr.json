@@ -981,7 +981,11 @@
     "backToProfile": "Retour au profil",
     "total": "Total",
     "bugs": "Bugs",
-    "features": "Fonctionnalités"
+    "features": "Fonctionnalités",
+    "searchPlaceholder": "Rechercher par titre, message, auteur...",
+    "allTypes": "Tous les types",
+    "allStatuses": "Tous les statuts",
+    "urgency": "Urgence"
   },
   "betaEnd": {
     "title": "Période bêta terminée",
