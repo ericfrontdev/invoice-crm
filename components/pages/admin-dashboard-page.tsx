@@ -24,14 +24,14 @@ export function AdminDashboardPage({ users }: { users: User[] }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold mb-2">{t('admin.dashboardTitle')}</h1>
           <p className="text-muted-foreground">
             {t('admin.platformUsersInfo')}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Link href="/admin/feedback">
             <Button variant="outline">
               {t('admin.feedback')}

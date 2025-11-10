@@ -24,13 +24,13 @@ export function AdminUsersTable({ users }: { users: User[] }) {
         <thead className="bg-muted/50">
           <tr>
             <th className="text-left py-3 px-4">{t('clients.name')}</th>
-            <th className="text-left py-3 px-4">{t('clients.company')}</th>
+            <th className="hidden md:table-cell text-left py-3 px-4">{t('clients.company')}</th>
             <th className="text-left py-3 px-4">{t('clients.email')}</th>
-            <th className="text-left py-3 px-4">{t('clients.phone')}</th>
-            <th className="text-left py-3 px-4">{t('clients.address')}</th>
+            <th className="hidden lg:table-cell text-left py-3 px-4">{t('clients.phone')}</th>
+            <th className="hidden xl:table-cell text-left py-3 px-4">{t('clients.address')}</th>
             <th className="text-left py-3 px-4">{t('admin.plan')}</th>
-            <th className="text-left py-3 px-4">{t('admin.payment')}</th>
-            <th className="text-left py-3 px-4">{t('admin.registeredOn')}</th>
+            <th className="hidden lg:table-cell text-left py-3 px-4">{t('admin.payment')}</th>
+            <th className="hidden md:table-cell text-left py-3 px-4">{t('admin.registeredOn')}</th>
           </tr>
         </thead>
         <tbody>
@@ -56,10 +56,10 @@ export function AdminUsersTable({ users }: { users: User[] }) {
                   </div>
                 </div>
               </td>
-              <td className="py-3 px-4">{user.company || '-'}</td>
+              <td className="hidden md:table-cell py-3 px-4">{user.company || '-'}</td>
               <td className="py-3 px-4 text-muted-foreground">{user.email}</td>
-              <td className="py-3 px-4">{user.phone || '-'}</td>
-              <td className="py-3 px-4">{user.address || '-'}</td>
+              <td className="hidden lg:table-cell py-3 px-4">{user.phone || '-'}</td>
+              <td className="hidden xl:table-cell py-3 px-4">{user.address || '-'}</td>
               <td className="py-3 px-4">
                 <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
                   user.plan === 'owner'
@@ -73,8 +73,8 @@ export function AdminUsersTable({ users }: { users: User[] }) {
                   {user.plan || 'free'}
                 </span>
               </td>
-              <td className="py-3 px-4">{user.paymentMethod || '-'}</td>
-              <td className="py-3 px-4 text-sm text-muted-foreground">
+              <td className="hidden lg:table-cell py-3 px-4">{user.paymentMethod || '-'}</td>
+              <td className="hidden md:table-cell py-3 px-4 text-sm text-muted-foreground">
                 {new Date(user.createdAt).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
               </td>
             </tr>
