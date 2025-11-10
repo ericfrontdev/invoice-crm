@@ -92,7 +92,8 @@
     "processing": "Traitement...",
     "grid": "Grille",
     "list": "Liste",
-    "locale": "fr-FR"
+    "locale": "fr-FR",
+    "language": "Langue"
   },
   "nav": {
     "dashboard": "Tableau de bord",

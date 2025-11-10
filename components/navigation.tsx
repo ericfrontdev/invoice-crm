@@ -179,8 +179,6 @@ export function Navigation({
             {user && !isSuperAdmin && <UserNotificationBadge />}
             {user && isSuperAdmin && <AdminNotificationBadge />}
 
-            <LanguageSelector />
-
             <Button
               variant="outline"
               size="sm"
@@ -255,6 +253,14 @@ export function Navigation({
               >
                 {t('nav.accounting')}
               </Link>
+            </div>
+
+            {/* Language selector in mobile menu */}
+            <div className="border-t px-2 py-3">
+              <div className="flex items-center justify-between px-3">
+                <span className="text-sm font-medium">{t('common.language') || 'Langue'}</span>
+                <LanguageSelector />
+              </div>
             </div>
 
             {/* User section in mobile menu */}
