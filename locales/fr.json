@@ -985,7 +985,9 @@
     "searchPlaceholder": "Rechercher par titre, message, auteur...",
     "allTypes": "Tous les types",
     "allStatuses": "Tous les statuts",
-    "urgency": "Urgence"
+    "urgency": "Urgence",
+    "noFeedback": "Aucun feedback pour le moment",
+    "noFeedbackFiltered": "Aucun feedback ne correspond aux filtres"
   },
   "betaEnd": {
     "title": "Période bêta terminée",
