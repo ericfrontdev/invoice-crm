@@ -49,6 +49,7 @@ export async function GET(
           tpsNumber: true,
           tvqNumber: true,
           logo: true,
+          paymentProvider: true,
         },
       })
 
@@ -99,6 +100,7 @@ export async function GET(
           tpsNumber: true,
           tvqNumber: true,
           logo: true,
+          paymentProvider: true,
         },
       })
 

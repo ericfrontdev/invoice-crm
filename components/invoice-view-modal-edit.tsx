@@ -35,6 +35,7 @@ type User = {
   tpsNumber: string | null
   tvqNumber: string | null
   logo: string | null
+  paymentProvider: string | null
 }
 
 type InvoiceForView = {

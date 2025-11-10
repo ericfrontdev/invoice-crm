@@ -43,6 +43,7 @@ type InvoiceForView = Invoice & {
     tpsNumber: string | null
     tvqNumber: string | null
     logo: string | null
+    paymentProvider: string | null
   }
 }
 

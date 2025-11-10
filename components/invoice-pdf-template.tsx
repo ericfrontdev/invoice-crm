@@ -36,6 +36,7 @@ type User = {
   tpsNumber: string | null
   tvqNumber: string | null
   logo: string | null
+  paymentProvider: string | null
 }
 
 export const InvoicePDFTemplate = React.forwardRef<
@@ -303,9 +304,12 @@ export const InvoicePDFTemplate = React.forwardRef<
         <p className="text-xs md:text-sm text-gray-600">
           <strong>{t('invoice.paymentTermsLabel')}:</strong> {t('invoice.paymentTerms')}
         </p>
-        <p className="text-xs md:text-sm text-gray-600 mt-2">
-          <strong>{t('invoice.paymentMethodLabel')}:</strong> {t('invoice.paymentMethod')}
-        </p>
+        {user.paymentProvider && (
+          <p className="text-xs md:text-sm text-gray-600 mt-2">
+            <strong>{t('invoice.paymentMethodLabel')}:</strong>{' '}
+            {user.paymentProvider === 'paypal' ? 'PayPal' : user.paymentProvider === 'stripe' ? 'Stripe' : t('invoice.paymentMethod')}
+          </p>
+        )}
         <p
           className={
             forPrint
