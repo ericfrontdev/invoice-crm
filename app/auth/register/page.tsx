@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signIn } from 'next-auth/react'
 import { ThemeLogo } from '@/components/theme-logo'
+import { useTranslation } from '@/lib/i18n-context'
 
 export default function RegisterPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -22,13 +24,13 @@ export default function RegisterPage() {
     setError('')
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas')
+      setError(t('auth.passwordMismatch'))
       setLoading(false)
       return
     }
 
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères')
+      setError(t('auth.passwordTooShort'))
       setLoading(false)
       return
     }
@@ -43,7 +45,7 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Une erreur est survenue')
+        setError(data.error || t('errors.generic'))
         setLoading(false)
         return
       }
@@ -56,13 +58,13 @@ export default function RegisterPage() {
       })
 
       if (result?.error) {
-        setError('Inscription réussie mais erreur de connexion')
+        setError(t('auth.registerSuccessLoginError'))
       } else {
         router.push('/')
         router.refresh()
       }
     } catch {
-      setError('Une erreur est survenue')
+      setError(t('errors.generic'))
     } finally {
       setLoading(false)
     }
@@ -81,8 +83,8 @@ export default function RegisterPage() {
             <ThemeLogo className="mb-6 w-auto" />
           </div>
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Inscription</h1>
-            <p className="text-muted-foreground mt-2">Créez votre compte</p>
+            <h1 className="text-3xl font-bold">{t('auth.register')}</h1>
+            <p className="text-muted-foreground mt-2">{t('auth.createAccount')}</p>
           </div>
 
           {error && (
@@ -100,7 +102,7 @@ export default function RegisterPage() {
                 htmlFor="name"
                 className="block text-sm font-medium mb-2"
               >
-                Nom complet
+                {t('auth.fullName')}
               </label>
               <input
                 id="name"
@@ -117,7 +119,7 @@ export default function RegisterPage() {
                 htmlFor="email"
                 className="block text-sm font-medium mb-2"
               >
-                Email
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -134,7 +136,7 @@ export default function RegisterPage() {
                 htmlFor="password"
                 className="block text-sm font-medium mb-2"
               >
-                Mot de passe
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -151,7 +153,7 @@ export default function RegisterPage() {
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium mb-2"
               >
-                Confirmer le mot de passe
+                {t('auth.confirmPassword')}
               </label>
               <input
                 id="confirmPassword"
@@ -168,7 +170,7 @@ export default function RegisterPage() {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Inscription...' : "S'inscrire"}
+              {loading ? t('auth.registering') : t('auth.signUp')}
             </Button>
           </form>
 
@@ -178,7 +180,7 @@ export default function RegisterPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-background text-muted-foreground">
-                Ou continuer avec
+                {t('auth.orContinueWith')}
               </span>
             </div>
           </div>
@@ -215,12 +217,12 @@ export default function RegisterPage() {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Vous avez déjà un compte ?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link
               href="/auth/login"
               className="text-blue-600 hover:underline dark:text-blue-400"
             >
-              Se connecter
+              {t('auth.signIn')}
             </Link>
           </p>
         </div>

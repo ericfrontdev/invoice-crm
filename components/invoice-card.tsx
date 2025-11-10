@@ -91,12 +91,12 @@ export function InvoiceCard({
   onResend: () => void
   isBusy: boolean
 }) {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [longPressTriggered, setLongPressTriggered] = useState(false)
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
 
   const formatDate = (d: string | Date) =>
-    new Intl.DateTimeFormat('fr-FR', { timeZone: 'UTC' }).format(new Date(d))
+    new Intl.DateTimeFormat(locale === 'fr' ? 'fr-FR' : 'en-US', { timeZone: 'UTC' }).format(new Date(d))
 
   // Vérifier si la facture est en retard
   const isOverdue = invoice.status === 'sent' &&

@@ -125,7 +125,12 @@
     "checkEmail": "Check your email for the password reset link",
     "passwordResetSuccess": "Password reset successfully",
     "invalidCredentials": "Invalid credentials",
-    "accountCreated": "Account created successfully"
+    "accountCreated": "Account created successfully",
+    "fullName": "Full name",
+    "passwordMismatch": "Passwords do not match",
+    "registerSuccessLoginError": "Registration successful but login error",
+    "registering": "Registering...",
+    "orContinueWith": "Or continue with"
   },
   "dashboard": {
     "title": "Dashboard",

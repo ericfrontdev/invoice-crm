@@ -49,31 +49,31 @@ export function Navigation({
                   href="/"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Dashboard
+                  {t('nav.dashboard')}
                 </Link>
                 <Link
                   href="/clients"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Clients
+                  {t('nav.clients')}
                 </Link>
                 <Link
                   href="/projets"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Projets
+                  {t('nav.projects')}
                 </Link>
                 <Link
                   href="/invoices"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Factures
+                  {t('nav.invoices')}
                 </Link>
                 <Link
                   href="/accounting"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  Comptabilité
+                  {t('nav.accounting')}
                 </Link>
               </div>
             </div>
@@ -133,7 +133,7 @@ export function Navigation({
                   href="/crm"
                   className="px-3 py-2 text-sm font-medium hover:bg-accent rounded-md"
                 >
-                  CRM
+                  {t('nav.crm')}
                 </Link>
                 <Link
                   href="/accounting"
@@ -244,7 +244,7 @@ export function Navigation({
                 className="block px-3 py-2 text-base font-medium hover:bg-accent rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                CRM
+                {t('nav.crm')}
               </Link>
               <Link
                 href="/accounting"
