@@ -504,29 +504,31 @@ export function FeedbackDetailsModal({
                 {/* New message */}
                 {feedback.status !== 'closed' ? (
                   <div className="space-y-2">
-                    <Label htmlFor="newMessage">{t('feedback.message')}</Label>
-                    <div className="flex gap-2">
-                      <Textarea
-                        id="newMessage"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder={t('feedback.reply')}
-                        rows={2}
-                        className="flex-1"
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        disabled={sending || !newMessage.trim()}
-                        size="sm"
-                        className="self-end"
-                      >
-                        {sending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Send className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+                    <Label htmlFor="newMessage">{t('feedback.writeMessage')}</Label>
+                    <Textarea
+                      id="newMessage"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder={t('feedback.reply')}
+                      rows={2}
+                    />
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={sending || !newMessage.trim()}
+                      className="w-full sm:w-auto sm:ml-auto sm:flex"
+                    >
+                      {sending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('feedback.sending')}
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          {t('feedback.send')}
+                        </>
+                      )}
+                    </Button>
                   </div>
                 ) : (
                   <div className="text-sm text-muted-foreground text-center py-4 bg-muted/30 rounded-lg">
