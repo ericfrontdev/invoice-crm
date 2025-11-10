@@ -504,7 +504,10 @@
     "thisActionIsIrreversible": "Cette action est irréversible.",
     "exOfficeTravelMarketing": "Ex: Bureau, Transport, Marketing...",
     "addAmount": "Ajouter un montant",
-    "descriptionPlaceholder": "Description du montant dû..."
+    "descriptionPlaceholder": "Description du montant dû...",
+    "projectRevenue": "Revenus projets",
+    "standaloneRevenue": "Revenus ponctuels",
+    "totalMonthRevenue": "Total revenus du mois"
   },
   "profile": {
     "title": "Profil",

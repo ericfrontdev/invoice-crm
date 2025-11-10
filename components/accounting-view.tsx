@@ -6,6 +6,7 @@ import { OverviewAccountingTab } from '@/components/accounting/overview-tab'
 import { RevenueTab } from '@/components/accounting/revenue-tab'
 import { ExpensesTab } from '@/components/accounting/expenses-tab'
 import { ReportsTab } from '@/components/accounting/reports-tab'
+import { useTranslation } from '@/lib/i18n-context'
 
 type AccountingData = {
   revenue: {
@@ -62,6 +63,7 @@ type AccountingData = {
 }
 
 export function AccountingView({ data }: { data: AccountingData }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('overview')
 
   return (
@@ -88,11 +90,11 @@ export function AccountingView({ data }: { data: AccountingData }) {
                   <path d="m7 7 10 10-5 5V2l5 5L7 17" />
                 </svg>
               </div>
-              <span className="text-sm text-muted-foreground">Ce mois</span>
+              <span className="text-sm text-muted-foreground">{t('accounting.thisMonth')}</span>
             </div>
           </div>
           <p className="text-3xl font-bold">{data.revenue.monthProjects.toFixed(2)} $</p>
-          <p className="text-xs text-muted-foreground mt-1">Revenus projets</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('accounting.projectRevenue')}</p>
         </div>
 
         {/* Revenus ponctuels du mois */}
@@ -116,11 +118,11 @@ export function AccountingView({ data }: { data: AccountingData }) {
                   <path d="M16 7h6v6" />
                 </svg>
               </div>
-              <span className="text-sm text-muted-foreground">Ce mois</span>
+              <span className="text-sm text-muted-foreground">{t('accounting.thisMonth')}</span>
             </div>
           </div>
           <p className="text-3xl font-bold">{data.revenue.monthStandalone.toFixed(2)} $</p>
-          <p className="text-xs text-muted-foreground mt-1">Revenus ponctuels</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('accounting.standaloneRevenue')}</p>
         </div>
 
         {/* Total revenus du mois */}
@@ -144,21 +146,21 @@ export function AccountingView({ data }: { data: AccountingData }) {
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
-              <span className="text-sm text-muted-foreground">Ce mois</span>
+              <span className="text-sm text-muted-foreground">{t('accounting.thisMonth')}</span>
             </div>
           </div>
           <p className="text-3xl font-bold">{data.revenue.monthTotal.toFixed(2)} $</p>
-          <p className="text-xs text-muted-foreground mt-1">Total revenus du mois</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('accounting.totalMonthRevenue')}</p>
         </div>
       </div>
 
       {/* Onglets */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Aperçu</TabsTrigger>
-          <TabsTrigger value="revenue">Revenus</TabsTrigger>
-          <TabsTrigger value="expenses">Dépenses</TabsTrigger>
-          <TabsTrigger value="reports">Rapports</TabsTrigger>
+          <TabsTrigger value="overview">{t('accounting.overview')}</TabsTrigger>
+          <TabsTrigger value="revenue">{t('accounting.revenues')}</TabsTrigger>
+          <TabsTrigger value="expenses">{t('accounting.expenses')}</TabsTrigger>
+          <TabsTrigger value="reports">{t('accounting.reports')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
