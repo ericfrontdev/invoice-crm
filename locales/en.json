@@ -164,7 +164,7 @@
     "nothingOverdue": "Nothing overdue 🎉",
     "client": "Client",
     "dueDate": "Due date",
-    "topClientsDue": "Top clients (due)",
+    "topClientsDue": "Top clients (to invoice)",
     "shareOfTotal": "Share of total",
     "noDue": "No amount due"
   },
