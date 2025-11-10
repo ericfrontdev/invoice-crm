@@ -588,10 +588,10 @@ export function ProfileForm({ user }: { user: User }) {
               <h3 className="text-lg font-semibold text-destructive">{t('profile.dangerZone')}</h3>
             </div>
 
-            <div className="space-y-3 bg-destructive/5 rounded-lg p-4 border border-destructive/20">
+            <div className="space-y-4 bg-destructive/5 rounded-lg p-4 border border-destructive/20">
               {/* Annuler l'abonnement */}
               {user.plan === 'pro' && user.subscriptionStatus === 'active' && (
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex-1">
                     <p className="font-medium">{t('profile.cancelSubscription')}</p>
                     <p className="text-sm text-muted-foreground">
@@ -603,6 +603,7 @@ export function ProfileForm({ user }: { user: User }) {
                     variant="destructive"
                     onClick={() => setShowCancelSubscriptionDialog(true)}
                     disabled={isCancelingSubscription}
+                    className="w-full sm:w-auto shrink-0"
                   >
                     {t('profile.cancelSubscription')}
                   </Button>
@@ -610,8 +611,8 @@ export function ProfileForm({ user }: { user: User }) {
               )}
 
               {/* Supprimer le compte */}
-              <div className="flex items-center justify-between pt-3 border-t border-destructive/20">
-                <div className="flex-1 pr-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-destructive/20">
+                <div className="flex-1">
                   <p className="font-medium">{t('profile.deleteMyAccount')}</p>
                   <p className="text-sm text-muted-foreground">
                     {t('profile.deleteAccountWarning')}
@@ -622,6 +623,7 @@ export function ProfileForm({ user }: { user: User }) {
                   variant="destructive"
                   onClick={() => setShowDeleteAccountDialog(true)}
                   disabled={isDeletingAccount}
+                  className="w-full sm:w-auto shrink-0"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   {t('profile.deleteAccount')}
