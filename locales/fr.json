@@ -810,7 +810,7 @@
     "enabled": "Rappels automatiques activés",
     "disabled": "Rappels automatiques désactivés",
     "reminderSent": "Rappel envoyé avec succès",
-    "noReminders": "Aucun rappel envoyé",
+    "noReminders": "Aucun rappel envoyé pour le moment.",
     "customTemplate": "Template personnalisé de mise en demeure",
     "autoRemindersDescription": "Les rappels seront envoyés automatiquement pour les factures en retard",
     "templatePlaceholder": "Message personnalisé pour les mises en demeure...",
