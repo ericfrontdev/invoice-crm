@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/lib/i18n-context'
 
 export type EditAmountData = {
   amount: number
@@ -33,6 +34,7 @@ export function EditAmountModal({
   onSubmit: (data: EditAmountData) => void
   amount: UnpaidAmount | null
 }) {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState<EditAmountData>({
     amount: 0,
     description: '',
@@ -79,15 +81,15 @@ export function EditAmountModal({
 
       <div className="relative bg-background border rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b backdrop-blur supports-[backdrop-filter]:bg-background/70">
-          <h2 className="text-lg font-semibold">Modifier le montant dû</h2>
+          <h2 className="text-lg font-semibold">{t('crm.editAmountDue')}</h2>
           <button className="text-sm underline" onClick={onClose}>
-            Fermer
+            {t('common.close')}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t('common.description')} *</Label>
             <Input
               id="description"
               type="text"
@@ -101,7 +103,7 @@ export function EditAmountModal({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="amount">Montant ($) *</Label>
+              <Label htmlFor="amount">{t('common.amount')} ($) *</Label>
               <Input
                 id="amount"
                 type="number"
@@ -116,7 +118,7 @@ export function EditAmountModal({
             </div>
 
             <div>
-              <Label htmlFor="date">Date *</Label>
+              <Label htmlFor="date">{t('common.date')} *</Label>
               <Input
                 id="date"
                 type="date"
@@ -130,7 +132,7 @@ export function EditAmountModal({
           </div>
 
           <div>
-            <Label htmlFor="dueDate">Date d&apos;échéance</Label>
+            <Label htmlFor="dueDate">{t('dashboard.dueDate')}</Label>
             <Input
               id="dueDate"
               type="date"
@@ -148,10 +150,10 @@ export function EditAmountModal({
               onClick={onClose}
               className="cursor-pointer"
             >
-              Annuler
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="cursor-pointer">
-              Enregistrer
+              {t('common.save')}
             </Button>
           </div>
         </form>

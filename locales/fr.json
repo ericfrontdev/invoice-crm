@@ -91,7 +91,8 @@
     "deleting": "Suppression...",
     "processing": "Traitement...",
     "grid": "Grille",
-    "list": "Liste"
+    "list": "Liste",
+    "locale": "fr-FR"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -781,10 +782,11 @@
     "noUnpaidAmounts": "Aucun montant dû",
     "selectedTotal": "Total sélectionné",
     "generateInvoiceForSelected": "Générer facture pour les éléments sélectionnés",
-    "preview": "Prévisualiser",
+    "preview": "Aperçu",
     "viewDetails": "Voir les détails",
     "createInvoiceFromAmount": "Créer une facture",
-    "addFirstNote": "Créez votre première note"
+    "addFirstNote": "Créez votre première note",
+    "editAmountDue": "Modifier le montant dû"
   },
   "reminders": {
     "title": "Rappels de paiement",
@@ -816,6 +818,26 @@
     "templatePlaceholder": "Message personnalisé pour les mises en demeure...",
     "templateDescription": "Ce message sera utilisé pour les mises en demeure (4e rappel)",
     "manualRemindersInfo": "Les rappels automatiques sont désactivés. Vous devrez envoyer les rappels manuellement."
+  },
+  "payment": {
+    "unavailable": "Paiement non disponible",
+    "notConfigured": "Le paiement en ligne n'est pas encore configuré pour cette facture. Veuillez contacter",
+    "invoicePaid": "Facture payée",
+    "invoicePayment": "Paiement de facture",
+    "invoice": "Facture",
+    "paidOn": "Payée le",
+    "from": "De",
+    "to": "À",
+    "totalToPay": "Total à payer",
+    "paymentTerms": "Conditions de paiement: Payable à réception.",
+    "questionsContact": "Pour toute question, veuillez contacter",
+    "success": "Paiement réussi!",
+    "thankYouPayment": "Merci pour votre paiement",
+    "amountPaid": "Montant payé",
+    "paymentDate": "Date de paiement",
+    "confirmationEmail": "Un courriel de confirmation a été envoyé à",
+    "thankYouBusiness": "Merci d'avoir fait affaire avec",
+    "viewInvoice": "Voir la facture"
   },
   "admin": {
     "title": "Administration",

@@ -80,7 +80,8 @@
     "processing": "Processing...",
     "grid": "Grid",
     "list": "List",
-    "tags": "Tags"
+    "tags": "Tags",
+    "locale": "en-US"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -802,6 +803,7 @@
     "selectedTotal": "Selected total",
     "generateInvoiceForSelected": "Generate invoice for selected items",
     "preview": "Preview",
+    "editAmountDue": "Edit amount due",
     "overview": {
       "title": "Overview",
       "active": "active",
@@ -940,6 +942,26 @@
     "templatePlaceholder": "Custom message for final notices...",
     "templateDescription": "This message will be used for final notices (4th reminder)",
     "manualRemindersInfo": "Automatic reminders are disabled. You will need to send reminders manually."
+  },
+  "payment": {
+    "unavailable": "Payment unavailable",
+    "notConfigured": "Online payment is not yet configured for this invoice. Please contact",
+    "invoicePaid": "Invoice paid",
+    "invoicePayment": "Invoice payment",
+    "invoice": "Invoice",
+    "paidOn": "Paid on",
+    "from": "From",
+    "to": "To",
+    "totalToPay": "Total to pay",
+    "paymentTerms": "Payment terms: Payable upon receipt.",
+    "questionsContact": "For any questions, please contact",
+    "success": "Payment successful!",
+    "thankYouPayment": "Thank you for your payment",
+    "amountPaid": "Amount paid",
+    "paymentDate": "Payment date",
+    "confirmationEmail": "A confirmation email has been sent to",
+    "thankYouBusiness": "Thank you for doing business with",
+    "viewInvoice": "View invoice"
   },
   "admin": {
     "title": "Administration",

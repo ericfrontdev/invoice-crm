@@ -22,18 +22,18 @@ export function NoteList({
   onEdit: (note: Note) => void
   onDelete: (noteId: string) => void
 }) {
-  const { locale } = useTranslation()
+  const { t, locale } = useTranslation()
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead className="bg-muted">
           <tr>
-            <th className="text-left p-3 font-medium">Titre</th>
-            <th className="text-left p-3 font-medium">Aperçu</th>
-            <th className="text-left p-3 font-medium">Tags</th>
-            <th className="text-left p-3 font-medium">Modifié le</th>
-            <th className="text-right p-3 font-medium">Actions</th>
+            <th className="text-left p-3 font-medium">{t('common.title')}</th>
+            <th className="text-left p-3 font-medium">{t('crm.preview')}</th>
+            <th className="text-left p-3 font-medium">{t('common.tags')}</th>
+            <th className="text-left p-3 font-medium">{t('common.modifiedOn')}</th>
+            <th className="text-right p-3 font-medium">{t('common.actions')}</th>
           </tr>
         </thead>
         <tbody>

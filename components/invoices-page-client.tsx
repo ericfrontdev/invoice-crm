@@ -98,7 +98,7 @@ export function InvoicesPageClient({
           {projectInvoices.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold">Factures de projets</h2>
+                <h2 className="text-xl font-semibold">{t('invoices.projectInvoices')}</h2>
                 <span className="text-sm text-muted-foreground">
                   ({projectInvoices.length})
                 </span>
@@ -111,7 +111,7 @@ export function InvoicesPageClient({
           {standaloneInvoices.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold">Factures ponctuelles</h2>
+                <h2 className="text-xl font-semibold">{t('invoices.standaloneInvoices')}</h2>
                 <span className="text-sm text-muted-foreground">
                   ({standaloneInvoices.length})
                 </span>
