@@ -391,7 +391,7 @@ export function ProfileForm({ user }: { user: User }) {
                 id="neq"
                 value={formData.neq}
                 onChange={(e) => setFormData({ ...formData, neq: e.target.value })}
-                placeholder="Ex: 1234567890"
+                placeholder={t('profile.neqPlaceholder')}
               />
             </div>
 
@@ -403,7 +403,7 @@ export function ProfileForm({ user }: { user: User }) {
                 id="tpsNumber"
                 value={formData.tpsNumber}
                 onChange={(e) => setFormData({ ...formData, tpsNumber: e.target.value })}
-                placeholder="Ex: 123456789RT0001"
+                placeholder={t('profile.tpsPlaceholder')}
               />
             </div>
 
@@ -415,7 +415,7 @@ export function ProfileForm({ user }: { user: User }) {
                 id="tvqNumber"
                 value={formData.tvqNumber}
                 onChange={(e) => setFormData({ ...formData, tvqNumber: e.target.value })}
-                placeholder="Ex: 1234567890TQ0001"
+                placeholder={t('profile.tvqPlaceholder')}
               />
             </div>
 
@@ -473,7 +473,7 @@ export function ProfileForm({ user }: { user: User }) {
                   type="email"
                   value={formData.paypalEmail}
                   onChange={(e) => setFormData({ ...formData, paypalEmail: e.target.value })}
-                  placeholder="votre-email@example.com"
+                  placeholder={t('profile.emailPlaceholder')}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('profile.paypalEmailDescription')}
@@ -491,7 +491,7 @@ export function ProfileForm({ user }: { user: User }) {
                   type="password"
                   value={formData.stripeSecretKey}
                   onChange={(e) => setFormData({ ...formData, stripeSecretKey: e.target.value })}
-                  placeholder="sk_test_... ou sk_live_..."
+                  placeholder={t('profile.stripePlaceholder')}
                 />
                 <div className="mt-2 space-y-2">
                   <p className="text-xs text-muted-foreground">

@@ -99,7 +99,7 @@ export function NewClientModal({
                 </Label>
                 <Input
                   id="name"
-                  placeholder="Ex: Jean Tremblay"
+                  placeholder={t('clients.namePlaceholder')}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   autoFocus
@@ -113,7 +113,7 @@ export function NewClientModal({
                 </Label>
                 <Input
                   id="company"
-                  placeholder="Ex: Tremblay Construction"
+                  placeholder={t('clients.companyPlaceholder')}
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   disabled={isSubmitting}
@@ -133,7 +133,7 @@ export function NewClientModal({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="exemple@domaine.com"
+                  placeholder={t('clients.emailPlaceholder')}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={isSubmitting}
@@ -146,7 +146,7 @@ export function NewClientModal({
                 </Label>
                 <Input
                   id="phone"
-                  placeholder="Ex: 514-555-0123"
+                  placeholder={t('clients.phonePlaceholder')}
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   disabled={isSubmitting}
@@ -165,7 +165,7 @@ export function NewClientModal({
                 </Label>
                 <Input
                   id="address"
-                  placeholder="Rue, ville, code postal"
+                  placeholder={t('clients.addressPlaceholder')}
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   disabled={isSubmitting}
@@ -178,7 +178,7 @@ export function NewClientModal({
                 <Input
                   id="website"
                   type="url"
-                  placeholder="https://exemple.com"
+                  placeholder={t('clients.websitePlaceholder')}
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   disabled={isSubmitting}

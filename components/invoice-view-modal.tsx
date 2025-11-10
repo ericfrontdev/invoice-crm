@@ -125,7 +125,7 @@ export function InvoiceViewModal({
           </div>
 
           <div className="text-sm text-muted-foreground">
-            <p className="mb-1">Conditions de paiement</p>
+            <p className="mb-1">{t('invoice.paymentTermsLabel')}</p>
             <p>{t('invoices.thankYou')}</p>
           </div>
         </div>

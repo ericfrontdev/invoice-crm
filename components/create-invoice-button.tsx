@@ -139,7 +139,7 @@ export function CreateInvoiceButton() {
             {/* Section: Facture ponctuelle */}
             <DropdownMenuLabel className="flex items-center">
               <FileText className="h-4 w-4 mr-2" />
-              Facture ponctuelle
+              {t('invoices.oneTimeInvoice')}
             </DropdownMenuLabel>
             {clients.length === 0 ? (
               <div className="px-2 py-2 text-sm text-muted-foreground">
