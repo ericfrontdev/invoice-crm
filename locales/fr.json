@@ -987,7 +987,12 @@
     "allStatuses": "Tous les statuts",
     "urgency": "Urgence",
     "noFeedback": "Aucun feedback pour le moment",
-    "noFeedbackFiltered": "Aucun feedback ne correspond aux filtres"
+    "noFeedbackFiltered": "Aucun feedback ne correspond aux filtres",
+    "feedbackSystem": "Système de feedback",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "widgetVisible": "Le widget est visible pour tous les utilisateurs",
+    "widgetHidden": "Le widget est masqué. Aucun nouveau feedback ne peut être soumis."
   },
   "betaEnd": {
     "title": "Période bêta terminée",
