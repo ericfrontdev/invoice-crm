@@ -452,7 +452,8 @@
     "statusActive": "Active",
     "statusCompleted": "Completed",
     "statusOnHold": "On Hold",
-    "statusCancelled": "Cancelled"
+    "statusCancelled": "Cancelled",
+    "invoices": "Invoices"
   },
   "accounting": {
     "title": "Accounting",
