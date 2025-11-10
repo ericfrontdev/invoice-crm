@@ -53,12 +53,6 @@ const typeIcons: Record<string, typeof Bug> = {
   other: MessageCircle,
 }
 
-const typeLabels: Record<string, string> = {
-  bug: 'Bug',
-  feature: 'Feature',
-  improvement: 'Amélioration',
-  other: 'Autre',
-}
 
 const severityColors: Record<string, string> = {
   critical: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
@@ -67,13 +61,6 @@ const severityColors: Record<string, string> = {
   low: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
 }
 
-const statusLabels: Record<string, string> = {
-  new: '🆕 Nouveau',
-  reviewing: '👀 En révision',
-  in_progress: '⏳ En cours',
-  resolved: '✅ Résolu',
-  wont_fix: '❌ Won\'t fix',
-}
 
 export function FeedbackList({
   feedbacks,
@@ -83,7 +70,7 @@ export function FeedbackList({
   feedbackSystemEnabled: boolean
 }) {
   const router = useRouter()
-  const { locale } = useTranslation()
+  const { t, locale } = useTranslation()
   const [systemEnabled, setSystemEnabled] = useState(initialEnabled)
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -91,6 +78,27 @@ export function FeedbackList({
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null)
   const [toggling, setToggling] = useState(false)
   const [resolvingId, setResolvingId] = useState<string | null>(null)
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'bug': return t('feedback.bug')
+      case 'feature': return t('feedback.feature')
+      case 'improvement': return t('feedback.improvement')
+      case 'other': return t('feedback.other')
+      default: return type
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'new': return `🆕 ${t('feedback.new')}`
+      case 'reviewing': return `👀 ${t('feedback.reviewing')}`
+      case 'in_progress': return `⏳ ${t('feedback.inProgress')}`
+      case 'resolved': return `✅ ${t('admin.resolvedPlural')}`
+      case 'wont_fix': return `❌ ${t('feedback.wontFix')}`
+      default: return status
+    }
+  }
 
   const handleToggleSystem = async (enabled: boolean) => {
     setToggling(true)
@@ -106,10 +114,10 @@ export function FeedbackList({
         setSystemEnabled(enabled)
         router.refresh()
       } else {
-        alert('Erreur lors de la mise à jour')
+        alert(t('feedback.updateError'))
       }
     } catch {
-      alert('Erreur lors de la mise à jour')
+      alert(t('feedback.updateError'))
     } finally {
       setToggling(false)
     }
@@ -129,10 +137,10 @@ export function FeedbackList({
       if (res.ok) {
         router.refresh()
       } else {
-        alert('Erreur lors de la mise à jour')
+        alert(t('feedback.updateError'))
       }
     } catch {
-      alert('Erreur lors de la mise à jour')
+      alert(t('feedback.updateError'))
     } finally {
       setResolvingId(null)
     }
@@ -161,11 +169,11 @@ export function FeedbackList({
         <div className="p-6 border-b space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Système de feedback</h2>
+              <h2 className="text-lg font-semibold">{t('feedback.feedbackSystem')}</h2>
               <p className="text-sm text-muted-foreground">
                 {systemEnabled
-                  ? 'Le widget est visible pour tous les utilisateurs'
-                  : 'Le widget est masqué. Aucun nouveau feedback ne peut être envoyé.'}
+                  ? t('feedback.widgetVisible')
+                  : t('feedback.widgetHidden')}
               </p>
             </div>
             <div className="flex items-center space-x-2">
@@ -176,7 +184,7 @@ export function FeedbackList({
                 disabled={toggling}
               />
               <Label htmlFor="feedback-system" className="cursor-pointer">
-                {systemEnabled ? 'Activé' : 'Désactivé'}
+                {systemEnabled ? t('feedback.enabled') : t('feedback.disabled')}
               </Label>
             </div>
           </div>
@@ -186,7 +194,7 @@ export function FeedbackList({
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Rechercher par titre, message, auteur..."
+                placeholder={t('feedback.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -194,34 +202,34 @@ export function FeedbackList({
             </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Type" />
+                <SelectValue placeholder={t('feedback.type')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les types</SelectItem>
-                <SelectItem value="bug">Bugs</SelectItem>
-                <SelectItem value="feature">Features</SelectItem>
-                <SelectItem value="improvement">Améliorations</SelectItem>
-                <SelectItem value="other">Autres</SelectItem>
+                <SelectItem value="all">{t('feedback.allTypes')}</SelectItem>
+                <SelectItem value="bug">{t('feedback.bugs')}</SelectItem>
+                <SelectItem value="feature">{t('feedback.features')}</SelectItem>
+                <SelectItem value="improvement">{t('admin.improvements')}</SelectItem>
+                <SelectItem value="other">{t('feedback.others')}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Statut" />
+                <SelectValue placeholder={t('feedback.status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les statuts</SelectItem>
-                <SelectItem value="new">Nouveaux</SelectItem>
-                <SelectItem value="reviewing">En révision</SelectItem>
-                <SelectItem value="in_progress">En cours</SelectItem>
-                <SelectItem value="resolved">Résolus</SelectItem>
-                <SelectItem value="wont_fix">Won&apos;t fix</SelectItem>
+                <SelectItem value="all">{t('feedback.allStatuses')}</SelectItem>
+                <SelectItem value="new">{t('admin.newPlural')}</SelectItem>
+                <SelectItem value="reviewing">{t('feedback.reviewing')}</SelectItem>
+                <SelectItem value="in_progress">{t('feedback.inProgress')}</SelectItem>
+                <SelectItem value="resolved">{t('admin.resolvedPlural')}</SelectItem>
+                <SelectItem value="wont_fix">{t('feedback.wontFix')}</SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="outline"
               size="icon"
               onClick={() => router.refresh()}
-              title="Rafraîchir"
+              title={t('feedback.refresh')}
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -232,8 +240,8 @@ export function FeedbackList({
         {filteredFeedbacks.length === 0 ? (
           <div className="p-12 text-center text-muted-foreground">
             {feedbacks.length === 0
-              ? 'Aucun feedback pour le moment'
-              : 'Aucun feedback ne correspond aux filtres'}
+              ? t('feedback.noFeedback')
+              : t('feedback.noFeedbackFiltered')}
           </div>
         ) : (
           <>
@@ -242,14 +250,14 @@ export function FeedbackList({
               <table className="w-full">
                 <thead className="bg-muted/50 border-b">
                   <tr>
-                    <th className="text-left p-3 font-medium text-sm">Type</th>
-                    <th className="text-left p-3 font-medium text-sm">Titre</th>
-                    <th className="text-left p-3 font-medium text-sm">Auteur</th>
-                    <th className="text-left p-3 font-medium text-sm">Urgence</th>
-                    <th className="text-left p-3 font-medium text-sm">Statut</th>
-                    <th className="text-left p-3 font-medium text-sm">Date</th>
-                    <th className="text-center p-3 font-medium text-sm">Messages</th>
-                    <th className="text-center p-3 font-medium text-sm">Actions</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.type')}</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.title')}</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.author')}</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.urgency')}</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.status')}</th>
+                    <th className="text-left p-3 font-medium text-sm">{t('feedback.date')}</th>
+                    <th className="text-center p-3 font-medium text-sm">{t('feedback.messages')}</th>
+                    <th className="text-center p-3 font-medium text-sm">{t('feedback.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -266,14 +274,14 @@ export function FeedbackList({
                             return <Icon className="h-5 w-5 text-muted-foreground" />
                           })()}
                           <span className="text-sm">
-                            {typeLabels[feedback.type] || feedback.type}
+                            {getTypeLabel(feedback.type)}
                           </span>
                         </div>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           {!feedback.viewedAt && (
-                            <span className="h-2 w-2 bg-blue-500 rounded-full" title="Non lu" />
+                            <span className="h-2 w-2 bg-blue-500 rounded-full" title={t('feedback.unread')} />
                           )}
                           <span className="font-medium text-sm">
                             {feedback.title}
@@ -283,7 +291,7 @@ export function FeedbackList({
                       <td className="p-3">
                         <div className="text-sm">
                           {feedback.isAnonymous ? (
-                            <span className="text-muted-foreground italic">Anonyme</span>
+                            <span className="text-muted-foreground italic">{t('feedback.anonymous')}</span>
                           ) : (
                             <div>
                               <div className="font-medium">{feedback.user?.name}</div>
@@ -304,7 +312,7 @@ export function FeedbackList({
                       </td>
                       <td className="p-3">
                         <span className="text-sm">
-                          {statusLabels[feedback.status] || feedback.status}
+                          {getStatusLabel(feedback.status)}
                         </span>
                       </td>
                       <td className="p-3">
@@ -352,14 +360,14 @@ export function FeedbackList({
                                   disabled={resolvingId === feedback.id}
                                 >
                                   <Check className="h-4 w-4 mr-2 text-green-600" />
-                                  Marquer comme résolu
+                                  {t('feedback.markAsResolved')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
                                   disabled={resolvingId === feedback.id}
                                 >
                                   <X className="h-4 w-4 mr-2 text-gray-600" />
-                                  Fermer
+                                  {t('feedback.close')}
                                 </DropdownMenuItem>
                               </>
                             )}
@@ -370,14 +378,14 @@ export function FeedbackList({
                                   disabled={resolvingId === feedback.id}
                                 >
                                   <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
-                                  Réouvrir
+                                  {t('feedback.reopen')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
                                   disabled={resolvingId === feedback.id}
                                 >
                                   <X className="h-4 w-4 mr-2 text-gray-600" />
-                                  Fermer
+                                  {t('feedback.close')}
                                 </DropdownMenuItem>
                               </>
                             )}
@@ -387,7 +395,7 @@ export function FeedbackList({
                                 disabled={resolvingId === feedback.id}
                               >
                                 <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
-                                Réouvrir
+                                {t('feedback.reopen')}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -415,12 +423,12 @@ export function FeedbackList({
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             {!feedback.viewedAt && (
-                              <span className="h-2 w-2 bg-blue-500 rounded-full" title="Non lu" />
+                              <span className="h-2 w-2 bg-blue-500 rounded-full" title={t('feedback.unread')} />
                             )}
                             <h3 className="font-medium text-sm">{feedback.title}</h3>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {typeLabels[feedback.type] || feedback.type}
+                            {getTypeLabel(feedback.type)}
                           </p>
                         </div>
                       </div>
@@ -441,9 +449,9 @@ export function FeedbackList({
 
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Auteur:</span>
+                        <span className="text-muted-foreground">{t('feedback.author')}:</span>
                         {feedback.isAnonymous ? (
-                          <span className="italic">Anonyme</span>
+                          <span className="italic">{t('feedback.anonymous')}</span>
                         ) : (
                           <span className="font-medium">{feedback.user?.name}</span>
                         )}
@@ -457,7 +465,7 @@ export function FeedbackList({
                           {feedback.severity}
                         </Badge>
                         <span className="text-muted-foreground">•</span>
-                        <span>{statusLabels[feedback.status] || feedback.status}</span>
+                        <span>{getStatusLabel(feedback.status)}</span>
                       </div>
 
                       <div className="text-xs text-muted-foreground">
@@ -482,7 +490,7 @@ export function FeedbackList({
                             onClick={(e) => e.stopPropagation()}
                           >
                             <MoreVertical className="h-4 w-4 mr-2" />
-                            Actions
+                            {t('feedback.actions')}
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="center" className="w-48">
@@ -493,14 +501,14 @@ export function FeedbackList({
                                 disabled={resolvingId === feedback.id}
                               >
                                 <Check className="h-4 w-4 mr-2 text-green-600" />
-                                Marquer comme résolu
+                                {t('feedback.markAsResolved')}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
                                 disabled={resolvingId === feedback.id}
                               >
                                 <X className="h-4 w-4 mr-2 text-gray-600" />
-                                Fermer
+                                {t('feedback.close')}
                               </DropdownMenuItem>
                             </>
                           )}
@@ -511,14 +519,14 @@ export function FeedbackList({
                                 disabled={resolvingId === feedback.id}
                               >
                                 <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
-                                Réouvrir
+                                {t('feedback.reopen')}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={(e) => handleStatusChange(feedback.id, 'closed', e)}
                                 disabled={resolvingId === feedback.id}
                               >
                                 <X className="h-4 w-4 mr-2 text-gray-600" />
-                                Fermer
+                                {t('feedback.close')}
                               </DropdownMenuItem>
                             </>
                           )}
@@ -528,7 +536,7 @@ export function FeedbackList({
                               disabled={resolvingId === feedback.id}
                             >
                               <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
-                              Réouvrir
+                              {t('feedback.reopen')}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>

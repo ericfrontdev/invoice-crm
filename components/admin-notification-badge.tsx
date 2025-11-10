@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { MessageSquare } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function AdminNotificationBadge() {
+  const { t } = useTranslation()
   const [unreadCount, setUnreadCount] = useState(0)
   const pathname = usePathname()
 
@@ -40,7 +42,7 @@ export function AdminNotificationBadge() {
     <Link
       href="/admin/feedback"
       className="relative flex items-center justify-center p-2 cursor-pointer hover:opacity-80 transition-opacity"
-      title={`${unreadCount} feedback${unreadCount > 1 ? 's' : ''} non lu${unreadCount > 1 ? 's' : ''}`}
+      title={`${unreadCount} feedback${unreadCount > 1 ? 's' : ''} ${t('feedback.unread').toLowerCase()}`}
     >
       <MessageSquare className="h-5 w-5 text-muted-foreground" />
       <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-background" />

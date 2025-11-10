@@ -10,7 +10,7 @@ import {
 import { useTranslation } from '@/lib/i18n-context'
 
 export function LanguageSelector() {
-  const { locale, setLocale } = useTranslation()
+  const { t, locale, setLocale } = useTranslation()
 
   return (
     <DropdownMenu>
@@ -24,13 +24,13 @@ export function LanguageSelector() {
           onClick={() => setLocale('fr')}
           className={locale === 'fr' ? 'bg-accent' : ''}
         >
-          Français
+          {t('common.french')}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setLocale('en')}
           className={locale === 'en' ? 'bg-accent' : ''}
         >
-          English
+          {t('common.english')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

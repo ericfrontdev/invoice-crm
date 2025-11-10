@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { InvoiceCard } from '@/components/invoice-card'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useTranslation } from '@/lib/i18n-context'
 
 type Invoice = {
   id: string
@@ -59,6 +60,7 @@ export function ProjectInvoicesList({
   projectId,
 }: ProjectInvoicesListProps) {
   const router = useRouter()
+  const { t } = useTranslation()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<{
     type: 'success' | 'error'
@@ -80,14 +82,14 @@ export function ProjectInvoicesList({
 
       if (kind === 'send') {
         url = '/api/invoices/send'
-        successMsg = 'Facture envoyée'
+        successMsg = t('invoices.invoiceSent')
       } else if (kind === 'paid') {
         url = '/api/invoices/mark-paid'
-        successMsg = 'Facture payée'
+        successMsg = t('invoices.invoicePaid')
       } else if (kind === 'delete') {
         url = `/api/invoices/${invoiceId}`
         method = 'DELETE'
-        successMsg = 'Facture supprimée'
+        successMsg = t('invoices.invoiceDeleted')
       }
 
       const res = await fetch(url, {
@@ -97,7 +99,7 @@ export function ProjectInvoicesList({
       })
 
       if (!res.ok) {
-        setToast({ type: 'error', message: 'Action impossible' })
+        setToast({ type: 'error', message: t('common.actionImpossible') })
         return
       }
 
@@ -105,7 +107,7 @@ export function ProjectInvoicesList({
       setToast({ type: 'success', message: successMsg })
       setDeleteConfirmId(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('common.networkError') })
     } finally {
       setBusyId(null)
       setTimeout(() => setToast(null), 2500)
@@ -132,11 +134,11 @@ export function ProjectInvoicesList({
     navigator.clipboard
       .writeText(paymentUrl)
       .then(() => {
-        setToast({ type: 'success', message: 'Lien de paiement copié!' })
+        setToast({ type: 'success', message: t('invoices.paymentLinkCopied') })
         setTimeout(() => setToast(null), 2500)
       })
       .catch(() => {
-        setToast({ type: 'error', message: 'Erreur lors de la copie' })
+        setToast({ type: 'error', message: t('common.copyError') })
         setTimeout(() => setToast(null), 2500)
       })
   }

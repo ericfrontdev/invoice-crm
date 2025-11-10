@@ -72,7 +72,7 @@ export function UploadDocumentsModal({
 
         if (!res.ok) {
           const errorData = await res.json()
-          throw new Error(errorData.error || `Erreur lors de l'upload de ${file.name}`)
+          throw new Error(errorData.error || `${t('projects.uploadError')} ${file.name}`)
         }
       }
 
@@ -82,7 +82,7 @@ export function UploadDocumentsModal({
       onClose()
     } catch (error) {
       console.error('Upload error:', error)
-      setError(error instanceof Error ? error.message : 'Erreur lors de l\'upload')
+      setError(error instanceof Error ? error.message : t('projects.uploadError'))
     } finally {
       setIsUploading(false)
     }

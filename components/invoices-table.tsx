@@ -163,7 +163,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
         )
         setToast({
           type: 'success',
-          message: `${selectedInvoiceIds.length} facture(s) supprimée(s)`,
+          message: `${selectedInvoiceIds.length} ${t('invoices.invoiceDeleted')}`,
         })
       } else if (action === 'archive') {
         await Promise.all(
@@ -177,7 +177,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
         )
         setToast({
           type: 'success',
-          message: `${selectedInvoiceIds.length} facture(s) archivée(s)`,
+          message: `${selectedInvoiceIds.length} ${t('invoices.invoiceArchived')}`,
         })
       }
 
@@ -185,7 +185,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
       setBatchAction(null)
       router.refresh()
     } catch {
-      setToast({ type: 'error', message: "Erreur lors de l'action" })
+      setToast({ type: 'error', message: t('common.actionError') })
     } finally {
       setBusyId(null)
       setTimeout(() => setToast(null), 2500)
@@ -204,14 +204,14 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
 
       if (kind === 'send') {
         url = '/api/invoices/send'
-        successMsg = 'Facture envoyée'
+        successMsg = t('invoices.invoiceSent')
       } else if (kind === 'paid') {
         url = '/api/invoices/mark-paid'
-        successMsg = 'Facture payée'
+        successMsg = t('invoices.invoicePaid')
       } else if (kind === 'delete') {
         url = `/api/invoices/${invoiceId}`
         method = 'DELETE'
-        successMsg = 'Facture supprimée'
+        successMsg = t('invoices.invoiceDeleted')
       }
 
       const res = await fetch(url, {
@@ -221,7 +221,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
       })
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}))
-        const errorMessage = errorData.error || "Action impossible"
+        const errorMessage = errorData.error || t('common.actionImpossible')
         setToast({ type: 'error', message: errorMessage })
         return
       }
@@ -229,7 +229,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
       setToast({ type: 'success', message: successMsg })
       setDeleteConfirmId(null)
     } catch {
-      setToast({ type: 'error', message: 'Erreur réseau' })
+      setToast({ type: 'error', message: t('common.networkError') })
     } finally {
       setBusyId(null)
       setTimeout(() => setToast(null), 2500)
@@ -254,10 +254,10 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
     const paymentUrl = `${baseUrl}/invoices/${invoiceId}/pay`
 
     navigator.clipboard.writeText(paymentUrl).then(() => {
-      setToast({ type: 'success', message: 'Lien de paiement copié!' })
+      setToast({ type: 'success', message: t('invoices.paymentLinkCopied') })
       setTimeout(() => setToast(null), 2500)
     }).catch(() => {
-      setToast({ type: 'error', message: 'Erreur lors de la copie' })
+      setToast({ type: 'error', message: t('common.copyError') })
       setTimeout(() => setToast(null), 2500)
     })
   }

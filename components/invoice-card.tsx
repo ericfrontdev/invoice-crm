@@ -242,7 +242,7 @@ export function InvoiceCard({
                   }}
                 >
                   <Link2 className="h-4 w-4 mr-2" />
-                  Copier lien
+                  {t('invoices.copyLink')}
                 </DropdownMenuItem>
               )}
               {invoice.status !== 'paid' && (

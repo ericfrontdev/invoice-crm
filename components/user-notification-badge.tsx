@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslation } from '@/lib/i18n-context'
 
 export function UserNotificationBadge({ onClick }: { onClick?: () => void }) {
+  const { t } = useTranslation()
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export function UserNotificationBadge({ onClick }: { onClick?: () => void }) {
     <Link
       href="/profil/mes-feedbacks"
       className="relative flex items-center justify-center p-2 cursor-pointer hover:opacity-80 transition-opacity"
-      title={`${unreadCount} message${unreadCount > 1 ? 's' : ''} non lu${unreadCount > 1 ? 's' : ''}`}
+      title={`${unreadCount} ${t('feedback.messages').toLowerCase()}${unreadCount > 1 ? 's' : ''} ${t('feedback.unread')}`}
       onClick={onClick}
     >
       <MessageCircle className="h-5 w-5 text-muted-foreground" />
