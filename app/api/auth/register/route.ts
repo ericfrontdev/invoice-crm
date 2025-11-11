@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Tous les champs sont requis' },
+        { error: 'auth.allFieldsRequired' },
         { status: 400 }
       )
     }
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
       if (userCount >= settings.maxBetaUsers) {
         return NextResponse.json(
-          { error: 'Le nombre maximum d\'inscriptions pour la période bêta a été atteint' },
+          { error: 'auth.betaLimitReached' },
           { status: 403 }
         )
       }
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Un utilisateur avec cet email existe déjà' },
+        { error: 'auth.userAlreadyExists' },
         { status: 400 }
       )
     }
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json(
-      { error: 'Erreur lors de la création de l\'utilisateur' },
+      { error: 'auth.userCreationError' },
       { status: 500 }
     )
   }

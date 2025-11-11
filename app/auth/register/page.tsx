@@ -45,7 +45,12 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || t('errors.generic'))
+        // Si l'erreur est une clé de traduction, on la traduit
+        const errorKey = data.error
+        const errorMessage = errorKey?.startsWith('auth.')
+          ? t(errorKey)
+          : (errorKey || t('errors.generic'))
+        setError(errorMessage)
         setLoading(false)
         return
       }

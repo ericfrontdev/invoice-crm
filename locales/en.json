@@ -135,7 +135,11 @@
     "passwordMismatch": "Passwords do not match",
     "registerSuccessLoginError": "Registration successful but login error",
     "registering": "Registering...",
-    "orContinueWith": "Or continue with"
+    "orContinueWith": "Or continue with",
+    "betaLimitReached": "The maximum number of registrations for the beta period has been reached",
+    "userAlreadyExists": "A user with this email already exists",
+    "allFieldsRequired": "All fields are required",
+    "userCreationError": "Error creating user"
   },
   "dashboard": {
     "title": "Dashboard",
