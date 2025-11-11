@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Loader2, Save } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n-context'
+import { toast } from 'sonner'
 
 type Settings = {
   id: string
@@ -47,13 +48,13 @@ export function SettingsForm({ settings }: { settings: Settings }) {
 
       if (res.ok) {
         router.refresh()
-        alert(t('admin.settingsSaved'))
+        toast.success(t('admin.settingsSaved'))
       } else {
-        alert(t('admin.saveError'))
+        toast.error(t('admin.saveError'))
       }
     } catch (error) {
       console.error('Error saving settings:', error)
-      alert(t('admin.saveError'))
+      toast.error(t('admin.saveError'))
     } finally {
       setSaving(false)
     }

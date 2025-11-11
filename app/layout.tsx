@@ -6,6 +6,7 @@ import { I18nProvider } from '@/lib/i18n-context'
 import { Navigation } from '@/components/navigation'
 import { FeedbackWidget } from '@/components/feedback-widget'
 import { BetaEndBlocker } from '@/components/beta-end-blocker'
+import { Toaster } from 'sonner'
 import { auth } from '@/auth'
 import { isSuperAdmin } from '@/lib/check-super-admin'
 import { prisma } from '@/lib/prisma'
@@ -104,6 +105,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <I18nProvider>
+            <Toaster richColors position="top-right" />
             {isBetaEnded && !isPricingPage ? (
               <BetaEndBlocker
                 betaEndDate={betaEndDate}
