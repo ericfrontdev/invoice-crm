@@ -111,6 +111,7 @@
   "auth": {
     "login": "Connexion",
     "register": "Inscription",
+    "fullName": "Nom complet",
     "email": "Email",
     "password": "Mot de passe",
     "confirmPassword": "Confirmer le mot de passe",
