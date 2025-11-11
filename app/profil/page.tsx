@@ -39,5 +39,8 @@ export default async function ProfilPage() {
     redirect('/auth/login')
   }
 
-  return <ProfilPageClient user={user} />
+  // Récupérer les paramètres système pour vérifier si le système de feedback est activé
+  const settings = await prisma.systemSettings.findFirst()
+
+  return <ProfilPageClient user={user} feedbackSystemEnabled={settings?.feedbackSystemEnabled ?? true} />
 }
