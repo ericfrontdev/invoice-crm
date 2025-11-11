@@ -142,6 +142,7 @@
     "registerSuccessLoginError": "Inscription réussie mais erreur de connexion",
     "registering": "Inscription...",
     "betaLimitReached": "Le nombre maximum d'inscriptions pour la période bêta a été atteint",
+    "registrationsClosed": "Les inscriptions sont temporairement fermées. Veuillez réessayer plus tard.",
     "userAlreadyExists": "Un utilisateur avec cet email existe déjà",
     "allFieldsRequired": "Tous les champs sont requis",
     "userCreationError": "Erreur lors de la création de l'utilisateur"

@@ -137,6 +137,7 @@
     "registering": "Registering...",
     "orContinueWith": "Or continue with",
     "betaLimitReached": "The maximum number of registrations for the beta period has been reached",
+    "registrationsClosed": "Registrations are temporarily closed. Please try again later.",
     "userAlreadyExists": "A user with this email already exists",
     "allFieldsRequired": "All fields are required",
     "userCreationError": "Error creating user"

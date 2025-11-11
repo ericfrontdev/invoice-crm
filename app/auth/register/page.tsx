@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signIn } from 'next-auth/react'
 import { ThemeLogo } from '@/components/theme-logo'
 import { useTranslation } from '@/lib/i18n-context'
+import { AlertCircle } from 'lucide-react'
 
 export default function RegisterPage() {
   const { t } = useTranslation()
@@ -17,6 +18,27 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [registrationOpen, setRegistrationOpen] = useState(true)
+  const [checkingBeta, setCheckingBeta] = useState(true)
+
+  // Vérifier le statut du beta au chargement
+  useEffect(() => {
+    const checkBetaStatus = async () => {
+      try {
+        const res = await fetch('/api/auth/beta-status')
+        const data = await res.json()
+        setRegistrationOpen(data.registrationOpen)
+      } catch (error) {
+        console.error('Error checking beta status:', error)
+        // En cas d'erreur, autoriser l'inscription
+        setRegistrationOpen(true)
+      } finally {
+        setCheckingBeta(false)
+      }
+    }
+
+    checkBetaStatus()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,6 +114,23 @@ export default function RegisterPage() {
             <p className="text-muted-foreground mt-2">{t('auth.createAccount')}</p>
           </div>
 
+          {/* Message si les inscriptions sont fermées */}
+          {!checkingBeta && !registrationOpen && (
+            <div className="mb-6 p-4 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                    {t('auth.betaLimitReached')}
+                  </p>
+                  <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    {t('auth.registrationsClosed')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
               <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
@@ -114,8 +153,9 @@ export default function RegisterPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={!registrationOpen}
               />
             </div>
 
@@ -131,8 +171,9 @@ export default function RegisterPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={!registrationOpen}
               />
             </div>
 
@@ -148,8 +189,9 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={!registrationOpen}
               />
             </div>
 
@@ -165,15 +207,16 @@ export default function RegisterPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={!registrationOpen}
               />
             </div>
 
             <Button
               type="submit"
               className="w-full"
-              disabled={loading}
+              disabled={loading || !registrationOpen}
             >
               {loading ? t('auth.registering') : t('auth.signUp')}
             </Button>
@@ -195,7 +238,7 @@ export default function RegisterPage() {
             variant="outline"
             className="w-full"
             onClick={handleGoogleSignIn}
-            disabled={loading}
+            disabled={loading || !registrationOpen}
           >
             <svg
               className="w-5 h-5 mr-2"
