@@ -105,7 +105,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <I18nProvider>
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position="bottom-right" />
             {isBetaEnded && !isPricingPage ? (
               <BetaEndBlocker
                 betaEndDate={betaEndDate}
