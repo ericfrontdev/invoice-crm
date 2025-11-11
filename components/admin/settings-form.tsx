@@ -12,7 +12,9 @@ import { useTranslation } from '@/lib/i18n-context'
 type Settings = {
   id: string
   feedbackSystemEnabled: boolean
+  betaEnabled: boolean
   betaEndDate: Date | null
+  maxBetaUsers: number
   updatedAt: Date
   updatedBy: string | null
 }
@@ -21,9 +23,11 @@ export function SettingsForm({ settings }: { settings: Settings }) {
   const { t } = useTranslation()
   const router = useRouter()
   const [feedbackEnabled, setFeedbackEnabled] = useState(settings.feedbackSystemEnabled)
+  const [betaEnabled, setBetaEnabled] = useState(settings.betaEnabled)
   const [betaEndDate, setBetaEndDate] = useState(
     settings.betaEndDate ? new Date(settings.betaEndDate).toISOString().split('T')[0] : ''
   )
+  const [maxBetaUsers, setMaxBetaUsers] = useState(settings.maxBetaUsers)
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
@@ -35,7 +39,9 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           feedbackSystemEnabled: feedbackEnabled,
+          betaEnabled: betaEnabled,
           betaEndDate: betaEndDate || null,
+          maxBetaUsers: maxBetaUsers,
         }),
       })
 
@@ -75,14 +81,44 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         </div>
       </div>
 
-      {/* Beta End Date */}
+      {/* Beta Settings */}
       <div className="bg-card rounded-lg border p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold mb-1">{t('admin.betaEndTitle')}</h2>
+          <h2 className="text-lg font-semibold mb-1">{t('admin.betaSettings')}</h2>
           <p className="text-sm text-muted-foreground">
-            {t('admin.betaEndDescription')}
+            {t('admin.betaSettingsDescription')}
           </p>
         </div>
+
+        {/* Beta Enabled Switch */}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="beta-enabled" className="cursor-pointer">
+            {t('admin.betaEnabled')}
+          </Label>
+          <Switch
+            id="beta-enabled"
+            checked={betaEnabled}
+            onCheckedChange={setBetaEnabled}
+          />
+        </div>
+
+        {/* Max Beta Users */}
+        <div className="space-y-2">
+          <Label htmlFor="max-beta-users">{t('admin.maxBetaUsers')}</Label>
+          <Input
+            id="max-beta-users"
+            type="number"
+            min="1"
+            value={maxBetaUsers}
+            onChange={(e) => setMaxBetaUsers(parseInt(e.target.value) || 10)}
+            disabled={!betaEnabled}
+          />
+          <p className="text-xs text-muted-foreground">
+            {t('admin.maxBetaUsersHint')}
+          </p>
+        </div>
+
+        {/* Beta End Date */}
         <div className="space-y-2">
           <Label htmlFor="beta-end-date">{t('admin.betaEndDateLabel')}</Label>
           <Input
@@ -90,6 +126,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
             type="date"
             value={betaEndDate}
             onChange={(e) => setBetaEndDate(e.target.value)}
+            disabled={!betaEnabled}
           />
           <p className="text-xs text-muted-foreground">
             {t('admin.betaEndDateHint')}

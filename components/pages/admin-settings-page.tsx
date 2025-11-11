@@ -9,7 +9,9 @@ import { ArrowLeft } from 'lucide-react'
 type Settings = {
   id: string
   feedbackSystemEnabled: boolean
+  betaEnabled: boolean
   betaEndDate: Date | null
+  maxBetaUsers: number
   updatedAt: Date
   updatedBy: string | null
 }

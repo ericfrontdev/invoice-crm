@@ -348,7 +348,9 @@ model FeedbackMessage {
 model SystemSettings {
   id                    String    @id @default(cuid())
   feedbackSystemEnabled Boolean   @default(true)
+  betaEnabled           Boolean   @default(false) // Activer/désactiver le mode bêta
   betaEndDate           DateTime? // Date de fin de la période bêta (null = pas de limite)
+  maxBetaUsers          Int       @default(10)    // Nombre maximum d'utilisateurs pendant le bêta
   updatedAt             DateTime  @updatedAt
   updatedBy             String?   // Super admin qui a modifié
 }

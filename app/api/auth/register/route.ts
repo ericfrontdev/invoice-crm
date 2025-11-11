@@ -13,6 +13,21 @@ export async function POST(req: Request) {
       )
     }
 
+    // Vérifier les paramètres beta
+    const settings = await prisma.systemSettings.findFirst()
+
+    if (settings?.betaEnabled) {
+      // Compter le nombre d'utilisateurs actuels
+      const userCount = await prisma.user.count()
+
+      if (userCount >= settings.maxBetaUsers) {
+        return NextResponse.json(
+          { error: 'Le nombre maximum d\'inscriptions pour la période bêta a été atteint' },
+          { status: 403 }
+        )
+      }
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
