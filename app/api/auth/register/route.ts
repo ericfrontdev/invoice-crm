@@ -4,28 +4,46 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json()
+    const { name, email, password, invitationCode } = await req.json()
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !invitationCode) {
       return NextResponse.json(
         { error: 'auth.allFieldsRequired' },
         { status: 400 }
       )
     }
 
-    // Vérifier les paramètres beta
-    const settings = await prisma.systemSettings.findFirst()
+    // Vérifier le code d'invitation
+    const code = await prisma.invitationCode.findUnique({
+      where: { code: invitationCode.toUpperCase() }
+    })
 
-    if (settings?.betaEnabled) {
-      // Compter le nombre d'utilisateurs actuels
-      const userCount = await prisma.user.count()
+    if (!code) {
+      return NextResponse.json(
+        { error: 'auth.invalidInvitationCode' },
+        { status: 400 }
+      )
+    }
 
-      if (userCount >= settings.maxBetaUsers) {
-        return NextResponse.json(
-          { error: 'auth.betaLimitReached' },
-          { status: 403 }
-        )
-      }
+    if (!code.active) {
+      return NextResponse.json(
+        { error: 'auth.invitationCodeDeactivated' },
+        { status: 400 }
+      )
+    }
+
+    if (code.usedBy) {
+      return NextResponse.json(
+        { error: 'auth.invitationCodeAlreadyUsed' },
+        { status: 400 }
+      )
+    }
+
+    if (code.expiresAt && new Date() > code.expiresAt) {
+      return NextResponse.json(
+        { error: 'auth.invitationCodeExpired' },
+        { status: 400 }
+      )
     }
 
     // Check if user already exists
@@ -43,13 +61,25 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create user
+    // Create user (tous les utilisateurs avec code d'invitation sont beta testers)
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        betaTester: true,
+        lifetimeDiscount: 50, // 50% de réduction à vie pour les beta testers
       },
+    })
+
+    // Marquer le code comme utilisé
+    await prisma.invitationCode.update({
+      where: { id: code.id },
+      data: {
+        usedBy: user.id,
+        usedAt: new Date(),
+        uses: code.uses + 1
+      }
     })
 
     return NextResponse.json(

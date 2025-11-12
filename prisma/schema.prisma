@@ -371,3 +371,28 @@ model WebhookLog {
   @@index([processedAt])
   @@index([status])
 }
+
+model InvitationCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  type      String   // "ALPHA" ou "BETA"
+  maxUses   Int      @default(1) // Nombre max d'utilisations (1 = code unique)
+  uses      Int      @default(0) // Nombre d'utilisations actuelles
+  active    Boolean  @default(true)
+
+  // Tracking
+  createdBy String?  // ID de l'utilisateur qui a créé ce code (admin)
+  createdAt DateTime @default(now())
+  expiresAt DateTime? // Date d'expiration optionnelle
+
+  // Qui l'a utilisé
+  usedBy    String?  // ID de l'utilisateur qui a utilisé ce code (null si pas encore utilisé)
+  usedAt    DateTime? // Date d'utilisation
+
+  // Notes personnelles
+  notes     String?  // Ex: "Code pour Jean Tremblay - Designer"
+
+  @@index([code])
+  @@index([type])
+  @@index([active])
+}

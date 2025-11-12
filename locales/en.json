@@ -140,7 +140,12 @@
     "registrationsClosed": "Registrations are temporarily closed. Please try again later.",
     "userAlreadyExists": "A user with this email already exists",
     "allFieldsRequired": "All fields are required",
-    "userCreationError": "Error creating user"
+    "userCreationError": "Error creating user",
+    "invitationCode": "Invitation Code",
+    "invalidInvitationCode": "Invalid invitation code",
+    "invitationCodeDeactivated": "This invitation code has been deactivated",
+    "invitationCodeAlreadyUsed": "This invitation code has already been used",
+    "invitationCodeExpired": "This invitation code has expired"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -396,6 +401,8 @@
     "resendInvoice": "Resend invoice",
     "copyPaymentLink": "Copy payment link",
     "copyLink": "Copy link",
+    "paymentLinkCopied": "Payment link copied!",
+    "copyError": "Error copying",
     "viewReminders": "View reminders",
     "oneTimeInvoice": "One-time Invoice",
     "thankYou": "Thank you for your business!"

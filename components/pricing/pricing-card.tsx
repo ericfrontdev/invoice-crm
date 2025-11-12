@@ -10,7 +10,10 @@ interface PricingCardProps {
   lifetimeDiscount: number
 }
 
-export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps) {
+export function PricingCard({
+  isBetaTester,
+  lifetimeDiscount,
+}: PricingCardProps) {
   const { t } = useTranslation()
 
   const features = [
@@ -26,10 +29,11 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const regularPrice = 29
-  const discountedPrice = isBetaTester && lifetimeDiscount > 0
-    ? regularPrice * (1 - lifetimeDiscount / 100)
-    : regularPrice
+  const regularPrice = 39
+  const discountedPrice =
+    isBetaTester && lifetimeDiscount > 0
+      ? regularPrice * (1 - lifetimeDiscount / 100)
+      : regularPrice
 
   const handleSubscribe = async () => {
     setLoading(true)
@@ -84,7 +88,9 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
         <div className="text-center mb-8">
           <div className="text-5xl font-bold mb-2">
             {discountedPrice.toFixed(2)}$
-            <span className="text-2xl text-muted-foreground font-normal">/{t('pricing.perMonth')}</span>
+            <span className="text-2xl text-muted-foreground font-normal">
+              /{t('pricing.perMonth')}
+            </span>
           </div>
 
           {isBetaTester && lifetimeDiscount > 0 && (
@@ -107,7 +113,10 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
         {/* Features */}
         <div className="space-y-3 mb-8">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-3">
+            <div
+              key={index}
+              className="flex items-start gap-3"
+            >
               <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
               <span className="text-base">{feature}</span>
             </div>
@@ -149,9 +158,13 @@ export function PricingCard({ isBetaTester, lifetimeDiscount }: PricingCardProps
           <div className="flex gap-3">
             <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-yellow-800 dark:text-yellow-200">
-              <p className="font-semibold mb-1">⚠️ {t('pricing.importantBetaTesters')}</p>
+              <p className="font-semibold mb-1">
+                ⚠️ {t('pricing.importantBetaTesters')}
+              </p>
               <p>
-                {t('pricing.betaTesterWarning1')} {lifetimeDiscount}% {t('pricing.betaTesterWarning2')} {regularPrice}$/{t('pricing.perMonth')} {t('pricing.betaTesterWarning3')}
+                {t('pricing.betaTesterWarning1')} {lifetimeDiscount}%{' '}
+                {t('pricing.betaTesterWarning2')} {regularPrice}$/
+                {t('pricing.perMonth')} {t('pricing.betaTesterWarning3')}
               </p>
             </div>
           </div>

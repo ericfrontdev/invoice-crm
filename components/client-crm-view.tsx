@@ -115,7 +115,7 @@ export function ClientCRMView({ client, openProjectModal = false }: { client: Cl
   }, [router])
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-visible">
       <div className="space-y-6">
         {/* Info client */}
         <div className="bg-card rounded-lg border p-6">

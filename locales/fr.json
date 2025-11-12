@@ -145,7 +145,12 @@
     "registrationsClosed": "Les inscriptions sont temporairement fermées. Veuillez réessayer plus tard.",
     "userAlreadyExists": "Un utilisateur avec cet email existe déjà",
     "allFieldsRequired": "Tous les champs sont requis",
-    "userCreationError": "Erreur lors de la création de l'utilisateur"
+    "userCreationError": "Erreur lors de la création de l'utilisateur",
+    "invitationCode": "Code d'invitation",
+    "invalidInvitationCode": "Code d'invitation invalide",
+    "invitationCodeDeactivated": "Ce code d'invitation a été désactivé",
+    "invitationCodeAlreadyUsed": "Ce code d'invitation a déjà été utilisé",
+    "invitationCodeExpired": "Ce code d'invitation a expiré"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -359,6 +364,8 @@
     "resendInvoice": "Renvoyer la facture",
     "copyPaymentLink": "Copier le lien de paiement",
     "copyLink": "Copier lien",
+    "paymentLinkCopied": "Lien de paiement copié!",
+    "copyError": "Erreur lors de la copie",
     "viewReminders": "Voir les rappels",
     "oneTimeInvoice": "Facture ponctuelle",
     "paypal": {
@@ -764,7 +771,6 @@
     },
     "notes": "Notes",
     "projects": "Projets",
-    "invoices": "Factures",
     "addNote": "Ajouter une note",
     "editNote": "Modifier la note",
     "deleteNote": "Supprimer la note",

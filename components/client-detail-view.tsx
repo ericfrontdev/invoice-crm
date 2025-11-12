@@ -91,7 +91,7 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
     .reduce((sum, amount) => sum + amount.amount, 0)
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-visible">
       {/* Section infos client - fixe */}
       <div className="container mx-auto px-4 mb-8">
         <div className="bg-card rounded-lg border p-6">
@@ -228,9 +228,6 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                         <th className="text-left py-3 px-4 font-medium">
                           {t('crm.creationDate')}
                         </th>
-                        <th className="text-left py-3 px-4 font-medium">
-                          {t('invoices.dueDate')}
-                        </th>
                         <th className="text-right py-3 px-4 font-medium">
                           {t('common.amount')}
                         </th>
@@ -251,11 +248,6 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           <td className="py-4 px-4">{amount.description}</td>
                           <td className="py-4 px-4 text-muted-foreground">
                             {new Date(amount.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">
-                            {amount.dueDate
-                              ? new Date(amount.dueDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
-                              : '-'}
                           </td>
                           <td className="py-4 px-4 text-right font-semibold">
                             {amount.amount.toFixed(2)} $
@@ -292,12 +284,6 @@ export function ClientDetailView({ client }: { client: ClientWithAmounts }) {
                           <div className="space-y-1 text-sm text-muted-foreground">
                             <p>
                               {t('crm.created')}: {new Date(amount.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')}
-                            </p>
-                            <p>
-                              {t('crm.due')}:{' '}
-                              {amount.dueDate
-                                ? new Date(amount.dueDate).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US')
-                                : '-'}
                             </p>
                           </div>
                         </div>

@@ -39,7 +39,7 @@ export function ClientDetailPageClient({ client }: ClientDetailPageClientProps) 
   const { t } = useTranslation()
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-visible">
       <div className="container mx-auto px-4 py-8">
         {/* Bouton retour */}
         <div className="mb-6">

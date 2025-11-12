@@ -83,7 +83,7 @@ export default async function ClientCRMPage(props: {
   const client = await getClientWithCRMData(params.id, session.user.id)
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-visible">
       <div className="container mx-auto px-4 py-8">
         {/* Bouton retour */}
         <div className="mb-6">

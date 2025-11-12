@@ -114,7 +114,7 @@ export default async function RootLayout({
             ) : (
               <>
                 <Navigation user={session?.user} isSuperAdmin={isAdmin} />
-                <main className="min-h-screen bg-background">{children}</main>
+                <main className="min-h-screen bg-background overflow-x-visible">{children}</main>
                 {session?.user && <FeedbackWidget />}
               </>
             )}
