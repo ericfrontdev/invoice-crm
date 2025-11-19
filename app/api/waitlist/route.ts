@@ -72,6 +72,9 @@ export async function POST(req: Request) {
 
     // Si le contact existe déjà dans Brevo
     if (!brevoResponse.ok) {
+      console.error('Brevo API error - Status:', brevoResponse.status)
+      console.error('Brevo API error - Response:', JSON.stringify(brevoData, null, 2))
+
       if (brevoData.code === 'duplicate_parameter') {
         return NextResponse.json(
           { error: 'waitlist.alreadyOnWaitlist' },
@@ -79,9 +82,8 @@ export async function POST(req: Request) {
         )
       }
 
-      console.error('Brevo API error:', brevoData)
       return NextResponse.json(
-        { error: 'waitlist.errorAdding' },
+        { error: 'waitlist.errorAdding', details: brevoData.message || 'Unknown error' },
         { status: 500 }
       )
     }
