@@ -21,18 +21,6 @@ export async function POST(req: Request) {
       )
     }
 
-    // Vérifier si l'email existe déjà dans la waitlist
-    const existingEntry = await prisma.waitlistEntry.findUnique({
-      where: { email },
-    })
-
-    if (existingEntry) {
-      return NextResponse.json(
-        { error: 'waitlist.alreadyOnWaitlist' },
-        { status: 400 }
-      )
-    }
-
     // Vérifier si l'utilisateur n'est pas déjà inscrit
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -45,16 +33,61 @@ export async function POST(req: Request) {
       )
     }
 
-    // Ajouter à la waitlist
-    const entry = await prisma.waitlistEntry.create({
-      data: {
-        name,
-        email,
+    // Ajouter à la liste Brevo
+    const brevoApiKey = process.env.BREVO_API_KEY
+    const brevoListId = process.env.BREVO_WAITLIST_ID || '3'
+
+    if (!brevoApiKey) {
+      console.error('BREVO_API_KEY not configured')
+      return NextResponse.json(
+        { error: 'waitlist.errorAdding' },
+        { status: 500 }
+      )
+    }
+
+    // Séparer prénom et nom
+    const nameParts = name.trim().split(' ')
+    const firstName = nameParts[0]
+    const lastName = nameParts.slice(1).join(' ') || ''
+
+    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': brevoApiKey,
+        'content-type': 'application/json'
       },
+      body: JSON.stringify({
+        email: email,
+        attributes: {
+          FIRSTNAME: firstName,
+          LASTNAME: lastName,
+        },
+        listIds: [parseInt(brevoListId)],
+        updateEnabled: true, // Met à jour si le contact existe déjà
+      })
     })
 
+    const brevoData = await brevoResponse.json()
+
+    // Si le contact existe déjà dans Brevo
+    if (!brevoResponse.ok) {
+      if (brevoData.code === 'duplicate_parameter') {
+        return NextResponse.json(
+          { error: 'waitlist.alreadyOnWaitlist' },
+          { status: 400 }
+        )
+      }
+
+      console.error('Brevo API error:', brevoData)
+      return NextResponse.json(
+        { error: 'waitlist.errorAdding' },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json(
-      { message: 'waitlist.successfullyAdded', id: entry.id },
+      { message: 'waitlist.successfullyAdded' },
       { status: 201 }
     )
   } catch (error) {
