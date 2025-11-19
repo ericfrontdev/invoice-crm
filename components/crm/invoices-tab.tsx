@@ -27,6 +27,7 @@ type Invoice = {
   tvq: number
   total: number
   createdAt: Date
+  dueDate: Date | null
   project: {
     id: string
     name: string
@@ -53,6 +54,13 @@ const statusColors = {
   draft: 'bg-gray-100 text-gray-800 dark:bg-gray-400/10 dark:text-gray-300',
   sent: 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-300',
   paid: 'bg-green-100 text-green-800 dark:bg-green-400/10 dark:text-green-300',
+  overdue: 'bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300',
+}
+
+// Helper to check if invoice is overdue
+const isOverdue = (invoice: Invoice) => {
+  if (invoice.status !== 'sent' || !invoice.dueDate) return false
+  return new Date(invoice.dueDate) < new Date()
 }
 
 // Status labels will be dynamically translated using i18n hook
@@ -433,13 +441,13 @@ export function InvoicesTab({
                     <td className="p-3">
                       <span
                         className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                          statusColors[
-                            invoice.status as keyof typeof statusColors
-                          ] || statusColors.draft
+                          isOverdue(invoice)
+                            ? statusColors.overdue
+                            : statusColors[invoice.status as keyof typeof statusColors] || statusColors.draft
                         }`}
                       >
                         {invoice.status === 'draft' && t('invoices.draft')}
-                        {invoice.status === 'sent' && t('invoices.sent')}
+                        {invoice.status === 'sent' && (isOverdue(invoice) ? t('invoices.overdue') : t('invoices.sent'))}
                         {invoice.status === 'paid' && t('invoices.paid')}
                         {!['draft', 'sent', 'paid'].includes(invoice.status) && invoice.status}
                       </span>

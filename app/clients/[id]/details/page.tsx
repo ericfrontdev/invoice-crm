@@ -40,7 +40,16 @@ async function getClientWithCRMData(id: string, userId: string) {
       },
       invoices: {
         orderBy: { createdAt: 'desc' },
-        include: {
+        select: {
+          id: true,
+          number: true,
+          status: true,
+          subtotal: true,
+          tps: true,
+          tvq: true,
+          total: true,
+          createdAt: true,
+          dueDate: true,
           project: {
             select: {
               id: true,
