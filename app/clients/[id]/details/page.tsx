@@ -71,7 +71,7 @@ async function getClientWithCRMData(id: string, userId: string) {
 
 export default async function ClientCRMPage(props: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ createProject?: string }>
+  searchParams: Promise<{ createProject?: string; tab?: string }>
 }) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -95,7 +95,11 @@ export default async function ClientCRMPage(props: {
           </Link>
         </div>
 
-        <ClientCRMView client={client} openProjectModal={searchParams.createProject === 'true'} />
+        <ClientCRMView
+          client={client}
+          openProjectModal={searchParams.createProject === 'true'}
+          initialTab={searchParams.tab}
+        />
       </div>
     </div>
   )

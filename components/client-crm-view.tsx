@@ -72,10 +72,10 @@ type ClientWithCRM = {
   }>
 }
 
-export function ClientCRMView({ client, openProjectModal = false }: { client: ClientWithCRM; openProjectModal?: boolean }) {
+export function ClientCRMView({ client, openProjectModal = false, initialTab }: { client: ClientWithCRM; openProjectModal?: boolean; initialTab?: string }) {
   const { t } = useTranslation()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview')
 
   // Modal states shared across tabs
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)

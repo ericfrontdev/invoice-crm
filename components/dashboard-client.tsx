@@ -188,7 +188,7 @@ export function DashboardClient({
                       <p className="text-xs text-muted-foreground">
                         {t('dashboard.client')}{' '}
                         <Link
-                          href={`/clients/${item.client.id}`}
+                          href={`/clients/${item.client.id}/details?tab=invoices`}
                           className="underline"
                         >
                           {item.client.name}
