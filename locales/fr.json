@@ -364,6 +364,7 @@
     "defaultDueDate": "Par défaut: 30 jours après la date de création",
     "createInvoice": "Créer la facture",
     "noInvoices": "Aucune facture",
+    "standaloneInvoices": "Factures ponctuelles",
     "createFirstInvoice": "Créez votre première facture",
     "invoiceCreated": "Facture créée avec succès",
     "invoiceUpdated": "Facture mise à jour avec succès",
