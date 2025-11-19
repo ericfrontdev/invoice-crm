@@ -365,6 +365,7 @@
     "createInvoice": "Créer la facture",
     "noInvoices": "Aucune facture",
     "standaloneInvoices": "Factures ponctuelles",
+    "projectInvoices": "Factures de projets",
     "createFirstInvoice": "Créez votre première facture",
     "invoiceCreated": "Facture créée avec succès",
     "invoiceUpdated": "Facture mise à jour avec succès",

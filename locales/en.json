@@ -394,6 +394,7 @@
     "cancelConfirm": "Are you sure you want to cancel this invoice?",
     "noInvoices": "No invoices yet",
     "standaloneInvoices": "Standalone Invoices",
+    "projectInvoices": "Project Invoices",
     "createFirstInvoice": "Create your first invoice to get started",
     "filters": {
       "all": "All Invoices",
