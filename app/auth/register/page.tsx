@@ -16,7 +16,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [invitationCode, setInvitationCode] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [registrationOpen, setRegistrationOpen] = useState(true)
@@ -29,6 +28,11 @@ export default function RegisterPage() {
         const res = await fetch('/api/auth/beta-status')
         const data = await res.json()
         setRegistrationOpen(data.registrationOpen)
+
+        // Rediriger vers la waitlist si les inscriptions sont fermées
+        if (!data.registrationOpen) {
+          router.push('/waitlist')
+        }
       } catch (error) {
         console.error('Error checking beta status:', error)
         // En cas d'erreur, autoriser l'inscription
@@ -39,7 +43,7 @@ export default function RegisterPage() {
     }
 
     checkBetaStatus()
-  }, [])
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,7 +66,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, invitationCode }),
+        body: JSON.stringify({ name, email, password }),
       })
 
       const data = await res.json()
@@ -173,25 +177,6 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                required
-                disabled={!registrationOpen}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="invitationCode"
-                className="block text-sm font-medium mb-2"
-              >
-                {t('auth.invitationCode')}
-              </label>
-              <input
-                id="invitationCode"
-                type="text"
-                value={invitationCode}
-                onChange={(e) => setInvitationCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-mono"
-                placeholder="ALPHA-2025-XXXXXX"
                 required
                 disabled={!registrationOpen}
               />

@@ -396,3 +396,15 @@ model InvitationCode {
   @@index([type])
   @@index([active])
 }
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  notified  Boolean  @default(false) // A été notifié quand des places se libèrent
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([notified])
+}
