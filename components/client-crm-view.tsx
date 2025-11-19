@@ -53,6 +53,7 @@ type ClientWithCRM = {
     tvq: number
     total: number
     createdAt: Date
+    dueDate: Date | null
     project: {
       id: string
       name: string
