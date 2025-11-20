@@ -25,8 +25,23 @@ const messages: Record<Locale, Record<string, any>> = {
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('fr')
 
-  // Load locale from localStorage on mount
+  // Load locale from localStorage on mount, or from URL params
   useEffect(() => {
+    // Check for lang in URL params (from landing page)
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlLang = urlParams.get('lang')
+    if (urlLang === 'en' || urlLang === 'fr') {
+      localStorage.setItem('locale', urlLang)
+      setLocaleState(urlLang)
+      // Clean URL
+      urlParams.delete('lang')
+      const newUrl = urlParams.toString()
+        ? `${window.location.pathname}?${urlParams.toString()}`
+        : window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+      return
+    }
+
     const savedLocale = localStorage.getItem('locale') as Locale | null
     if (savedLocale && (savedLocale === 'en' || savedLocale === 'fr')) {
       setLocaleState(savedLocale)

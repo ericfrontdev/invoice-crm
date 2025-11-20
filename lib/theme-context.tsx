@@ -31,6 +31,21 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(defaultTheme)
 
   useEffect(() => {
+    // Check for theme in URL params (from landing page)
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlTheme = urlParams.get('theme')
+    if (urlTheme === 'dark' || urlTheme === 'light') {
+      localStorage.setItem(storageKey, urlTheme)
+      setTheme(urlTheme)
+      // Clean URL
+      urlParams.delete('theme')
+      const newUrl = urlParams.toString()
+        ? `${window.location.pathname}?${urlParams.toString()}`
+        : window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+      return
+    }
+
     const storedTheme = localStorage.getItem(storageKey) as Theme
     if (storedTheme) {
       setTheme(storedTheme)
