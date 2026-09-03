@@ -22,6 +22,8 @@ type Invoice = {
   id: string
   number: string
   status: 'draft' | 'sent' | 'paid' | string
+  type?: 'invoice' | 'receipt' | string
+  paymentMethod?: string | null
   subtotal: number
   tps: number
   tvq: number
@@ -439,11 +441,14 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                         statusColors[inv.status as keyof typeof statusColors] || statusColors.draft
                       }`}
                     >
-                      {inv.status === 'draft' && t('invoices.draft')}
-                      {inv.status === 'sent' && t('invoices.sent')}
-                      {inv.status === 'paid' && t('invoices.paid')}
-                      {inv.status === 'archived' && t('common.archive')}
-                      {!['draft', 'sent', 'paid', 'archived'].includes(inv.status) && inv.status}
+                      {inv.type === 'receipt' && t('receipts.receipt')}
+                      {inv.type !== 'receipt' && inv.status === 'draft' && t('invoices.draft')}
+                      {inv.type !== 'receipt' && inv.status === 'sent' && t('invoices.sent')}
+                      {inv.type !== 'receipt' && inv.status === 'paid' && t('invoices.paid')}
+                      {inv.type !== 'receipt' && inv.status === 'archived' && t('common.archive')}
+                      {inv.type !== 'receipt' &&
+                        !['draft', 'sent', 'paid', 'archived'].includes(inv.status) &&
+                        inv.status}
                     </span>
                     {inv.status === 'sent' && inv.dueDate && new Date(inv.dueDate) < new Date() && (
                       <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300">
@@ -482,8 +487,8 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                     </Tooltip>
 
                     {/* Action contextuelle selon le statut */}
-                    {inv.status === 'draft' && inv.client?.email && (
-                      <Tooltip content={t('invoices.sendInvoice')}>
+                    {(inv.status === 'draft' || inv.type === 'receipt') && inv.client?.email && (
+                      <Tooltip content={inv.type === 'receipt' ? t('receipts.sendReceipt') : t('invoices.sendInvoice')}>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -523,7 +528,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {/* Renvoyer (si sent) */}
-                        {inv.status === 'sent' && inv.client?.email && (
+                        {inv.status === 'sent' && inv.type !== 'receipt' && inv.client?.email && (
                           <DropdownMenuItem
                             onClick={() => doAction(inv.id, 'send')}
                             disabled={busyId === inv.id}
@@ -534,15 +539,17 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                         )}
 
                         {/* Voir les rappels */}
+                        {inv.type !== 'receipt' && (
                         <DropdownMenuItem asChild>
                           <Link href={`/factures/${inv.id}/rappels`}>
                             <History className="h-4 w-4 mr-2" />
                             {t('invoices.viewReminders')}
                           </Link>
                         </DropdownMenuItem>
+                        )}
 
-                        {/* Copier lien (si non-draft) */}
-                        {inv.status !== 'draft' && (
+                        {/* Copier lien de paiement (jamais pour un reçu: déjà payé) */}
+                        {inv.status !== 'draft' && inv.type !== 'receipt' && (
                           <DropdownMenuItem
                             onClick={() => handleCopyPaymentLink(inv.id)}
                           >
@@ -552,7 +559,7 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
                         )}
 
                         {/* Marquer payée (si non-paid) */}
-                        {inv.status !== 'paid' && (
+                        {inv.status !== 'paid' && inv.type !== 'receipt' && (
                           <DropdownMenuItem
                             onClick={() => doAction(inv.id, 'paid')}
                             disabled={busyId === inv.id}

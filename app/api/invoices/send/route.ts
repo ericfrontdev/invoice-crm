@@ -8,6 +8,15 @@ import { logger } from '@/lib/logger'
 
 const INVOICE_FROM_EMAIL = process.env.INVOICE_FROM_EMAIL || process.env.EMAIL_FROM || 'invoices@solopack.app'
 
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  cash: 'Comptant',
+  interac: 'Interac',
+  card: 'Carte',
+  transfer: 'Virement bancaire',
+  cheque: 'Chèque',
+  other: 'Autre',
+}
+
 export async function POST(req: Request) {
   try {
     // Check authentication
@@ -66,8 +75,10 @@ export async function POST(req: Request) {
     }
 
     // Préparer les données pour l'email
+    const isReceipt = invoice.type === 'receipt'
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-    const paymentUrl = invoice.client.user.paymentProvider
+    // Un reçu atteste d'un paiement déjà encaissé: pas de lien de paiement
+    const paymentUrl = !isReceipt && invoice.client.user.paymentProvider
       ? `${baseUrl}/invoices/${invoice.id}/pay`
       : undefined
 
@@ -87,6 +98,17 @@ export async function POST(req: Request) {
       total: invoice.total,
       invoiceId: invoice.id,
       paymentUrl,
+      documentType: isReceipt ? ('receipt' as const) : ('invoice' as const),
+      paidAt: invoice.paidAt
+        ? new Date(invoice.paidAt).toLocaleDateString('fr-CA', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+        : undefined,
+      paymentMethodLabel: invoice.paymentMethod
+        ? PAYMENT_METHOD_LABELS[invoice.paymentMethod] || invoice.paymentMethod
+        : undefined,
     }
 
     // Générer le HTML de l'email
@@ -100,7 +122,7 @@ export async function POST(req: Request) {
       const { data, error } = await resend.emails.send({
         from: `${senderName} <${INVOICE_FROM_EMAIL}>`,
         to: invoice.client.email,
-        subject: `Facture ${invoice.number}`,
+        subject: `${isReceipt ? 'Reçu' : 'Facture'} ${invoice.number}`,
         html: emailHtml,
       })
 
@@ -115,16 +137,18 @@ export async function POST(req: Request) {
       // Continue quand même pour mettre à jour le statut
     }
 
-    // Mettre à jour le statut à 'sent'
-    const updatedInvoice = await prisma.invoice.update({
-      where: { id: invoiceId },
-      data: { status: 'sent' },
-    })
+    // Un reçu reste "paid": seul l'envoi d'une facture fait passer à 'sent'
+    const updatedInvoice = isReceipt
+      ? invoice
+      : await prisma.invoice.update({
+          where: { id: invoiceId },
+          data: { status: 'sent' },
+        })
 
     return NextResponse.json({ ok: true, invoice: updatedInvoice }, { status: 200 })
   } catch (e) {
     logger.error('[invoices:send] Error:', e)
-    return NextResponse.json({ error: "Impossible d'envoyer la facture" }, { status: 500 })
+    return NextResponse.json({ error: "Impossible d'envoyer le document" }, { status: 500 })
   }
 }
 

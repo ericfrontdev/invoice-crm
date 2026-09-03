@@ -32,6 +32,11 @@ async function getInvoice(id: string) {
     notFound()
   }
 
+  // Un reçu atteste d'un paiement déjà encaissé: il n'y a rien à payer.
+  if (invoice.type === 'receipt') {
+    notFound()
+  }
+
   return invoice
 }
 

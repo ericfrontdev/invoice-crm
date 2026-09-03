@@ -24,24 +24,44 @@ type InvoiceItem = {
   amount: string
 }
 
+const PAYMENT_METHODS = ['cash', 'interac', 'card', 'transfer', 'cheque', 'other'] as const
+type PaymentMethod = (typeof PAYMENT_METHODS)[number]
+
+const today = () => new Date().toISOString().split('T')[0]
+
+export type ReceiptDetails = {
+  paidAt: string
+  paymentMethod: PaymentMethod
+}
+
 export function CreateInvoiceForProjectModal({
   isOpen,
   onClose,
   onSave,
   project,
   client,
+  mode = 'invoice',
 }: {
   isOpen: boolean
   onClose: () => void
-  onSave: (items: { description: string; amount: number }[], dueDate: string) => Promise<void>
+  onSave: (
+    items: { description: string; amount: number }[],
+    dueDate: string,
+    receipt?: ReceiptDetails
+  ) => Promise<void>
   project?: Project | null
   client?: Client | null
+  /** 'receipt' documente un service déjà payé: date et mode de paiement au lieu d'une échéance. */
+  mode?: 'invoice' | 'receipt'
 }) {
   const { t } = useTranslation()
+  const isReceipt = mode === 'receipt'
   const [items, setItems] = useState<InvoiceItem[]>([
     { description: '', amount: '' },
   ])
   const [dueDate, setDueDate] = useState<string>('')
+  const [paidAt, setPaidAt] = useState<string>('')
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('interac')
 
   // Réinitialiser les items et calculer la date d'échéance quand la modale s'ouvre
   useEffect(() => {
@@ -51,6 +71,9 @@ export function CreateInvoiceForProjectModal({
       const defaultDueDate = new Date()
       defaultDueDate.setDate(defaultDueDate.getDate() + 30)
       setDueDate(defaultDueDate.toISOString().split('T')[0])
+      // Un reçu documente un paiement déjà encaissé: aujourd'hui par défaut
+      setPaidAt(today())
+      setPaymentMethod('interac')
     }
   }, [isOpen])
 
@@ -80,15 +103,22 @@ export function CreateInvoiceForProjectModal({
         amount: parseFloat(item.amount),
       }))
 
-    if (validItems.length === 0 || !dueDate) return
+    if (validItems.length === 0) return
+    if (isReceipt ? !paidAt : !dueDate) return
 
-    await onSave(validItems, dueDate)
+    await onSave(
+      validItems,
+      dueDate,
+      isReceipt ? { paidAt, paymentMethod } : undefined
+    )
 
     // Réinitialiser
     setItems([{ description: '', amount: '' }])
     const defaultDueDate = new Date()
     defaultDueDate.setDate(defaultDueDate.getDate() + 30)
     setDueDate(defaultDueDate.toISOString().split('T')[0])
+    setPaidAt(today())
+    setPaymentMethod('interac')
   }
 
   const handleClose = () => {
@@ -96,6 +126,8 @@ export function CreateInvoiceForProjectModal({
     const defaultDueDate = new Date()
     defaultDueDate.setDate(defaultDueDate.getDate() + 30)
     setDueDate(defaultDueDate.toISOString().split('T')[0])
+    setPaidAt(today())
+    setPaymentMethod('interac')
     onClose()
   }
 
@@ -104,11 +136,13 @@ export function CreateInvoiceForProjectModal({
     return sum + amount
   }, 0)
 
+  const actionLabel = isReceipt ? t('receipts.createReceipt') : t('invoices.createInvoice')
+
   const modalTitle = project
-    ? `${t('invoices.createInvoice')} - ${project.name}`
+    ? `${actionLabel} - ${project.name}`
     : client
-    ? `${t('invoices.createInvoice')} - ${client.name}`
-    : t('invoices.createInvoice')
+    ? `${actionLabel} - ${client.name}`
+    : actionLabel
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -120,7 +154,7 @@ export function CreateInvoiceForProjectModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>{t('invoices.billingItems')}</Label>
+              <Label>{isReceipt ? t('receipts.serviceItems') : t('invoices.billingItems')}</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -143,7 +177,11 @@ export function CreateInvoiceForProjectModal({
                     {t('common.description')}
                   </Label>
                   <Textarea
-                    placeholder={t('invoices.workDescriptionPlaceholder')}
+                    placeholder={
+                      isReceipt
+                        ? t('receipts.serviceDescriptionPlaceholder')
+                        : t('invoices.workDescriptionPlaceholder')
+                    }
                     value={item.description}
                     onChange={(e) => updateItem(index, 'description', e.target.value)}
                     rows={2}
@@ -190,19 +228,54 @@ export function CreateInvoiceForProjectModal({
             ))}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="dueDate">{t('invoices.dueDate')}</Label>
-            <Input
-              id="dueDate"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('invoices.defaultDueDate')}
-            </p>
-          </div>
+          {isReceipt ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="paidAt">{t('receipts.paymentDate')}</Label>
+                <Input
+                  id="paidAt"
+                  type="date"
+                  value={paidAt}
+                  max={today()}
+                  onChange={(e) => setPaidAt(e.target.value)}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t('receipts.paymentDateHint')}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">{t('receipts.paymentMethod')}</Label>
+                <select
+                  id="paymentMethod"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                  className="w-full h-9 px-3 rounded-md border bg-background text-sm"
+                  required
+                >
+                  {PAYMENT_METHODS.map((method) => (
+                    <option key={method} value={method}>
+                      {t(`receipts.methods.${method}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">{t('invoices.dueDate')}</Label>
+              <Input
+                id="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('invoices.defaultDueDate')}
+              </p>
+            </div>
+          )}
 
           {items.length > 0 && (
             <div className="flex justify-end pt-2 border-t">
@@ -218,7 +291,7 @@ export function CreateInvoiceForProjectModal({
               {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {t('invoices.createInvoice')}
+              {actionLabel}
             </Button>
           </div>
         </form>

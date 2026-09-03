@@ -42,6 +42,9 @@ type InvoiceForView = {
   id: string
   number: string
   status: 'draft' | 'sent' | 'paid' | string
+  type?: 'invoice' | 'receipt' | string
+  paymentMethod?: string | null
+  paidAt?: string | Date | null
   subtotal: number
   tps: number
   tvq: number
@@ -105,10 +108,15 @@ export function InvoiceViewModal({
   const created = new Date(invoice.createdAt)
 
   // Préparer les données de l'invoice pour le template
+  const isReceipt = invoice.type === 'receipt'
+
   const invoiceData = invoice.user ? {
     id: invoice.id,
     number: invoice.number,
     status: invoice.status,
+    type: invoice.type,
+    paymentMethod: invoice.paymentMethod,
+    paidAt: invoice.paidAt,
     subtotal: invoice.subtotal,
     tps: invoice.tps,
     tvq: invoice.tvq,
@@ -259,10 +267,13 @@ export function InvoiceViewModal({
         <div className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold">{t('invoices.title')}</h3>
+              <h3 className="text-xl font-semibold">
+                {isReceipt ? t('receipts.receipt') : t('invoices.title')}
+              </h3>
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-sm text-muted-foreground">{t('invoices.status')}:</p>
-                {isEditing ? (
+                {/* Un reçu est payé par définition: son statut n'est pas modifiable */}
+                {isEditing && !isReceipt ? (
                   <select
                     value={editedStatus}
                     onChange={(e) => setEditedStatus(e.target.value)}
@@ -273,7 +284,9 @@ export function InvoiceViewModal({
                     <option value="paid">paid</option>
                   </select>
                 ) : (
-                  <span className="text-sm">{invoice.status}</span>
+                  <span className="text-sm">
+                    {isReceipt ? t('invoices.paid') : invoice.status}
+                  </span>
                 )}
               </div>
 

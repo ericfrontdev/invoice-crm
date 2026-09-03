@@ -331,7 +331,10 @@
     "paymentTerms": "Paiement sous 30 jours",
     "paymentMethodLabel": "Mode de paiement",
     "paymentMethod": "Virement bancaire",
-    "thankYou": "Merci pour votre confiance !"
+    "thankYou": "Merci pour votre confiance !",
+    "receiptTitle": "Reçu",
+    "paidOn": "Payé le",
+    "receiptThankYou": "Merci, ce reçu confirme le paiement reçu."
   },
   "invoices": {
     "title": "Factures",
@@ -417,6 +420,29 @@
     "stripe": {
       "sessionError": "Erreur lors de la création de la session de paiement",
       "initError": "Erreur lors de l'initialisation du paiement Stripe"
+    }
+  },
+  "receipts": {
+    "title": "Reçus",
+    "receipt": "Reçu",
+    "newReceipt": "Nouveau reçu",
+    "createReceipt": "Créer le reçu",
+    "sendReceipt": "Envoyer le reçu",
+    "viewReceipt": "Voir le reçu",
+    "deleteReceipt": "Supprimer le reçu",
+    "noReceipts": "Aucun reçu",
+    "serviceItems": "Services rendus",
+    "serviceDescriptionPlaceholder": "Description du service rendu",
+    "paymentDate": "Date du paiement",
+    "paymentDateHint": "Date à laquelle le paiement a été reçu.",
+    "paymentMethod": "Mode de paiement",
+    "methods": {
+      "cash": "Comptant",
+      "interac": "Interac",
+      "card": "Carte",
+      "transfer": "Virement bancaire",
+      "cheque": "Chèque",
+      "other": "Autre"
     }
   },
   "projects": {

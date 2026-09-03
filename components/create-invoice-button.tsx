@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Plus, FileText, Folder } from 'lucide-react'
+import { Plus, FileText, Folder, ReceiptText } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { CreateInvoiceForProjectModal } from '@/components/crm/create-invoice-for-project-modal'
+import {
+  CreateInvoiceForProjectModal,
+  type ReceiptDetails,
+} from '@/components/crm/create-invoice-for-project-modal'
 import { useTranslation } from '@/lib/i18n-context'
 import { logger } from '@/lib/logger'
 
@@ -42,6 +45,7 @@ export function CreateInvoiceButton() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [mode, setMode] = useState<'invoice' | 'receipt'>('invoice')
 
   // Load clients and projects on mount
   useEffect(() => {
@@ -87,13 +91,22 @@ export function CreateInvoiceButton() {
       })
   }, [])
 
-  const openInvoiceModal = (client: Client, project?: Project) => {
+  const openInvoiceModal = (
+    client: Client,
+    project?: Project,
+    documentMode: 'invoice' | 'receipt' = 'invoice'
+  ) => {
     setSelectedClient(client)
     setSelectedProject(project || null)
+    setMode(documentMode)
     setIsModalOpen(true)
   }
 
-  const handleCreateInvoice = async (items: { description: string; amount: number }[]) => {
+  const handleCreateInvoice = async (
+    items: { description: string; amount: number }[],
+    _dueDate: string,
+    receipt?: ReceiptDetails
+  ) => {
     setCreating(true)
     try {
       const res = await fetch('/api/invoices', {
@@ -103,6 +116,12 @@ export function CreateInvoiceButton() {
           clientId: selectedProject ? selectedProject.clientId : selectedClient?.id,
           projectId: selectedProject?.id || null,
           items,
+          ...(receipt && {
+            type: 'receipt',
+            // Le champ date HTML donne une date seule: on la normalise en ISO complet
+            paidAt: new Date(`${receipt.paidAt}T12:00:00`).toISOString(),
+            paymentMethod: receipt.paymentMethod,
+          }),
         }),
       })
 
@@ -192,6 +211,35 @@ export function CreateInvoiceButton() {
                 </DropdownMenuItem>
               ))
             )}
+
+            <DropdownMenuSeparator />
+
+            {/* Section: Reçu (service déjà payé) */}
+            <DropdownMenuLabel className="flex items-center">
+              <ReceiptText className="h-4 w-4 mr-2" />
+              {t('receipts.receipt')}
+            </DropdownMenuLabel>
+            {clients.length === 0 ? (
+              <div className="px-2 py-2 text-sm text-muted-foreground">
+                {t('clients.noClients')}
+              </div>
+            ) : (
+              clients.map((client) => (
+                <DropdownMenuItem
+                  key={`receipt-${client.id}`}
+                  onClick={() => openInvoiceModal(client, undefined, 'receipt')}
+                  disabled={creating}
+                  className="cursor-pointer"
+                >
+                  <div className="flex-1">
+                    <p className="font-medium">{client.name}</p>
+                    {client.company && (
+                      <p className="text-xs text-muted-foreground">{client.company}</p>
+                    )}
+                  </div>
+                </DropdownMenuItem>
+              ))
+            )}
           </>
         )}
       </DropdownMenuContent>
@@ -203,10 +251,12 @@ export function CreateInvoiceButton() {
         setIsModalOpen(false)
         setSelectedClient(null)
         setSelectedProject(null)
+        setMode('invoice')
       }}
       onSave={handleCreateInvoice}
       project={selectedProject}
       client={selectedClient}
+      mode={mode}
     />
   </>
   )

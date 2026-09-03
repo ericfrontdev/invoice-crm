@@ -27,6 +27,10 @@ interface InvoiceEmailProps {
   total: number
   invoiceId: string
   paymentUrl?: string
+  /** 'receipt' atteste d'un paiement déjà reçu: aucun bouton de paiement. */
+  documentType?: 'invoice' | 'receipt'
+  paidAt?: string
+  paymentMethodLabel?: string
 }
 
 export default function InvoiceEmail({
@@ -41,14 +45,19 @@ export default function InvoiceEmail({
   total,
   invoiceId,
   paymentUrl,
+  documentType = 'invoice',
+  paidAt,
+  paymentMethodLabel,
 }: InvoiceEmailProps) {
   const hasTaxes = tps > 0 || tvq > 0
+  const isReceipt = documentType === 'receipt'
+  const documentLabel = isReceipt ? 'Reçu' : 'Facture'
 
   return (
     <Html>
       <Head />
       <Preview>
-        Facture {invoiceNumber} - Montant: {total.toFixed(2)} $
+        {documentLabel} {invoiceNumber} - Montant: {total.toFixed(2)} $
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -60,13 +69,25 @@ export default function InvoiceEmail({
             <Text style={senderText}>{senderName}</Text>
           </Section>
 
-          <Heading style={h1}>Facture {invoiceNumber}</Heading>
+          <Heading style={h1}>
+            {documentLabel} {invoiceNumber}
+          </Heading>
 
           <Text style={text}>Bonjour {clientName},</Text>
 
           <Text style={text}>
-            Veuillez trouver ci-dessous le détail de votre facture.
+            {isReceipt
+              ? 'Voici le reçu confirmant le paiement reçu. Merci!'
+              : 'Veuillez trouver ci-dessous le détail de votre facture.'}
           </Text>
+
+          {isReceipt && (paidAt || paymentMethodLabel) && (
+            <Text style={text}>
+              {paidAt && <>Paiement reçu le {paidAt}</>}
+              {paidAt && paymentMethodLabel && <> · </>}
+              {paymentMethodLabel && <>Mode de paiement : {paymentMethodLabel}</>}
+            </Text>
+          )}
 
           <Section style={box}>
             <table style={table}>
@@ -154,7 +175,7 @@ export default function InvoiceEmail({
             </table>
           </Section>
 
-          {paymentUrl && (
+          {!isReceipt && paymentUrl && (
             <Section
               style={{
                 padding: '0 48px',
