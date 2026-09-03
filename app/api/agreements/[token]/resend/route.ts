@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
 import PaymentAgreementEmail from '@/emails/payment-agreement-email'
 import { logger } from '@/lib/logger'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const PAYMENT_AGREEMENT_FROM_EMAIL = process.env.PAYMENT_AGREEMENT_FROM_EMAIL || process.env.EMAIL_FROM || 'agreements@solopack.app'
@@ -12,6 +13,17 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params
+
+  // Rate limiting: 5 renvois par heure par IP (endpoint public qui envoie un email)
+  const rateLimitResult = rateLimit(`agreement-resend:${getClientIp(request)}`, {
+    limit: 5,
+    windowMs: 60 * 60 * 1000,
+    message: 'Trop de renvois. Veuillez réessayer plus tard.',
+  })
+
+  if (rateLimitResult) {
+    return rateLimitResult
+  }
 
   try {
     // Récupérer l'entente avec les informations du projet et du client

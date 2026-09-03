@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
 import { logger } from '@/lib/logger'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const EMAIL_FROM = process.env.EMAIL_FROM || 'notifications@solopack.app'
@@ -11,6 +12,17 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params
+
+  // Rate limiting: 10 confirmations par heure par IP (endpoint public, envoie un email)
+  const rateLimitResult = rateLimit(`agreement-confirm:${getClientIp(request)}`, {
+    limit: 10,
+    windowMs: 60 * 60 * 1000,
+    message: 'Trop de tentatives. Veuillez réessayer plus tard.',
+  })
+
+  if (rateLimitResult) {
+    return rateLimitResult
+  }
 
   try {
     // Vérifier que l'entente existe et n'est pas déjà confirmée
