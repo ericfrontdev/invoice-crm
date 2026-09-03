@@ -6,9 +6,10 @@ import { logger } from '@/lib/logger'
  * GET|POST /api/webhooks/cleanup
  *
  * Nettoie les logs de webhooks anciens pour éviter la croissance infinie de la table.
- * Appelé par le cron Vercel configuré dans vercel.json (Vercel Cron envoie une
- * requête GET avec le header `Authorization: Bearer $CRON_SECRET`).
- * La méthode POST reste disponible pour un cron externe ou un déclenchement manuel.
+ * Appelé quotidiennement par .github/workflows/webhook-cleanup.yml (POST), le site
+ * étant hébergé sur Netlify qui ne permet pas de déclarer un cron dans le dépôt.
+ * GET est également accepté: c'est la seule méthode qu'utilise Vercel Cron, et le
+ * garder évite une panne silencieuse si l'hébergement change un jour.
  *
  * Configuration requise:
  * - Ajouter CRON_SECRET dans les variables d'environnement (même token que /api/reminders/check)

@@ -1,6 +1,12 @@
 # Guide de déploiement - SoloPack
 
-## 🚀 Déploiement sur Vercel (Recommandé)
+> **Hébergement actuel : Netlify.** `solopack.app` est servi par Netlify, pas par
+> Vercel. La section Vercel ci-dessous reste valable si vous migrez, mais ce n'est
+> pas la configuration en production aujourd'hui. Conséquence pratique : un
+> `vercel.json` n'a aucun effet, et les tâches planifiées passent par GitHub
+> Actions (voir `WEBHOOK_CLEANUP.md`).
+
+## 🚀 Déploiement sur Vercel (alternative)
 
 ### 1. Préparer la base de données (Neon)
 
