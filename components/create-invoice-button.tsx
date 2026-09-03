@@ -8,8 +8,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
@@ -149,97 +151,116 @@ export function CreateInvoiceButton() {
           {t('invoices.newInvoice')}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent align="end" className="w-56">
         {loading ? (
           <div className="px-2 py-3 text-sm text-muted-foreground text-center">
             {t('common.loading')}
           </div>
         ) : (
           <>
-            {/* Section: Facture ponctuelle */}
-            <DropdownMenuLabel className="flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              {t('invoices.oneTimeInvoice')}
-            </DropdownMenuLabel>
-            {clients.length === 0 ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
-                {t('clients.noClients')}
-              </div>
-            ) : (
-              clients.map((client) => (
-                <DropdownMenuItem
-                  key={client.id}
-                  onClick={() => openInvoiceModal(client)}
-                  disabled={creating}
-                  className="cursor-pointer"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium">{client.name}</p>
-                    {client.company && (
-                      <p className="text-xs text-muted-foreground">{client.company}</p>
-                    )}
-                  </div>
-                </DropdownMenuItem>
-              ))
-            )}
+            {/* Facture ponctuelle → sous-menu des clients */}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer">
+                <FileText className="h-4 w-4 mr-2" />
+                {t('invoices.oneTimeInvoice')}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent className="w-64 max-h-[60vh] overflow-y-auto">
+                  {clients.length === 0 ? (
+                    <div className="px-2 py-2 text-sm text-muted-foreground">
+                      {t('clients.noClients')}
+                    </div>
+                  ) : (
+                    clients.map((client) => (
+                      <DropdownMenuItem
+                        key={client.id}
+                        onClick={() => openInvoiceModal(client)}
+                        disabled={creating}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{client.name}</p>
+                          {client.company && (
+                            <p className="text-xs text-muted-foreground">{client.company}</p>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
 
-            <DropdownMenuSeparator />
+            {/* Facture de projet → sous-menu des projets actifs */}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer">
+                <Folder className="h-4 w-4 mr-2" />
+                {t('invoices.projectInvoices')}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent className="w-64 max-h-[60vh] overflow-y-auto">
+                  {projects.length === 0 ? (
+                    <div className="px-2 py-2 text-sm text-muted-foreground">
+                      {t('projects.noProjects')}
+                    </div>
+                  ) : (
+                    projects.map((project) => (
+                      <DropdownMenuItem
+                        key={project.id}
+                        onClick={() =>
+                          openInvoiceModal(
+                            { id: project.clientId, name: project.client.name },
+                            project
+                          )
+                        }
+                        disabled={creating}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{project.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {project.client.name}
+                          </p>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
 
-            {/* Section: Pour un projet */}
-            <DropdownMenuLabel className="flex items-center">
-              <Folder className="h-4 w-4 mr-2" />
-              {t('projects.title')}
-            </DropdownMenuLabel>
-            {projects.length === 0 ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
-                {t('projects.noProjects')}
-              </div>
-            ) : (
-              projects.map((project) => (
-                <DropdownMenuItem
-                  key={project.id}
-                  onClick={() => openInvoiceModal({ id: project.clientId, name: project.client.name }, project)}
-                  disabled={creating}
-                  className="cursor-pointer"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium">{project.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {project.client.name}
-                    </p>
-                  </div>
-                </DropdownMenuItem>
-              ))
-            )}
-
-            <DropdownMenuSeparator />
-
-            {/* Section: Reçu (service déjà payé) */}
-            <DropdownMenuLabel className="flex items-center">
-              <ReceiptText className="h-4 w-4 mr-2" />
-              {t('receipts.receipt')}
-            </DropdownMenuLabel>
-            {clients.length === 0 ? (
-              <div className="px-2 py-2 text-sm text-muted-foreground">
-                {t('clients.noClients')}
-              </div>
-            ) : (
-              clients.map((client) => (
-                <DropdownMenuItem
-                  key={`receipt-${client.id}`}
-                  onClick={() => openInvoiceModal(client, undefined, 'receipt')}
-                  disabled={creating}
-                  className="cursor-pointer"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium">{client.name}</p>
-                    {client.company && (
-                      <p className="text-xs text-muted-foreground">{client.company}</p>
-                    )}
-                  </div>
-                </DropdownMenuItem>
-              ))
-            )}
+            {/* Reçu (service déjà payé) → sous-menu des clients */}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer">
+                <ReceiptText className="h-4 w-4 mr-2" />
+                {t('receipts.receipt')}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent className="w-64 max-h-[60vh] overflow-y-auto">
+                  {clients.length === 0 ? (
+                    <div className="px-2 py-2 text-sm text-muted-foreground">
+                      {t('clients.noClients')}
+                    </div>
+                  ) : (
+                    clients.map((client) => (
+                      <DropdownMenuItem
+                        key={`receipt-${client.id}`}
+                        onClick={() => openInvoiceModal(client, undefined, 'receipt')}
+                        disabled={creating}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{client.name}</p>
+                          {client.company && (
+                            <p className="text-xs text-muted-foreground">{client.company}</p>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
           </>
         )}
       </DropdownMenuContent>
