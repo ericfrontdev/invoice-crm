@@ -158,7 +158,9 @@
     "resetting": "Resetting...",
     "resetPasswordButton": "Reset password",
     "passwordResetSuccess": "Password reset successfully!",
-    "redirectingToLogin": "Redirecting to login page..."
+    "redirectingToLogin": "Redirecting to login page...",
+    "emailNotInBetaWhitelist": "This email is not approved for the private beta. Join the waitlist to request access.",
+    "joinWaitlist": "Join the waitlist"
   },
   "waitlist": {
     "title": "Join the Waitlist",

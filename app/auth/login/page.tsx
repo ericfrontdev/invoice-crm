@@ -176,13 +176,14 @@ export default function LoginPage() {
             </button>
           )}
 
+          {/* Beta privée: pas d'inscription libre, on renvoie vers la liste d'attente */}
           <p className="text-center text-sm text-muted-foreground mt-6">
             {t('auth.noAccount')}{' '}
             <Link
-              href="/auth/register"
+              href="/waitlist"
               className="text-blue-600 hover:underline dark:text-blue-400"
             >
-              {t('auth.signUp')}
+              {t('auth.joinWaitlist')}
             </Link>
           </p>
         </div>

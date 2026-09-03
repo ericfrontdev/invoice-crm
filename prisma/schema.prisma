@@ -444,3 +444,15 @@ model Notification {
   @@index([createdAt])
   @@index([userId, read]) // Index composite pour compter les non-lus
 }
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  company   String?
+  approved  Boolean  @default(false) // Approuvé pour s'inscrire
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([approved])
+}

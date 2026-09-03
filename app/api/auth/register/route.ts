@@ -6,6 +6,9 @@ import { validateBody, validationError, registerSchema } from '@/lib/validations
 import { rateLimit, getClientIp, getRateLimitHeaders } from '@/lib/rate-limit'
 import { logger } from '@/lib/logger'
 
+// Rabais à vie accordé aux beta testeurs: 29$/mois au lieu de 49$/mois
+const BETA_LIFETIME_DISCOUNT = 41
+
 export async function POST(req: Request) {
   // Rate limiting: 5 registrations per hour per IP
   const clientIp = getClientIp(req)
@@ -22,6 +25,20 @@ export async function POST(req: Request) {
   try {
     // Validate request body with Zod
     const { name, email, password, company } = await validateBody(req, registerSchema)
+
+    // Beta privée: seuls les emails approuvés sur la waitlist peuvent créer un
+    // compte. Les entrées de la waitlist sont stockées en minuscules.
+    const waitlistEntry = await prisma.waitlist.findUnique({
+      where: { email: email.trim().toLowerCase() },
+      select: { approved: true },
+    })
+
+    if (!waitlistEntry || !waitlistEntry.approved) {
+      return NextResponse.json(
+        { error: 'auth.emailNotInBetaWhitelist' },
+        { status: 403 }
+      )
+    }
 
     // Vérifier les paramètres beta
     const settings = await prisma.systemSettings.findFirst()
@@ -53,13 +70,15 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create user
+    // Create user with beta tester flags
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
         company: company || null,
+        betaTester: true,
+        lifetimeDiscount: BETA_LIFETIME_DISCOUNT,
       },
     })
 

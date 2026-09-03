@@ -163,7 +163,9 @@
     "resetting": "Réinitialisation...",
     "resetPasswordButton": "Réinitialiser",
     "passwordResetSuccess": "Mot de passe réinitialisé avec succès !",
-    "redirectingToLogin": "Redirection vers la page de connexion..."
+    "redirectingToLogin": "Redirection vers la page de connexion...",
+    "emailNotInBetaWhitelist": "Cet email n'est pas approuvé pour la beta privée. Inscrivez-vous à la liste d'attente pour obtenir un accès.",
+    "joinWaitlist": "Rejoindre la liste d'attente"
   },
   "waitlist": {
     "title": "Liste d'attente",
