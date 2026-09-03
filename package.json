@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed-amounts": "tsx prisma/seed-amounts.ts",
     "db:backfill-invoice-items": "tsx prisma/scripts/backfill-invoice-items.ts",
