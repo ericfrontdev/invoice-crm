@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params
+
+  // Rate limiting: 30 requêtes par 15 minutes par IP (endpoint public non authentifié)
+  const rateLimitResult = rateLimit(`agreement:${getClientIp(request)}`, {
+    limit: 30,
+    windowMs: 15 * 60 * 1000,
+    message: 'Trop de requêtes. Veuillez réessayer dans quelques minutes.',
+  })
+
+  if (rateLimitResult) {
+    return rateLimitResult
+  }
 
   try {
     const agreement = await prisma.paymentAgreement.findUnique({
