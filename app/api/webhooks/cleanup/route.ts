@@ -3,23 +3,29 @@ import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 
 /**
- * POST /api/webhooks/cleanup
+ * GET|POST /api/webhooks/cleanup
  *
  * Nettoie les logs de webhooks anciens pour éviter la croissance infinie de la table.
- * Cette route doit être appelée par un cron job externe (Vercel Cron, GitHub Actions, etc.)
+ * Appelé par le cron Vercel configuré dans vercel.json (Vercel Cron envoie une
+ * requête GET avec le header `Authorization: Bearer $CRON_SECRET`).
+ * La méthode POST reste disponible pour un cron externe ou un déclenchement manuel.
  *
  * Configuration requise:
- * - Ajouter CRON_SECRET dans .env (même token que pour /api/reminders/check)
+ * - Ajouter CRON_SECRET dans les variables d'environnement (même token que /api/reminders/check)
  *
  * Politique de rétention:
- * - Logs de succès (200-299): 30 jours
+ * - Logs de succès (200-399): 30 jours
  * - Logs d'erreur (400+): 90 jours (gardés plus longtemps pour le debugging)
  */
-export async function POST(req: Request) {
+
+const SUCCESS_RETENTION_DAYS = 30
+const ERROR_RETENTION_DAYS = 90
+
+async function handleCleanup(req: Request) {
   try {
     // Vérification du token de sécurité pour le cron
     const authHeader = req.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
@@ -27,7 +33,7 @@ export async function POST(req: Request) {
 
     // Nettoyer les logs de succès plus vieux que 30 jours
     const successCutoff = new Date(now)
-    successCutoff.setDate(successCutoff.getDate() - 30)
+    successCutoff.setDate(successCutoff.getDate() - SUCCESS_RETENTION_DAYS)
 
     const deletedSuccess = await prisma.webhookLog.deleteMany({
       where: {
@@ -41,11 +47,11 @@ export async function POST(req: Request) {
       },
     })
 
-    logger.info(`[webhooks:cleanup] Deleted ${deletedSuccess.count} success logs older than 30 days`)
+    logger.info(`[webhooks:cleanup] Deleted ${deletedSuccess.count} success logs older than ${SUCCESS_RETENTION_DAYS} days`)
 
     // Nettoyer les logs d'erreur plus vieux que 90 jours
     const errorCutoff = new Date(now)
-    errorCutoff.setDate(errorCutoff.getDate() - 90)
+    errorCutoff.setDate(errorCutoff.getDate() - ERROR_RETENTION_DAYS)
 
     const deletedErrors = await prisma.webhookLog.deleteMany({
       where: {
@@ -58,7 +64,7 @@ export async function POST(req: Request) {
       },
     })
 
-    logger.info(`[webhooks:cleanup] Deleted ${deletedErrors.count} error logs older than 90 days`)
+    logger.info(`[webhooks:cleanup] Deleted ${deletedErrors.count} error logs older than ${ERROR_RETENTION_DAYS} days`)
 
     // Statistiques après cleanup
     const remainingLogs = await prisma.webhookLog.count()
@@ -77,8 +83,8 @@ export async function POST(req: Request) {
       remaining: remainingLogs,
       oldestLogDate: oldestLog?.processedAt || null,
       policy: {
-        successRetention: '30 days',
-        errorRetention: '90 days',
+        successRetention: `${SUCCESS_RETENTION_DAYS} days`,
+        errorRetention: `${ERROR_RETENTION_DAYS} days`,
       },
     })
   } catch (error) {
@@ -88,4 +94,14 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
+}
+
+// Vercel Cron appelle le endpoint en GET
+export async function GET(req: Request) {
+  return handleCleanup(req)
+}
+
+// Cron externe / déclenchement manuel
+export async function POST(req: Request) {
+  return handleCleanup(req)
 }

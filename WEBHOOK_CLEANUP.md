@@ -34,9 +34,10 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 Plusieurs options selon votre plateforme:
 
-#### Option A: Vercel Cron (Recommandé si hébergé sur Vercel)
+#### Option A: Vercel Cron (configuré par défaut)
 
-Créer `vercel.json`:
+Le cron est déjà déclaré dans `vercel.json` à la racine du projet:
+
 ```json
 {
   "crons": [
@@ -48,7 +49,9 @@ Créer `vercel.json`:
 }
 ```
 
-**Note:** Vercel Cron passe automatiquement l'authorization header avec le token configuré dans les variables d'environnement.
+Il ne reste qu'à définir la variable `CRON_SECRET` dans les variables d'environnement du projet Vercel (Settings → Environment Variables). Vercel envoie automatiquement le header `Authorization: Bearer $CRON_SECRET` avec la requête.
+
+**Note:** Vercel Cron appelle le endpoint en **GET**. Le endpoint accepte GET et POST, avec la même vérification du token.
 
 #### Option B: GitHub Actions (Gratuit)
 
