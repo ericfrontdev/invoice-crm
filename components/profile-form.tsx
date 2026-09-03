@@ -170,13 +170,22 @@ export function ProfileForm({ user }: { user: User }) {
       })
 
       if (!res.ok) {
-        throw new Error(t('errors.updateFailed'))
+        // Remonter le détail de la validation: sans ça, un champ invalide fait
+        // échouer tout l'enregistrement sans indiquer lequel.
+        const error = await res.json().catch(() => null)
+        const details = Array.isArray(error?.details)
+          ? error.details.map((d: { message: string }) => d.message).join(' · ')
+          : null
+        throw new Error(details || error?.error || t('errors.updateFailed'))
       }
 
       setMessage({ type: 'success', text: t('profile.profileUpdated') })
       router.refresh()
-    } catch (_error) {
-      setMessage({ type: 'error', text: t('errors.updateFailed') })
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : t('errors.updateFailed'),
+      })
     } finally {
       setIsLoading(false)
     }
