@@ -5,11 +5,12 @@ import { ZodError } from 'zod'
 import { validateBody, validationError, createInvoiceSchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
 
-function makeInvoiceNumber() {
+function makeInvoiceNumber(type: 'invoice' | 'receipt' = 'invoice') {
   const d = new Date()
   const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
   const rand = Math.floor(1000 + Math.random() * 9000)
-  return `INV-${ymd}-${rand}`
+  // Séquence distincte pour les reçus: un reçu n'est pas une facture au sens comptable
+  return `${type === 'receipt' ? 'REC' : 'INV'}-${ymd}-${rand}`
 }
 
 export async function POST(req: Request) {
@@ -21,7 +22,9 @@ export async function POST(req: Request) {
     }
 
     // Validate request body with Zod
-    const { clientId, unpaidAmountIds, items, projectId, dueDate } = await validateBody(req, createInvoiceSchema)
+    const { clientId, unpaidAmountIds, items, projectId, dueDate, type, paidAt, paymentMethod } =
+      await validateBody(req, createInvoiceSchema)
+    const isReceipt = type === 'receipt'
 
     const result = await prisma.$transaction(async (tx) => {
       // Vérifier client et ownership
@@ -83,19 +86,26 @@ export async function POST(req: Request) {
       const tps = chargesTaxes ? subtotal * 0.05 : 0 // TPS 5%
       const tvq = chargesTaxes ? subtotal * 0.09975 : 0 // TVQ 9.975%
       const total = subtotal + tps + tvq
-      const number = makeInvoiceNumber()
+      const number = makeInvoiceNumber(isReceipt ? 'receipt' : 'invoice')
 
       const invoice = await tx.invoice.create({
         data: {
           clientId,
           number,
-          status: 'draft',
+          // Un reçu documente un paiement déjà encaissé: il naît payé, sans échéance.
+          type: isReceipt ? 'receipt' : 'invoice',
+          status: isReceipt ? 'paid' : 'draft',
           subtotal,
           tps,
           tvq,
           total,
           ...(projectId && { projectId }),
-          ...(dueDate && { dueDate: new Date(dueDate) }),
+          ...(isReceipt
+            ? {
+                paidAt: new Date(paidAt!),
+                paymentMethod: paymentMethod!,
+              }
+            : dueDate && { dueDate: new Date(dueDate) }),
         },
       })
       logger.debug('[invoices:POST] Invoice created:', invoice.id, invoice.number)

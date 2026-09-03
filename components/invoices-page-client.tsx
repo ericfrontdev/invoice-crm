@@ -14,6 +14,9 @@ type Invoice = {
   id: string
   number: string
   status: 'draft' | 'sent' | 'paid' | string
+  type?: 'invoice' | 'receipt' | string
+  paymentMethod?: string | null
+  paidAt?: string | Date | null
   subtotal: number
   tps: number
   tvq: number
@@ -39,9 +42,11 @@ type InvoiceForView = Invoice & {
 export function InvoicesPageClient({
   projectInvoices,
   standaloneInvoices,
+  receipts = [],
 }: {
   projectInvoices: Invoice[]
   standaloneInvoices: Invoice[]
+  receipts?: Invoice[]
 }) {
   const { t } = useTranslation()
   const searchParams = useSearchParams()
@@ -66,7 +71,7 @@ export function InvoicesPageClient({
     }
   }, [viewId])
 
-  const totalInvoices = projectInvoices.length + standaloneInvoices.length
+  const totalInvoices = projectInvoices.length + standaloneInvoices.length + receipts.length
 
   return (
     <>
@@ -117,6 +122,19 @@ export function InvoicesPageClient({
                 </span>
               </div>
               <InvoicesTable invoices={standaloneInvoices} />
+            </div>
+          )}
+
+          {/* Reçus */}
+          {receipts.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">{t('receipts.title')}</h2>
+                <span className="text-sm text-muted-foreground">
+                  ({receipts.length})
+                </span>
+              </div>
+              <InvoicesTable invoices={receipts} />
             </div>
           )}
         </div>

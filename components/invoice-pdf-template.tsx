@@ -7,6 +7,9 @@ type Invoice = {
   id: string
   number: string
   status: string
+  type?: string | null
+  paymentMethod?: string | null
+  paidAt?: Date | string | null
   subtotal: number
   tps: number
   tvq: number
@@ -47,6 +50,8 @@ export const InvoicePDFTemplate = React.forwardRef<
 
   // Déterminer si les taxes sont chargées
   const hasTaxes = invoice.tps > 0 || invoice.tvq > 0
+  // Un reçu atteste d'un paiement déjà reçu: ni échéance, ni moyen de payer
+  const isReceipt = invoice.type === 'receipt'
 
   return (
     <div
@@ -87,7 +92,7 @@ export const InvoicePDFTemplate = React.forwardRef<
                     : 'text-2xl md:text-4xl font-bold text-gray-900'
                 }
               >
-                {t('invoice.title').toUpperCase()}
+                {(isReceipt ? t('invoice.receiptTitle') : t('invoice.title')).toUpperCase()}
               </h1>
             )}
             <p
@@ -206,14 +211,42 @@ export const InvoicePDFTemplate = React.forwardRef<
             )}
           </p>
         </div>
-        <div className="mt-6">
-          <p className="text-xs md:text-sm font-semibold text-gray-500">
-            {t('invoice.status')}
-          </p>
-          <p className="text-sm md:text-base text-gray-900 capitalize">
-            {invoice.status}
-          </p>
-        </div>
+        {isReceipt ? (
+          <>
+            {invoice.paidAt && (
+              <div className="mt-6">
+                <p className="text-xs md:text-sm font-semibold text-gray-500">
+                  {t('invoice.paidOn')}
+                </p>
+                <p className="text-sm md:text-base text-gray-900">
+                  {new Date(invoice.paidAt).toLocaleDateString(
+                    locale === 'fr' ? 'fr-FR' : 'en-US',
+                    { day: 'numeric', month: 'long', year: 'numeric' }
+                  )}
+                </p>
+              </div>
+            )}
+            {invoice.paymentMethod && (
+              <div className="mt-6">
+                <p className="text-xs md:text-sm font-semibold text-gray-500">
+                  {t('invoice.paymentMethodLabel')}
+                </p>
+                <p className="text-sm md:text-base text-gray-900">
+                  {t(`receipts.methods.${invoice.paymentMethod}`)}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="mt-6">
+            <p className="text-xs md:text-sm font-semibold text-gray-500">
+              {t('invoice.status')}
+            </p>
+            <p className="text-sm md:text-base text-gray-900 capitalize">
+              {invoice.status}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Tableau des items */}
@@ -311,7 +344,7 @@ export const InvoicePDFTemplate = React.forwardRef<
         {/* <p className="text-xs md:text-sm text-gray-600">
           <strong>{t('invoice.paymentTermsLabel')}:</strong> {t('invoice.paymentTerms')}
         </p> */}
-        {user.paymentProvider && (
+        {!isReceipt && user.paymentProvider && (
           <p className="text-xs md:text-sm text-gray-600 mt-2">
             <strong>{t('invoice.paymentMethodLabel')}:</strong>{' '}
             {user.paymentProvider === 'paypal'
@@ -328,7 +361,7 @@ export const InvoicePDFTemplate = React.forwardRef<
               : 'text-xs md:text-sm text-gray-600 mb-6 mt-2 pb-6 border-b'
           }
         >
-          {t('invoice.thankYou')}
+          {isReceipt ? t('invoice.receiptThankYou') : t('invoice.thankYou')}
         </p>
       </div>
 

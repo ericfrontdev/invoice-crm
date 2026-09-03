@@ -160,6 +160,10 @@ model Invoice {
   number        String         @unique
   status        String         @default("draft") // draft, sent, paid, cancelled
 
+  // Type de document: "invoice" (facture à payer) ou "receipt" (reçu d'un service déjà payé)
+  type          String         @default("invoice")
+  paymentMethod String?        // Pour les reçus: cash, interac, card, transfer, cheque, other
+
   // Montants avec taxes québécoises
   subtotal      Float          @default(0) // Montant avant taxes
   tps           Float          @default(0) // TPS 5%
@@ -184,6 +188,7 @@ model Invoice {
   @@index([clientId])
   @@index([projectId])
   @@index([status])
+  @@index([type])
   @@index([dueDate])
   @@index([createdAt])
   @@index([status, dueDate]) // Index composite pour le cron job des rappels

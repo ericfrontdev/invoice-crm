@@ -343,7 +343,10 @@
     "paymentTerms": "Payment due within 30 days",
     "paymentMethodLabel": "Payment Method",
     "paymentMethod": "Bank Transfer",
-    "thankYou": "Thank you for your business!"
+    "thankYou": "Thank you for your business!",
+    "receiptTitle": "Receipt",
+    "paidOn": "Paid on",
+    "receiptThankYou": "Thank you, this receipt confirms the payment received."
   },
   "invoices": {
     "title": "Invoices",
@@ -448,6 +451,29 @@
     "viewReminders": "View reminders",
     "oneTimeInvoice": "One-time Invoice",
     "thankYou": "Thank you for your business!"
+  },
+  "receipts": {
+    "title": "Receipts",
+    "receipt": "Receipt",
+    "newReceipt": "New receipt",
+    "createReceipt": "Create receipt",
+    "sendReceipt": "Send receipt",
+    "viewReceipt": "View receipt",
+    "deleteReceipt": "Delete receipt",
+    "noReceipts": "No receipts",
+    "serviceItems": "Services rendered",
+    "serviceDescriptionPlaceholder": "Description of the service rendered",
+    "paymentDate": "Payment date",
+    "paymentDateHint": "Date the payment was received.",
+    "paymentMethod": "Payment method",
+    "methods": {
+      "cash": "Cash",
+      "interac": "Interac",
+      "card": "Card",
+      "transfer": "Bank transfer",
+      "cheque": "Cheque",
+      "other": "Other"
+    }
   },
   "projects": {
     "title": "Projects",
