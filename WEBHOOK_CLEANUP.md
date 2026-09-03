@@ -34,51 +34,29 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 Plusieurs options selon votre plateforme:
 
-#### Option A: Vercel Cron (configuré par défaut)
+#### Option A: GitHub Actions (configuré par défaut)
 
-Le cron est déjà déclaré dans `vercel.json` à la racine du projet:
+Le site est hébergé sur **Netlify**, qui n'a pas d'équivalent de `vercel.json`
+pour déclarer un cron. Le déclenchement se fait donc depuis GitHub Actions, via
+`.github/workflows/webhook-cleanup.yml` (tous les jours à 2h UTC, avec
+déclenchement manuel possible depuis l'onglet Actions).
 
-```json
-{
-  "crons": [
-    {
-      "path": "/api/webhooks/cleanup",
-      "schedule": "0 2 * * *"
-    }
-  ]
-}
-```
+Configuration requise dans le dépôt GitHub:
 
-Il ne reste qu'à définir la variable `CRON_SECRET` dans les variables d'environnement du projet Vercel (Settings → Environment Variables). Vercel envoie automatiquement le header `Authorization: Bearer $CRON_SECRET` avec la requête.
+1. **Settings → Secrets and variables → Actions → Secrets** : ajouter
+   `CRON_SECRET` avec la même valeur que dans les variables d'environnement
+   Netlify.
+2. *(optionnel)* **Variables** : `APP_URL` si le domaine change. Par défaut le
+   workflow appelle `https://solopack.app`.
 
-**Note:** Vercel Cron appelle le endpoint en **GET**. Le endpoint accepte GET et POST, avec la même vérification du token.
+Le job échoue explicitement si le secret est absent ou si l'endpoint ne répond
+pas 200, ce qui déclenche la notification d'échec habituelle de GitHub.
 
-#### Option B: GitHub Actions (Gratuit)
+#### Option B: Netlify Scheduled Function
 
-Créer `.github/workflows/webhook-cleanup.yml`:
-```yaml
-name: Webhook Logs Cleanup
-
-on:
-  schedule:
-    # Tous les jours à 2h du matin (UTC)
-    - cron: '0 2 * * *'
-  workflow_dispatch: # Permet l'exécution manuelle
-
-jobs:
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call cleanup endpoint
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://your-app-domain.com/api/webhooks/cleanup
-```
-
-Configurer le secret dans GitHub:
-1. Settings → Secrets → Actions
-2. Ajouter `CRON_SECRET` avec la même valeur que dans `.env`
+Alternative native à l'hébergeur, si on préfère garder le déclenchement chez
+Netlify plutôt que chez GitHub. Nécessite un `netlify.toml` et une fonction
+planifiée dans `netlify/functions/`.
 
 #### Option C: Cron-job.org (Service externe gratuit)
 
