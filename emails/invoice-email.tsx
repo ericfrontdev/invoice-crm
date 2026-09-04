@@ -1,21 +1,34 @@
 import {
   Body,
+  Button,
+  Column,
   Container,
   Head,
-  Heading,
+  Hr,
   Html,
+  Img,
   Preview,
+  Row,
   Section,
   Text,
-  Hr,
-  Button,
 } from '@react-email/components'
 
 interface InvoiceEmailProps {
   invoiceNumber: string
   clientName: string
+  clientCompany?: string
+  clientAddress?: string
+  clientEmail?: string
   senderName: string
   senderCompany?: string
+  senderAddress?: string
+  senderPhone?: string
+  senderEmail?: string
+  senderLogo?: string
+  senderNeq?: string
+  senderTpsNumber?: string
+  senderTvqNumber?: string
+  paymentProvider?: string
   items: Array<{
     description: string
     amount: number
@@ -26,6 +39,8 @@ interface InvoiceEmailProps {
   tvq: number
   total: number
   invoiceId: string
+  status?: string
+  issueDate?: string
   paymentUrl?: string
   /** 'receipt' atteste d'un paiement déjà reçu: aucun bouton de paiement. */
   documentType?: 'invoice' | 'receipt'
@@ -33,17 +48,42 @@ interface InvoiceEmailProps {
   paymentMethodLabel?: string
 }
 
+const PAYMENT_PROVIDER_LABELS: Record<string, string> = {
+  paypal: 'PayPal',
+  stripe: 'Stripe',
+}
+
+/**
+ * Reprend la structure du document affiché dans l'application
+ * (components/invoice-pdf-template.tsx): en-tête avec logo et coordonnées,
+ * bloc « Facturé à », dates, tableau, totaux et pied de page légal.
+ *
+ * La mise en page passe par des tableaux et des styles en ligne: flexbox et
+ * grid, utilisés côté application, ne sont pas rendus par Outlook.
+ */
 export default function InvoiceEmail({
   invoiceNumber,
   clientName,
+  clientCompany,
+  clientAddress,
+  clientEmail,
   senderName,
   senderCompany,
+  senderAddress,
+  senderPhone,
+  senderEmail,
+  senderLogo,
+  senderNeq,
+  senderTpsNumber,
+  senderTvqNumber,
+  paymentProvider,
   items,
   subtotal,
   tps,
   tvq,
   total,
-  invoiceId,
+  status,
+  issueDate,
   paymentUrl,
   documentType = 'invoice',
   paidAt,
@@ -52,6 +92,7 @@ export default function InvoiceEmail({
   const hasTaxes = tps > 0 || tvq > 0
   const isReceipt = documentType === 'receipt'
   const documentLabel = isReceipt ? 'Reçu' : 'Facture'
+  const senderLine = senderCompany || senderName
 
   return (
     <Html>
@@ -61,154 +102,192 @@ export default function InvoiceEmail({
       </Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header avec info expéditeur */}
-          <Section style={headerSection}>
-            {senderCompany && (
-              <Heading style={companyName}>{senderCompany}</Heading>
-            )}
-            <Text style={senderText}>{senderName}</Text>
+          {/* En-tête: identité du document à gauche, coordonnées à droite */}
+          <Section style={block}>
+            <Row>
+              <Column style={{ verticalAlign: 'top' }}>
+                {senderLogo ? (
+                  <Img
+                    src={senderLogo}
+                    alt={senderLine}
+                    height={56}
+                    style={logo}
+                  />
+                ) : (
+                  <Text style={documentTitle}>
+                    {documentLabel.toUpperCase()}
+                  </Text>
+                )}
+                <Text style={documentNumber}>{invoiceNumber}</Text>
+              </Column>
+              <Column style={{ verticalAlign: 'top', textAlign: 'right' }}>
+                <Text style={senderNameStyle}>{senderLine}</Text>
+                {senderAddress && <Text style={senderMeta}>{senderAddress}</Text>}
+                <Text style={senderMeta}>Québec, Canada</Text>
+                {senderPhone && <Text style={senderMeta}>{senderPhone}</Text>}
+                {senderEmail && <Text style={senderMeta}>{senderEmail}</Text>}
+              </Column>
+            </Row>
           </Section>
 
-          <Heading style={h1}>
-            {documentLabel} {invoiceNumber}
-          </Heading>
+          {/* Facturé à */}
+          <Section style={block}>
+            <Section style={billedToBox}>
+              <Text style={sectionLabel}>Facturé à</Text>
+              <Text style={billedToName}>{clientCompany || clientName}</Text>
+              {clientCompany && clientName && (
+                <Text style={billedToLine}>{clientName}</Text>
+              )}
+              {clientAddress && <Text style={billedToLine}>{clientAddress}</Text>}
+              {clientEmail && <Text style={billedToLine}>{clientEmail}</Text>}
+            </Section>
+          </Section>
 
-          <Text style={text}>Bonjour {clientName},</Text>
+          {/* Dates et statut */}
+          <Section style={block}>
+            <Row>
+              <Column style={{ verticalAlign: 'top', width: '50%' }}>
+                <Text style={fieldLabel}>Date d&apos;émission</Text>
+                <Text style={fieldValue}>{issueDate}</Text>
+              </Column>
+              <Column style={{ verticalAlign: 'top', width: '50%' }}>
+                {isReceipt ? (
+                  <>
+                    {paidAt && (
+                      <>
+                        <Text style={fieldLabel}>Payé le</Text>
+                        <Text style={fieldValue}>{paidAt}</Text>
+                      </>
+                    )}
+                    {paymentMethodLabel && (
+                      <>
+                        <Text style={fieldLabel}>Mode de paiement</Text>
+                        <Text style={fieldValue}>{paymentMethodLabel}</Text>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  status && (
+                    <>
+                      <Text style={fieldLabel}>Statut</Text>
+                      <Text style={fieldValue}>{status}</Text>
+                    </>
+                  )
+                )}
+              </Column>
+            </Row>
+          </Section>
 
-          <Text style={text}>
-            {isReceipt
-              ? 'Voici le reçu confirmant le paiement reçu. Merci!'
-              : 'Veuillez trouver ci-dessous le détail de votre facture.'}
-          </Text>
-
-          {isReceipt && (paidAt || paymentMethodLabel) && (
-            <Text style={text}>
-              {paidAt && <>Paiement reçu le {paidAt}</>}
-              {paidAt && paymentMethodLabel && <> · </>}
-              {paymentMethodLabel && <>Mode de paiement : {paymentMethodLabel}</>}
-            </Text>
-          )}
-
-          <Section style={box}>
+          {/* Détail */}
+          <Section style={block}>
             <table style={table}>
               <thead>
                 <tr>
                   <th style={tableHeader}>Description</th>
                   <th style={tableHeader}>Date</th>
-                  <th style={{ ...tableHeader, textAlign: 'right' }}>
-                    Montant
-                  </th>
+                  <th style={{ ...tableHeader, textAlign: 'right' }}>Montant</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, idx) => (
                   <tr key={idx}>
                     <td style={tableCell}>{item.description}</td>
-                    <td style={tableCell}>
+                    <td style={{ ...tableCell, color: '#374151' }}>
                       {new Date(item.date).toLocaleDateString('fr-FR')}
                     </td>
-                    <td style={{ ...tableCell, textAlign: 'right' }}>
+                    <td style={{ ...tableCell, textAlign: 'right', fontWeight: 500 }}>
                       {item.amount.toFixed(2)} $
                     </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
+            </table>
+          </Section>
+
+          {/* Totaux, alignés à droite comme dans l'application */}
+          <Section style={block}>
+            <table style={totalsTable}>
+              <tbody>
                 {hasTaxes && (
-                  <tr>
-                    <td
-                      colSpan={2}
-                      style={tableCell}
-                    >
-                      Sous-total
-                    </td>
-                    <td style={{ ...tableCell, textAlign: 'right' }}>
-                      {subtotal.toFixed(2)} $
-                    </td>
-                  </tr>
-                )}
-                {hasTaxes && tps > 0 && (
-                  <tr>
-                    <td
-                      colSpan={2}
-                      style={tableCell}
-                    >
-                      TPS (5%)
-                    </td>
-                    <td style={{ ...tableCell, textAlign: 'right' }}>
-                      {tps.toFixed(2)} $
-                    </td>
-                  </tr>
-                )}
-                {hasTaxes && tvq > 0 && (
-                  <tr>
-                    <td
-                      colSpan={2}
-                      style={tableCell}
-                    >
-                      TVQ (9,975%)
-                    </td>
-                    <td style={{ ...tableCell, textAlign: 'right' }}>
-                      {tvq.toFixed(2)} $
-                    </td>
-                  </tr>
+                  <>
+                    <tr>
+                      <td style={totalsLabel}>Sous-total</td>
+                      <td style={totalsValue}>{subtotal.toFixed(2)} $</td>
+                    </tr>
+                    {tps > 0 && (
+                      <tr>
+                        <td style={totalsLabel}>TPS (5%)</td>
+                        <td style={totalsValue}>{tps.toFixed(2)} $</td>
+                      </tr>
+                    )}
+                    {tvq > 0 && (
+                      <tr>
+                        <td style={totalsLabel}>TVQ (9,975%)</td>
+                        <td style={totalsValue}>{tvq.toFixed(2)} $</td>
+                      </tr>
+                    )}
+                  </>
                 )}
                 <tr>
-                  <td
-                    colSpan={2}
-                    style={{ ...tableCell, fontWeight: 'bold' }}
-                  >
-                    Total
-                  </td>
-                  <td
-                    style={{
-                      ...tableCell,
-                      textAlign: 'right',
-                      fontWeight: 'bold',
-                      fontSize: '18px',
-                    }}
-                  >
-                    {total.toFixed(2)} $
-                  </td>
+                  <td style={grandTotalLabel}>Total</td>
+                  <td style={grandTotalValue}>{total.toFixed(2)} $</td>
                 </tr>
-              </tfoot>
+              </tbody>
             </table>
           </Section>
 
           {!isReceipt && paymentUrl && (
-            <Section
-              style={{
-                padding: '0 48px',
-                textAlign: 'center',
-                margin: '32px 0',
-              }}
-            >
-              <Button
-                href={paymentUrl}
-                style={payButton}
-              >
+            <Section style={{ ...block, textAlign: 'center' }}>
+              <Button href={paymentUrl} style={payButton}>
                 Payer cette facture
               </Button>
-              <Text
-                style={{ fontSize: '14px', color: '#666', marginTop: '12px' }}
-              >
+              <Text style={payHint}>
                 Cliquez sur le bouton ci-dessus pour payer en ligne de manière
                 sécurisée.
               </Text>
             </Section>
           )}
 
-          <Hr style={hr} />
+          {/* Notes */}
+          <Section style={block}>
+            <Hr style={hr} />
+            {!isReceipt && paymentProvider && (
+              <Text style={note}>
+                <strong>Mode de paiement :</strong>{' '}
+                {PAYMENT_PROVIDER_LABELS[paymentProvider] || 'Virement bancaire'}
+              </Text>
+            )}
+            <Text style={note}>
+              {isReceipt
+                ? 'Merci, ce reçu confirme le paiement reçu.'
+                : 'Merci pour votre confiance !'}
+            </Text>
+          </Section>
 
-          <Text style={footer}>Merci de votre confiance.</Text>
+          {/* Pied de page légal */}
+          <Section style={block}>
+            <Hr style={hr} />
+            <Text style={footer}>
+              {senderLine}
+              {senderNeq && ` - NEQ: ${senderNeq}`}
+              {senderTpsNumber && ` - TPS: ${senderTpsNumber}`}
+              {senderTvqNumber && ` - TVQ: ${senderTvqNumber}`}
+            </Text>
+            <Text style={footer}>
+              {senderAddress && `${senderAddress}, `}Québec, Canada
+              {senderPhone && ` - ${senderPhone}`}
+              {senderEmail && ` - ${senderEmail}`}
+            </Text>
+          </Section>
         </Container>
       </Body>
     </Html>
   )
 }
 
+// Fond blanc sur toute la page, comme le document affiché dans l'application.
 const main = {
-  backgroundColor: '#f6f9fc',
+  backgroundColor: '#ffffff',
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 }
@@ -216,76 +295,151 @@ const main = {
 const container = {
   backgroundColor: '#ffffff',
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
+  maxWidth: '640px',
+  padding: '32px 0 48px',
 }
 
-const box = {
+const block = {
   padding: '0 48px',
 }
 
-const h1 = {
-  color: '#333',
-  fontSize: '24px',
+const logo = {
+  maxWidth: '200px',
+  height: '56px',
+  objectFit: 'contain' as const,
+  margin: '0 0 8px 0',
+}
+
+const documentTitle = {
+  color: '#111827',
+  fontSize: '36px',
   fontWeight: 'bold',
-  margin: '40px 0',
-  padding: '0 48px',
+  lineHeight: '40px',
+  margin: '0',
 }
 
-const text = {
-  color: '#333',
+const documentNumber = {
+  color: '#4b5563',
+  fontSize: '20px',
+  lineHeight: '28px',
+  margin: '4px 0 0 0',
+}
+
+const senderNameStyle = {
+  color: '#111827',
+  fontSize: '18px',
+  fontWeight: 600,
+  lineHeight: '24px',
+  margin: '0',
+}
+
+const senderMeta = {
+  color: '#4b5563',
+  fontSize: '14px',
+  lineHeight: '20px',
+  margin: '0',
+}
+
+const billedToBox = {
+  backgroundColor: '#f9fafb',
+  borderRadius: '6px',
+  padding: '24px',
+}
+
+const sectionLabel = {
+  color: '#6b7280',
+  fontSize: '12px',
+  fontWeight: 600,
+  letterSpacing: '0.05em',
+  textTransform: 'uppercase' as const,
+  margin: '0 0 12px 0',
+}
+
+const billedToName = {
+  color: '#111827',
+  fontSize: '18px',
+  fontWeight: 600,
+  lineHeight: '24px',
+  margin: '0',
+}
+
+const billedToLine = {
+  color: '#374151',
   fontSize: '16px',
-  lineHeight: '26px',
-  padding: '0 48px',
+  lineHeight: '24px',
+  margin: '0',
+}
+
+const fieldLabel = {
+  color: '#6b7280',
+  fontSize: '14px',
+  fontWeight: 600,
+  margin: '0 0 2px 0',
+}
+
+const fieldValue = {
+  color: '#111827',
+  fontSize: '16px',
+  margin: '0 0 12px 0',
 }
 
 const table = {
   width: '100%',
   borderCollapse: 'collapse' as const,
-  marginTop: '20px',
 }
 
 const tableHeader = {
-  backgroundColor: '#f0f0f0',
-  padding: '12px',
+  color: '#6b7280',
+  fontSize: '12px',
+  fontWeight: 600,
+  letterSpacing: '0.05em',
+  textTransform: 'uppercase' as const,
   textAlign: 'left' as const,
-  fontWeight: 'bold',
-  borderBottom: '2px solid #ddd',
+  padding: '12px 0',
+  borderBottom: '2px solid #111827',
 }
 
 const tableCell = {
-  padding: '12px',
-  borderBottom: '1px solid #eee',
+  color: '#111827',
+  fontSize: '16px',
+  padding: '16px 0',
+  borderBottom: '1px solid #e5e7eb',
 }
 
-const hr = {
-  borderColor: '#e6ebf1',
-  margin: '20px 48px',
+const totalsTable = {
+  width: '320px',
+  marginLeft: 'auto',
+  borderCollapse: 'collapse' as const,
 }
 
-const footer = {
-  color: '#8898aa',
-  fontSize: '14px',
-  lineHeight: '24px',
-  padding: '0 48px',
+const totalsLabel = {
+  color: '#4b5563',
+  fontSize: '16px',
+  padding: '8px 0',
 }
 
-const headerSection = {
-  padding: '20px 48px 0 48px',
-  marginBottom: '20px',
+const totalsValue = {
+  color: '#111827',
+  fontSize: '16px',
+  padding: '8px 0',
+  textAlign: 'right' as const,
 }
 
-const companyName = {
-  color: '#333',
-  fontSize: '20px',
+const grandTotalLabel = {
+  color: '#111827',
+  fontSize: '18px',
   fontWeight: 'bold',
-  margin: '0 0 5px 0',
+  padding: '12px 0',
+  borderTop: '2px solid #111827',
 }
 
-const senderText = {
-  color: '#666',
-  fontSize: '14px',
-  margin: '0',
+const grandTotalValue = {
+  color: '#111827',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  padding: '12px 0',
+  borderTop: '2px solid #111827',
+  textAlign: 'right' as const,
 }
 
 const payButton = {
@@ -298,5 +452,31 @@ const payButton = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '16px 32px',
-  margin: '0 auto',
+}
+
+const payHint = {
+  color: '#4b5563',
+  fontSize: '14px',
+  marginTop: '12px',
+}
+
+const hr = {
+  borderColor: '#e5e7eb',
+  margin: '24px 0',
+}
+
+const note = {
+  color: '#4b5563',
+  fontSize: '14px',
+  lineHeight: '22px',
+  margin: '0 0 8px 0',
+}
+
+const footer = {
+  color: '#6b7280',
+  fontSize: '12px',
+  lineHeight: '18px',
+  margin: '0',
+  textAlign: 'center' as const,
+  wordBreak: 'break-word' as const,
 }
