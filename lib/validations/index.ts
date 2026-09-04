@@ -81,6 +81,7 @@ export function validateParams<T>(
 }
 
 // Re-export all validation schemas
+export * from './utils'
 export * from './clients'
 export * from './invoices'
 export * from './projects'

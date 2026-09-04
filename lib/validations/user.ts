@@ -1,13 +1,5 @@
 import { z } from 'zod'
-
-/**
- * Le formulaire de profil envoie une chaîne vide pour tout champ non rempli.
- * Sans ce prétraitement, les champs au format contraint (téléphone, email
- * PayPal, fournisseur de paiement) rejettent '' et font échouer la mise à jour
- * complète du profil avec une 400, y compris pour les champs valides.
- */
-const emptyToNull = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess((value) => (typeof value === 'string' && value.trim() === '' ? null : value), schema)
+import { emptyToNull } from './utils'
 
 /**
  * Format produit par lib/crypto.ts: iv(16o):authTag(16o):données, en hexadécimal.
