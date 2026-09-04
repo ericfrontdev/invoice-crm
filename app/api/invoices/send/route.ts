@@ -38,12 +38,21 @@ export async function POST(req: Request) {
         client: {
           select: {
             name: true,
+            company: true,
+            address: true,
             email: true,
             userId: true,
             user: {
               select: {
                 name: true,
                 company: true,
+                address: true,
+                phone: true,
+                email: true,
+                logo: true,
+                neq: true,
+                tpsNumber: true,
+                tvqNumber: true,
                 paymentProvider: true,
               }
             }
@@ -82,11 +91,32 @@ export async function POST(req: Request) {
       ? `${baseUrl}/invoices/${invoice.id}/pay`
       : undefined
 
+    // Mêmes libellés de date que le document affiché dans l'application
+    const formatLongDate = (value: Date) =>
+      new Date(value).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+
+    const sender = invoice.client.user
+
     const emailData = {
       invoiceNumber: invoice.number,
       clientName: invoice.client.name,
-      senderName: invoice.client.user.name,
-      senderCompany: invoice.client.user.company || undefined,
+      clientCompany: invoice.client.company || undefined,
+      clientAddress: invoice.client.address || undefined,
+      clientEmail: invoice.client.email,
+      senderName: sender.name,
+      senderCompany: sender.company || undefined,
+      senderAddress: sender.address || undefined,
+      senderPhone: sender.phone || undefined,
+      senderEmail: sender.email || undefined,
+      senderLogo: sender.logo || undefined,
+      senderNeq: sender.neq || undefined,
+      senderTpsNumber: sender.tpsNumber || undefined,
+      senderTvqNumber: sender.tvqNumber || undefined,
+      paymentProvider: sender.paymentProvider || undefined,
       items: invoice.items.map(item => ({
         description: item.description,
         amount: item.amount,
@@ -97,15 +127,11 @@ export async function POST(req: Request) {
       tvq: invoice.tvq,
       total: invoice.total,
       invoiceId: invoice.id,
+      status: invoice.status,
+      issueDate: formatLongDate(invoice.createdAt),
       paymentUrl,
       documentType: isReceipt ? ('receipt' as const) : ('invoice' as const),
-      paidAt: invoice.paidAt
-        ? new Date(invoice.paidAt).toLocaleDateString('fr-CA', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })
-        : undefined,
+      paidAt: invoice.paidAt ? formatLongDate(invoice.paidAt) : undefined,
       paymentMethodLabel: invoice.paymentMethod
         ? PAYMENT_METHOD_LABELS[invoice.paymentMethod] || invoice.paymentMethod
         : undefined,
