@@ -397,6 +397,7 @@
     "sendInvoice": "Send Invoice",
     "downloadPDF": "Download PDF",
     "markAsPaid": "Mark as Paid",
+    "lastSentOn": "Last sent:",
     "markAsSent": "Mark as Sent",
     "recordPayment": "Record Payment",
     "paymentDate": "Payment Date",

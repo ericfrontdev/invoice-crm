@@ -370,6 +370,7 @@
     "sendInvoice": "Envoyer la facture",
     "downloadPDF": "Télécharger PDF",
     "markAsPaid": "Marquer comme payée",
+    "lastSentOn": "Dernier envoi :",
     "markAsSent": "Marquer comme envoyée",
     "cancelInvoice": "Annuler la facture",
     "items": "Articles",

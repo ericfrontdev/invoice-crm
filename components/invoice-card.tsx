@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Bell,
   History,
+  MailCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -34,6 +35,7 @@ type Invoice = {
   total: number
   createdAt: string | Date
   dueDate?: string | Date | null
+  sentAt?: string | Date | null
   clientId: string
   client: { id: string; name: string | null; email?: string } | null
   project?: { id: string; name: string } | null
@@ -295,6 +297,14 @@ export function InvoiceCard({
               {invoice.status === 'archived' && t('common.archive')}
               {!['draft', 'sent', 'paid', 'archived'].includes(invoice.status) && invoice.status}
             </span>
+            {invoice.sentAt && (
+              <span
+                title={`${t('invoices.lastSentOn')} ${new Date(invoice.sentAt).toLocaleDateString()}`}
+                className="inline-flex items-center text-green-600 dark:text-green-400"
+              >
+                <MailCheck className="h-4 w-4" />
+              </span>
+            )}
             {isOverdue && (
               <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-400/10 dark:text-red-300">
                 ⚠️ {t('invoices.overdue')}

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useMemo, useEffect } from 'react'
-import { Eye, Mail, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw, MoreVertical, History } from 'lucide-react'
+import { Eye, Mail, MailCheck, CheckCircle, Trash2, Archive, ArrowUpDown, ArrowUp, ArrowDown, Link2, RefreshCw, MoreVertical, History } from 'lucide-react'
 import { InvoiceViewModal } from '@/components/invoice-view-modal-edit'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
@@ -30,6 +30,7 @@ type Invoice = {
   total: number
   createdAt: string | Date
   dueDate?: string | Date | null
+  sentAt?: string | Date | null
   clientId: string
   client: { id: string; name: string | null; email?: string } | null
   project?: { id: string; name: string } | null
@@ -488,15 +489,31 @@ export function InvoicesTable({ invoices, showProject = false }: { invoices: Inv
 
                     {/* Action contextuelle selon le statut */}
                     {(inv.status === 'draft' || inv.type === 'receipt') && inv.client?.email && (
-                      <Tooltip content={inv.type === 'receipt' ? t('receipts.sendReceipt') : t('invoices.sendInvoice')}>
+                      <Tooltip
+                        content={
+                          inv.sentAt
+                            ? `${t('invoices.lastSentOn')} ${formatDate(inv.sentAt)}`
+                            : inv.type === 'receipt'
+                              ? t('receipts.sendReceipt')
+                              : t('invoices.sendInvoice')
+                        }
+                      >
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className={
+                            inv.sentAt
+                              ? 'h-8 w-8 p-0 text-green-600 hover:text-green-700 dark:text-green-400'
+                              : 'h-8 w-8 p-0'
+                          }
                           disabled={busyId === inv.id}
                           onClick={() => doAction(inv.id, 'send')}
                         >
-                          <Mail className="h-4 w-4" />
+                          {inv.sentAt ? (
+                            <MailCheck className="h-4 w-4" />
+                          ) : (
+                            <Mail className="h-4 w-4" />
+                          )}
                         </Button>
                       </Tooltip>
                     )}

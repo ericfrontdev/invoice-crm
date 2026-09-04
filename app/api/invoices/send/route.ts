@@ -163,13 +163,16 @@ export async function POST(req: Request) {
       // Continue quand même pour mettre à jour le statut
     }
 
-    // Un reçu reste "paid": seul l'envoi d'une facture fait passer à 'sent'
-    const updatedInvoice = isReceipt
-      ? invoice
-      : await prisma.invoice.update({
-          where: { id: invoiceId },
-          data: { status: 'sent' },
-        })
+    // sentAt trace l'envoi pour les deux types de document. Le statut ne peut
+    // pas en tenir lieu: un reçu reste "paid" et seul l'envoi d'une facture la
+    // fait passer à 'sent'.
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        sentAt: new Date(),
+        ...(isReceipt ? {} : { status: 'sent' }),
+      },
+    })
 
     return NextResponse.json({ ok: true, invoice: updatedInvoice }, { status: 200 })
   } catch (e) {

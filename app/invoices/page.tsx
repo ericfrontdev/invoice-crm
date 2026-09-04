@@ -20,6 +20,7 @@ async function getInvoices(userId: string) {
       total: true,
       createdAt: true,
       dueDate: true,
+      sentAt: true,
       clientId: true,
       projectId: true,
       client: { select: { id: true, name: true, company: true, email: true, address: true } },
