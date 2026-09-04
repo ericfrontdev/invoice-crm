@@ -1,15 +1,20 @@
 import { z } from 'zod'
+import { emptyToNull } from './utils'
 
 /**
  * Schema for creating a new client
+ *
+ * Les champs optionnels passent par emptyToNull: le formulaire renvoie une
+ * chaîne vide pour tout champ non rempli, et sans ce prétraitement le
+ * téléphone et le site web feraient échouer la création complète du client.
  */
 export const createClientSchema = z.object({
   name: z.string().min(1, 'Le nom est requis').max(100, 'Le nom ne peut pas dépasser 100 caractères'),
-  company: z.string().max(100, 'Le nom de la compagnie ne peut pas dépasser 100 caractères').optional().nullable(),
+  company: emptyToNull(z.string().max(100, 'Le nom de la compagnie ne peut pas dépasser 100 caractères').optional().nullable()),
   email: z.string().email('Email invalide'),
-  phone: z.string().regex(/^\+?[\d\s\-()]+$/, 'Numéro de téléphone invalide').max(20).optional().nullable(),
-  address: z.string().max(500, 'L\'adresse ne peut pas dépasser 500 caractères').optional().nullable(),
-  website: z.string().url('URL invalide').optional().nullable(),
+  phone: emptyToNull(z.string().regex(/^\+?[\d\s\-()]+$/, 'Numéro de téléphone invalide').max(20).optional().nullable()),
+  address: emptyToNull(z.string().max(500, 'L\'adresse ne peut pas dépasser 500 caractères').optional().nullable()),
+  website: emptyToNull(z.string().url('URL invalide').optional().nullable()),
 })
 
 /**
